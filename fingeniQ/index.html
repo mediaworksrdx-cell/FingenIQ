@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FingenIQ — Learn. Grow. Prosper.</title>
+  <meta name="description" content="FingenIQ is an institution-grade financial education platform dedicated to helping individuals develop financial intelligence, achieve financial freedom, and build lasting wealth.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+  <style>
+    /* ── HOME PAGE EXTRAS ─────────────────────────── */
+    .stats-divider { width:1px;height:44px;background:var(--ink-700); }
+
+    .check-list { display:flex;flex-direction:column;gap:var(--sp-3); }
+    .check-list li {
+      display:flex;align-items:flex-start;gap:var(--sp-3);
+      font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed);
+    }
+    .check-list li::before {
+      content:'✓';
+      color:var(--brass-500);
+      font-weight:700;
+      flex-shrink:0;
+      margin-top:1px;
+    }
+
+    .bullet-list { display:flex;flex-direction:column;gap:var(--sp-2); }
+    .bullet-list li {
+      display:flex;align-items:flex-start;gap:var(--sp-3);
+      font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed);
+    }
+    .bullet-list li::before {
+      content:'→';
+      color:var(--brass-400);
+      font-weight:600;
+      flex-shrink:0;
+      margin-top:1px;
+    }
+
+    .wealth-grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:var(--sp-4);
+    }
+    .wealth-card {
+      background:var(--ink-900);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:var(--radius-xl);
+      padding:var(--sp-6);
+      transition:border-color var(--dur-base) var(--ease-out),
+                 transform var(--dur-base) var(--ease-out);
+    }
+    .wealth-card:hover {
+      border-color:rgba(201,168,76,0.25);
+      transform:translateY(-2px);
+    }
+    .wealth-card__label {
+      font-size:var(--text-xs);
+      font-weight:700;
+      letter-spacing:var(--tracking-widest);
+      text-transform:uppercase;
+      color:var(--brass-500);
+      margin-bottom:var(--sp-4);
+    }
+    .wealth-card ul {
+      display:flex;flex-direction:column;gap:var(--sp-2);
+    }
+    .wealth-card ul li {
+      font-size:var(--text-xs);
+      color:var(--ink-400);
+      padding-left:var(--sp-3);
+      position:relative;
+      line-height:var(--leading-relaxed);
+    }
+    .wealth-card ul li::before {
+      content:'•';
+      position:absolute;left:0;
+      color:var(--brass-600);
+    }
+
+    .audience-grid {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:var(--sp-6);
+    }
+    .audience-card {
+      background:var(--ink-900);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:var(--radius-xl);
+      padding:var(--sp-6);
+      transition:border-color var(--dur-base) var(--ease-out),
+                 transform var(--dur-base) var(--ease-out);
+    }
+    .audience-card:hover {
+      border-color:rgba(201,168,76,0.2);
+      transform:translateY(-2px);
+    }
+    .audience-card__icon { font-size:2rem;margin-bottom:var(--sp-3); }
+    .audience-card__title {
+      font-size:var(--text-base);font-weight:600;
+      color:var(--ink-100);margin-bottom:var(--sp-2);
+    }
+    .audience-card__desc { font-size:var(--text-xs);color:var(--ink-400);line-height:var(--leading-relaxed); }
+
+    .stages-grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:var(--sp-3);
+    }
+    .stage-item {
+      background:var(--ink-900);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:var(--radius-lg);
+      padding:var(--sp-4);
+      display:flex;align-items:center;gap:var(--sp-3);
+      transition:border-color var(--dur-base) var(--ease-out);
+    }
+    .stage-item:hover { border-color:rgba(201,168,76,0.2); }
+    .stage-item__num {
+      font-family:var(--font-mono);
+      font-size:var(--text-sm);
+      font-weight:600;
+      color:var(--brass-500);
+      flex-shrink:0;
+      min-width:28px;
+    }
+    .stage-item__text { font-size:var(--text-xs);color:var(--ink-300);line-height:var(--leading-relaxed); }
+
+    .intel-grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:var(--sp-3);
+    }
+    .intel-chip {
+      background:var(--ink-900);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:var(--radius-lg);
+      padding:var(--sp-4);
+      text-align:center;
+      font-size:var(--text-xs);
+      color:var(--ink-300);
+      font-weight:500;
+      line-height:var(--leading-relaxed);
+      transition:border-color var(--dur-base),background var(--dur-base);
+    }
+    .intel-chip:hover {
+      border-color:rgba(201,168,76,0.2);
+      background:rgba(201,168,76,0.04);
+    }
+
+    .learn-grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:var(--sp-4);
+    }
+    .learn-card {
+      background:var(--ink-900);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:var(--radius-xl);
+      padding:var(--sp-5);
+      transition:border-color var(--dur-base),transform var(--dur-base);
+    }
+    .learn-card:hover {
+      border-color:rgba(201,168,76,0.22);
+      transform:translateY(-2px);
+    }
+    .learn-card__title { font-size:var(--text-sm);font-weight:600;color:var(--brass-400);margin-bottom:var(--sp-2); }
+    .learn-card__desc { font-size:var(--text-xs);color:var(--ink-400);line-height:var(--leading-relaxed); }
+
+    .vision-card {
+      background:linear-gradient(135deg,rgba(8,12,24,0.95),rgba(27,35,68,0.6));
+      border:1px solid rgba(201,168,76,0.18);
+      border-radius:var(--radius-2xl);
+      padding:var(--sp-12);
+      position:relative;
+      overflow:hidden;
+    }
+    .vision-card::before {
+      content:'';
+      position:absolute;top:0;right:0;
+      width:320px;height:320px;
+      background:radial-gradient(circle,rgba(201,168,76,0.06),transparent 70%);
+      pointer-events:none;
+    }
+
+    .gateway-section {
+      position:relative;
+      overflow:hidden;
+      text-align:center;
+    }
+    .gateway-section::before {
+      content:'';
+      position:absolute;inset:0;
+      background:radial-gradient(ellipse 60% 80% at 50% 100%,rgba(27,35,68,0.5),transparent);
+      pointer-events:none;
+    }
+
+    @media (max-width:1024px) {
+      .wealth-grid { grid-template-columns:repeat(2,1fr); }
+      .stages-grid { grid-template-columns:repeat(3,1fr); }
+      .intel-grid  { grid-template-columns:repeat(2,1fr); }
+      .learn-grid  { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width:768px) {
+      .audience-grid { grid-template-columns:1fr; }
+      .wealth-grid   { grid-template-columns:1fr 1fr; }
+      .stages-grid   { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width:640px) {
+      .wealth-grid   { grid-template-columns:1fr; }
+      .intel-grid    { grid-template-columns:1fr 1fr; }
+      .learn-grid    { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body class="landing">
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <main class="page-main">
+
+      <!-- ══ HERO ══════════════════════════════════════════════ -->
+      <section class="hero" id="hero">
+        <div class="hero__bg"></div>
+        <div class="hero__grid"></div>
+        <div class="container relative">
+          <div class="hero__content animate-fadeUp" style="max-width:760px">
+            <div class="hero__eyebrow">🏛 Institution-Grade Financial Education</div>
+            <h1 class="hero__title">FingenIQ — <em>Learn. Grow. Prosper.</em></h1>
+            <h2 style="font-family:var(--font-sans);font-size:var(--text-xl);font-weight:600;color:var(--brass-400);margin-bottom:var(--sp-5)">
+              Empowering Financial Intelligence for Financial Freedom and Wealth Management
+            </h2>
+            <p class="hero__subtitle" style="margin-bottom:var(--sp-5)">
+              Financial success is not determined solely by how much money you earn—it is shaped by how well you understand, manage, grow, and protect your money. In today's rapidly evolving economy, financial education has become an essential life skill that empowers individuals to make informed decisions, achieve financial independence, and build lasting wealth.
+            </p>
+            <p style="font-size:var(--text-sm);color:var(--ink-300);margin-bottom:var(--sp-6);line-height:var(--leading-relaxed)">
+              <strong style="color:var(--ink-100)">FingenIQ</strong> is an institution-grade financial education platform dedicated to helping individuals develop financial intelligence through structured, practical, and AI-powered learning. Whether you are beginning your financial journey or expanding your expertise, FingenIQ equips you with the knowledge, confidence, and skills needed to navigate personal finance, investing, business, and wealth creation.
+            </p>
+            <div class="card" style="padding:var(--sp-4) var(--sp-5);background:rgba(201,168,76,0.07);border-color:rgba(201,168,76,0.2);margin-bottom:var(--sp-8)">
+              <p style="font-size:var(--text-sm);color:var(--ink-200);line-height:var(--leading-relaxed)">
+                Our mission is simple: <strong style="color:var(--brass-400)">transform financial knowledge into lifelong financial confidence, responsible wealth management, and sustainable financial freedom.</strong>
+              </p>
+            </div>
+            <div class="hero__actions">
+              <a href="dashboard.html" class="btn btn--brass btn--lg">Enter FingenIQ →</a>
+              <a href="about.html" class="btn btn--outline btn--lg">Read Our Story</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATS BAR ═════════════════════════════════════════ -->
+      <div style="background:var(--ink-950);border-top:var(--border-subtle);border-bottom:var(--border-subtle);padding:var(--sp-5) 0">
+        <div class="container">
+          <div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:var(--sp-6)">
+            <div style="text-align:center">
+              <div class="num" style="font-size:var(--text-3xl);font-weight:700;color:var(--brass-400)">44</div>
+              <div style="font-size:var(--text-xs);color:var(--ink-500);letter-spacing:var(--tracking-widest);text-transform:uppercase;margin-top:2px">Lessons</div>
+            </div>
+            <div class="stats-divider"></div>
+            <div style="text-align:center">
+              <div class="num" style="font-size:var(--text-3xl);font-weight:700;color:var(--brass-400)">8</div>
+              <div style="font-size:var(--text-xs);color:var(--ink-500);letter-spacing:var(--tracking-widest);text-transform:uppercase;margin-top:2px">Modules</div>
+            </div>
+            <div class="stats-divider"></div>
+            <div style="text-align:center">
+              <div class="num" style="font-size:var(--text-3xl);font-weight:700;color:var(--brass-400)">3</div>
+              <div style="font-size:var(--text-xs);color:var(--ink-500);letter-spacing:var(--tracking-widest);text-transform:uppercase;margin-top:2px">Credential Tiers</div>
+            </div>
+            <div class="stats-divider"></div>
+            <div style="text-align:center">
+              <div class="num" style="font-size:var(--text-3xl);font-weight:700;color:var(--brass-400)">20</div>
+              <div style="font-size:var(--text-xs);color:var(--ink-500);letter-spacing:var(--tracking-widest);text-transform:uppercase;margin-top:2px">Steps / Lesson</div>
+            </div>
+            <div class="stats-divider"></div>
+            <div style="text-align:center">
+              <div class="num" style="font-size:var(--text-3xl);font-weight:700;color:var(--brass-400)">AI</div>
+              <div style="font-size:var(--text-xs);color:var(--ink-500);letter-spacing:var(--tracking-widest);text-transform:uppercase;margin-top:2px">Powered Tutor</div>
+            </div>
+            <div class="stats-divider"></div>
+            <div style="text-align:center">
+              <div class="num" style="font-size:var(--text-3xl);font-weight:700;color:var(--brass-400)">SEBI</div>
+              <div style="font-size:var(--text-xs);color:var(--ink-500);letter-spacing:var(--tracking-widest);text-transform:uppercase;margin-top:2px">Equivalence Roadmap</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ WHY FINANCIAL EDUCATION MATTERS ══════════════════ -->
+      <section class="py-20" id="why-it-matters">
+        <div class="container">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-14);align-items:start">
+            <div class="animate-fadeUp">
+              <span class="section-label">Core Philosophy</span>
+              <h2 class="section-title" style="margin-top:var(--sp-3);margin-bottom:var(--sp-6)">Why Financial Education Matters</h2>
+              <p style="font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed);margin-bottom:var(--sp-5)">
+                Financial literacy is one of the strongest foundations for long-term financial well-being. People with stronger financial knowledge are generally better equipped to budget, save, invest, manage debt, avoid fraud, and make informed financial decisions.
+              </p>
+              <p style="font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed)">
+                As digital payments, online banking, investing platforms, cryptocurrencies, and AI-powered financial services become increasingly common, understanding financial concepts has become more important than ever. Financial education empowers individuals to confidently navigate these changes while reducing costly mistakes and improving financial resilience.
+              </p>
+            </div>
+            <div class="animate-fadeUp" style="animation-delay:100ms">
+              <div style="background:var(--ink-900);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-xl);padding:var(--sp-7)">
+                <div style="font-size:var(--text-sm);font-weight:600;color:var(--brass-400);margin-bottom:var(--sp-5)">Financial literacy helps individuals:</div>
+                <ul class="check-list">
+                  <li>Make informed financial decisions</li>
+                  <li>Build healthy money habits</li>
+                  <li>Create and manage personal budgets</li>
+                  <li>Save and invest with confidence</li>
+                  <li>Understand banking and credit systems</li>
+                  <li>Plan for major life goals</li>
+                  <li>Reduce financial stress</li>
+                  <li>Evaluate financial opportunities and risks</li>
+                  <li>Protect wealth through informed risk management</li>
+                  <li>Achieve long-term financial independence</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PATH TO FINANCIAL FREEDOM ════════════════════════ -->
+      <section class="py-20" id="financial-freedom" style="background:var(--ink-950);border-top:var(--border-subtle);border-bottom:var(--border-subtle)">
+        <div class="container">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-14);align-items:start">
+            <div class="animate-fadeUp">
+              <span class="section-label">FingenIQ Strategy</span>
+              <h2 class="section-title" style="margin-top:var(--sp-3);margin-bottom:var(--sp-6)">The Path to Financial Freedom</h2>
+              <p style="font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed);margin-bottom:var(--sp-5)">
+                Financial freedom is the ability to make life choices without being constrained by financial stress. It is achieved through consistent financial discipline, informed decision-making, and long-term planning.
+              </p>
+              <p style="font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed)">
+                Financial freedom is not an overnight achievement — it is the result of continuous learning and smart financial decisions.
+              </p>
+            </div>
+            <div class="animate-fadeUp" style="animation-delay:100ms">
+              <div style="background:var(--ink-900);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-xl);padding:var(--sp-7)">
+                <div style="font-size:var(--text-sm);font-weight:600;color:var(--brass-400);margin-bottom:var(--sp-5)">FingenIQ helps learners build the knowledge required to:</div>
+                <ul class="check-list">
+                  <li>Create realistic financial goals</li>
+                  <li>Build emergency funds</li>
+                  <li>Eliminate unnecessary debt</li>
+                  <li>Increase savings and investments</li>
+                  <li>Generate multiple income streams</li>
+                  <li>Understand passive income opportunities</li>
+                  <li>Plan for financial independence</li>
+                  <li>Preserve wealth across generations</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ WEALTH MANAGEMENT ══════════════════════════════════ -->
+      <section class="py-20" id="wealth-management">
+        <div class="container">
+          <div class="section-header text-center animate-fadeUp" style="margin-bottom:var(--sp-12)">
+            <span class="section-label">Structured Wealth Strategy</span>
+            <h2 class="section-title" style="margin-top:var(--sp-3)">Wealth Management for Every Stage of Life</h2>
+            <p class="section-subtitle mx-auto" style="margin-top:var(--sp-4)">
+              Wealth management is not reserved for high-net-worth individuals. It is a lifelong process of growing, protecting, and transferring wealth responsibly. FingenIQ introduces learners to essential wealth management principles, including:
+            </p>
+          </div>
+
+          <div class="wealth-grid">
+            <div class="wealth-card animate-fadeUp" style="animation-delay:0ms">
+              <div class="wealth-card__label">Wealth Creation</div>
+              <ul>
+                <li>Income planning</li>
+                <li>Saving strategies</li>
+                <li>Investment fundamentals</li>
+                <li>Business ownership</li>
+                <li>Long-term capital growth</li>
+              </ul>
+            </div>
+            <div class="wealth-card animate-fadeUp" style="animation-delay:80ms">
+              <div class="wealth-card__label">Wealth Growth</div>
+              <ul>
+                <li>Portfolio diversification</li>
+                <li>Asset allocation</li>
+                <li>Equity and fixed-income investing</li>
+                <li>Alternative investments</li>
+                <li>Risk-adjusted investing</li>
+              </ul>
+            </div>
+            <div class="wealth-card animate-fadeUp" style="animation-delay:160ms">
+              <div class="wealth-card__label">Wealth Protection</div>
+              <ul>
+                <li>Insurance planning</li>
+                <li>Risk management</li>
+                <li>Tax awareness</li>
+                <li>Emergency financial planning</li>
+                <li>Asset protection strategies</li>
+              </ul>
+            </div>
+            <div class="wealth-card animate-fadeUp" style="animation-delay:240ms">
+              <div class="wealth-card__label">Wealth Preservation</div>
+              <ul>
+                <li>Retirement planning</li>
+                <li>Estate planning fundamentals</li>
+                <li>Inflation management</li>
+                <li>Sustainable investing</li>
+                <li>Long-term financial resilience</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ WHO CAN BENEFIT ════════════════════════════════════ -->
+      <section class="py-20" id="who-benefits" style="background:var(--ink-950);border-top:var(--border-subtle);border-bottom:var(--border-subtle)">
+        <div class="container">
+          <div class="section-header text-center animate-fadeUp" style="margin-bottom:var(--sp-12)">
+            <span class="section-label">FingenIQ Ecosystem</span>
+            <h2 class="section-title" style="margin-top:var(--sp-3)">Who Can Benefit?</h2>
+          </div>
+
+          <div class="audience-grid">
+            <div class="audience-card animate-fadeUp" style="animation-delay:0ms">
+              <div class="audience-card__icon">🎓</div>
+              <div class="audience-card__title">Students</div>
+              <p class="audience-card__desc">Build a strong financial foundation early and develop lifelong money management skills, preparing for higher education, careers, entrepreneurship, and responsible financial decision-making.</p>
+            </div>
+            <div class="audience-card animate-fadeUp" style="animation-delay:80ms">
+              <div class="audience-card__icon">💼</div>
+              <div class="audience-card__title">Professionals</div>
+              <p class="audience-card__desc">Learn to effectively manage income, savings, taxes, investments, retirement planning, and long-term financial goals while improving overall financial well-being.</p>
+            </div>
+            <div class="audience-card animate-fadeUp" style="animation-delay:160ms">
+              <div class="audience-card__icon">🚀</div>
+              <div class="audience-card__title">Entrepreneurs</div>
+              <p class="audience-card__desc">Understand business finance, cash flow management, funding strategies, financial planning, profitability, and sustainable business growth to make informed business decisions.</p>
+            </div>
+            <div class="audience-card animate-fadeUp" style="animation-delay:240ms">
+              <div class="audience-card__icon">📈</div>
+              <div class="audience-card__title">Investors</div>
+              <p class="audience-card__desc">Develop the knowledge and analytical skills to evaluate investment opportunities, diversify portfolios, understand financial markets, manage risk, and build long-term wealth.</p>
+            </div>
+            <div class="audience-card animate-fadeUp" style="animation-delay:320ms">
+              <div class="audience-card__icon">👨‍👩‍👧</div>
+              <div class="audience-card__title">Families</div>
+              <p class="audience-card__desc">Plan household finances, manage expenses, protect assets, prepare for education and retirement, and work toward shared financial goals with greater confidence.</p>
+            </div>
+            <div class="audience-card animate-fadeUp" style="animation-delay:400ms">
+              <div class="audience-card__icon">🌍</div>
+              <div class="audience-card__title">Lifelong Learners</div>
+              <p class="audience-card__desc">Strengthen financial confidence, stay informed about evolving financial systems, adapt to changing economic environments, and continue developing financial intelligence throughout life.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ FINANCIAL KNOWLEDGE FOR EVERY STAGE ═══════════════ -->
+      <section class="py-20" id="knowledge-stages">
+        <div class="container">
+          <div class="section-header text-center animate-fadeUp" style="margin-bottom:var(--sp-10)">
+            <span class="section-label">Lifelong Learning</span>
+            <h2 class="section-title" style="margin-top:var(--sp-3)">Financial Knowledge for Every Stage of Life</h2>
+            <p class="section-subtitle mx-auto" style="margin-top:var(--sp-4)">
+              Financial education is valuable throughout life, helping individuals make informed decisions at every milestone.
+            </p>
+          </div>
+
+          <div class="stages-grid">
+            <div class="stage-item animate-fadeUp" style="animation-delay:0ms">   <span class="stage-item__num">01</span><span class="stage-item__text">Managing your first income</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:40ms">  <span class="stage-item__num">02</span><span class="stage-item__text">Building healthy saving habits</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:80ms">  <span class="stage-item__num">03</span><span class="stage-item__text">Creating and following a budget</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:120ms"> <span class="stage-item__num">04</span><span class="stage-item__text">Understanding banking and digital payments</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:160ms"> <span class="stage-item__num">05</span><span class="stage-item__text">Using credit responsibly</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:200ms"> <span class="stage-item__num">06</span><span class="stage-item__text">Planning major purchases</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:240ms"> <span class="stage-item__num">07</span><span class="stage-item__text">Protecting yourself through insurance</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:280ms"> <span class="stage-item__num">08</span><span class="stage-item__text">Growing wealth through investing</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:320ms"> <span class="stage-item__num">09</span><span class="stage-item__text">Understanding taxes and financial planning</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:360ms"> <span class="stage-item__num">10</span><span class="stage-item__text">Preparing for retirement</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:400ms"> <span class="stage-item__num">11</span><span class="stage-item__text">Building and managing a business</span></div>
+            <div class="stage-item animate-fadeUp" style="animation-delay:440ms"> <span class="stage-item__num">12</span><span class="stage-item__text">Creating long-term financial security</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ LEARN BEYOND THEORY ════════════════════════════════ -->
+      <section class="py-20" id="beyond-theory" style="background:var(--ink-950);border-top:var(--border-subtle);border-bottom:var(--border-subtle)">
+        <div class="container">
+          <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:var(--sp-14);align-items:start">
+            <div class="animate-fadeUp">
+              <span class="section-label">Practical Learning</span>
+              <h2 class="section-title" style="margin-top:var(--sp-3);margin-bottom:var(--sp-6)">Learn Beyond Theory</h2>
+              <p style="font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed);margin-bottom:var(--sp-5)">
+                FingenIQ combines academic-quality financial education with practical, real-world learning experiences. Learners explore financial concepts through multiple modalities.
+              </p>
+              <p style="font-size:var(--text-sm);color:var(--ink-400);line-height:var(--leading-relaxed);font-style:italic">
+                The focus is not simply on understanding concepts, but on applying them confidently in everyday financial situations.
+              </p>
+            </div>
+            <div class="learn-grid animate-fadeUp" style="animation-delay:100ms">
+              <div class="learn-card">
+                <div class="learn-card__title">Interactive Learning</div>
+                <div class="learn-card__desc">Scenario-based exercises, financial calculators, and compound modelers.</div>
+              </div>
+              <div class="learn-card">
+                <div class="learn-card__title">Visual Explanations</div>
+                <div class="learn-card__desc">Complex macroeconomics translated into clean infographics and diagrams.</div>
+              </div>
+              <div class="learn-card">
+                <div class="learn-card__title">Business Case Studies</div>
+                <div class="learn-card__desc">Real-world corporate restructurings, financial plans, and industry audits.</div>
+              </div>
+              <div class="learn-card">
+                <div class="learn-card__title">Industry Case Studies</div>
+                <div class="learn-card__desc">Sector-specific scenarios grounded in real market conditions and data.</div>
+              </div>
+              <div class="learn-card">
+                <div class="learn-card__title">AI Learning Assistance</div>
+                <div class="learn-card__desc">Contextual AI tutor that adapts explanations to your quiz performance.</div>
+              </div>
+              <div class="learn-card">
+                <div class="learn-card__title">Practical Activities</div>
+                <div class="learn-card__desc">Assignments that apply concepts to personal and business finance scenarios.</div>
+              </div>
+              <div class="learn-card">
+                <div class="learn-card__title">Knowledge Assessments</div>
+                <div class="learn-card__desc">Ungraded KCs, graded quizzes, proctored module tests, and a capstone project.</div>
+              </div>
+              <div class="learn-card">
+                <div class="learn-card__title">Revision &amp; Reinforcement</div>
+                <div class="learn-card__desc">Flashcard decks, concept summaries, and AI-generated study notes.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ BUILDING FINANCIAL INTELLIGENCE ══════════════════ -->
+      <section class="py-20" id="financial-intelligence">
+        <div class="container">
+          <div class="section-header text-center animate-fadeUp" style="margin-bottom:var(--sp-10)">
+            <span class="section-label">Critical Capabilities</span>
+            <h2 class="section-title" style="margin-top:var(--sp-3)">Building Financial Intelligence</h2>
+            <p class="section-subtitle mx-auto" style="margin-top:var(--sp-4)">
+              Financial intelligence goes beyond knowing definitions or formulas. It is the ability to think, evaluate, and decide with clarity. These are lifelong skills that support both personal success and professional development.
+            </p>
+          </div>
+
+          <div class="intel-grid">
+            <div class="intel-chip animate-fadeUp" style="animation-delay:0ms">Think critically about financial decisions</div>
+            <div class="intel-chip animate-fadeUp" style="animation-delay:50ms">Evaluate risks and opportunities</div>
+            <div class="intel-chip animate-fadeUp" style="animation-delay:100ms">Interpret financial information</div>
+            <div class="intel-chip animate-fadeUp" style="animation-delay:150ms">Understand economic events</div>
+            <div class="intel-chip animate-fadeUp" style="animation-delay:200ms">Analyze business performance</div>
+            <div class="intel-chip animate-fadeUp" style="animation-delay:250ms">Make informed investment decisions</div>
+            <div class="intel-chip animate-fadeUp" style="animation-delay:300ms">Plan for long-term financial goals</div>
+            <div class="intel-chip animate-fadeUp" style="animation-delay:350ms">Adapt to changing financial environments</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ AI-POWERED LEARNING ════════════════════════════════ -->
+      <section class="py-20" id="ai-learning" style="background:var(--ink-950);border-top:var(--border-subtle);border-bottom:var(--border-subtle)">
+        <div class="container">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-14);align-items:start">
+            <div class="animate-fadeUp">
+              <span class="section-label">Personalized Assistance</span>
+              <h2 class="section-title" style="margin-top:var(--sp-3);margin-bottom:var(--sp-6)">AI-Powered Personalized Learning</h2>
+              <p style="font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed);margin-bottom:var(--sp-4)">
+                FingenIQ integrates intelligent AI assistance to make financial education more accessible and engaging. This creates a learning experience that adapts to different learning styles and individual needs.
+              </p>
+              <p style="font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed)">
+                The AI Tutor is contextualised per lesson — it understands exactly which step you are on, what concepts were covered, and where your quiz results indicate gaps. Explanations are never generic.
+              </p>
+            </div>
+            <div class="animate-fadeUp" style="animation-delay:100ms">
+              <div style="background:var(--ink-900);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-xl);padding:var(--sp-7)">
+                <div style="font-size:var(--text-sm);font-weight:600;color:var(--brass-400);margin-bottom:var(--sp-5)">Learners can:</div>
+                <ul class="bullet-list">
+                  <li>Ask questions anytime — contextualised to the current lesson step</li>
+                  <li>Simplify complex concepts in plain language</li>
+                  <li>Explore real-world examples on demand</li>
+                  <li>Receive personalized explanations based on quiz results</li>
+                  <li>Generate custom study notes and concept summaries</li>
+                  <li>Review and reinforce difficult topics</li>
+                  <li>Reinforce learning through AI-guided practice sessions</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SUPPORTING FINANCIAL WELL-BEING ══════════════════ -->
+      <section class="py-20" id="financial-wellbeing">
+        <div class="container container--narrow">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-12);align-items:center">
+            <div class="animate-fadeUp">
+              <span class="section-label">Broader Impact</span>
+              <h2 class="section-title" style="margin-top:var(--sp-3);margin-bottom:var(--sp-6)">Supporting Financial Well-Being</h2>
+              <p style="font-size:var(--text-sm);color:var(--ink-300);line-height:var(--leading-relaxed)">
+                Strong financial literacy supports better financial behaviors, improved money management, informed investment decisions, and greater financial resilience. By developing financial intelligence, individuals are better prepared to navigate economic uncertainty, achieve long-term goals, and build sustainable financial well-being for themselves and their families.
+              </p>
+            </div>
+            <div class="animate-fadeUp" style="animation-delay:100ms">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3)">
+                <div style="background:var(--ink-900);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-xl);padding:var(--sp-5);text-align:center">
+                  <div style="font-size:1.8rem;margin-bottom:var(--sp-2)">💡</div>
+                  <div style="font-size:var(--text-xs);color:var(--ink-300);font-weight:500">Better Financial Behaviours</div>
+                </div>
+                <div style="background:var(--ink-900);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-xl);padding:var(--sp-5);text-align:center">
+                  <div style="font-size:1.8rem;margin-bottom:var(--sp-2)">📊</div>
+                  <div style="font-size:var(--text-xs);color:var(--ink-300);font-weight:500">Improved Money Management</div>
+                </div>
+                <div style="background:var(--ink-900);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-xl);padding:var(--sp-5);text-align:center">
+                  <div style="font-size:1.8rem;margin-bottom:var(--sp-2)">📈</div>
+                  <div style="font-size:var(--text-xs);color:var(--ink-300);font-weight:500">Informed Investment Decisions</div>
+                </div>
+                <div style="background:var(--ink-900);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-xl);padding:var(--sp-5);text-align:center">
+                  <div style="font-size:1.8rem;margin-bottom:var(--sp-2)">🛡️</div>
+                  <div style="font-size:var(--text-xs);color:var(--ink-300);font-weight:500">Greater Financial Resilience</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ 8 MODULES PREVIEW ══════════════════════════════════ -->
+      <section class="py-20" id="modules" style="background:var(--ink-950);border-top:var(--border-subtle);border-bottom:var(--border-subtle)">
+        <div class="container">
+          <div class="section-header text-center animate-fadeUp" style="margin-bottom:var(--sp-10)">
+            <span class="section-label">Curriculum Overview</span>
+            <h2 class="section-title" style="margin-top:var(--sp-3)">8 Structured Learning Modules</h2>
+            <p class="section-subtitle mx-auto" style="margin-top:var(--sp-4)">
+              44 lessons across 8 modules, each built on a rigorous 20-step framework covering theory, application, case studies, and assessment.
+            </p>
+          </div>
+          <div id="modules-preview-root" style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-4)">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ OUR VISION ═════════════════════════════════════════ -->
+      <section class="py-20" id="our-vision">
+        <div class="container container--narrow">
+          <div class="vision-card animate-fadeUp">
+            <span class="section-label" style="position:relative;z-index:1">Our North Star</span>
+            <h2 class="section-title" style="margin-top:var(--sp-4);margin-bottom:var(--sp-6);position:relative;z-index:1">Our Vision</h2>
+            <p style="font-size:var(--text-base);color:var(--ink-200);line-height:var(--leading-relaxed);position:relative;z-index:1;max-width:700px">
+              To make world-class financial education accessible to everyone by empowering individuals with the knowledge, confidence, and practical skills to make informed financial decisions, manage wealth responsibly, achieve lasting financial freedom, and create a financially empowered future for themselves, their families, businesses, and communities.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ GATEWAY CTA ════════════════════════════════════════ -->
+      <section class="py-20 gateway-section" id="enter-platform" style="background:var(--ink-950);border-top:var(--border-subtle)">
+        <div class="container container--narrow" style="position:relative;z-index:1">
+          <div class="animate-fadeUp" style="text-align:center">
+            <span class="section-label">Ready to Begin?</span>
+            <h2 class="section-title" style="margin-top:var(--sp-4);margin-bottom:var(--sp-5);font-size:var(--text-5xl)">
+              Learn Smarter.<br><em>Manage Wealth. Achieve Financial Freedom.</em>
+            </h2>
+            <p style="font-size:var(--text-base);color:var(--ink-300);max-width:500px;margin:0 auto var(--sp-10);line-height:var(--leading-relaxed)">
+              Access your personal dashboard, 44 structured lessons, proctored assessments, certification tracking, and an AI tutor — all inside FingenIQ.
+            </p>
+            <div style="display:flex;gap:var(--sp-4);justify-content:center;flex-wrap:wrap">
+              <a href="dashboard.html" class="btn btn--brass btn--lg" style="font-size:var(--text-base);padding:var(--sp-4) var(--sp-10)">
+                Enter FingenIQ →
+              </a>
+              <a href="lessons.html" class="btn btn--outline btn--lg">
+                Browse Curriculum
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ══ FOOTER ═════════════════════════════════════════════ -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer__inner">
+          <div>
+            <a href="index.html" class="nav__logo" style="margin-bottom:var(--sp-4)">
+              <div class="nav__logo-mark"><span class="nav__logo-glyph">F</span></div>
+              <span class="nav__logo-text">Fingen<span>IQ</span></span>
+            </a>
+            <p class="footer__brand-desc">Learn Smarter. Manage Wealth. Achieve Financial Freedom.</p>
+          </div>
+          <div>
+            <h4 class="footer__col-title">Company</h4>
+            <div class="footer__links">
+              <a href="about.html" class="footer__link">About Us</a>
+              <a href="contact.html" class="footer__link">Contact Us</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="footer__col-title">Platform</h4>
+            <div class="footer__links">
+              <a href="lessons.html" class="footer__link">Curriculum</a>
+              <a href="assessments.html" class="footer__link">Assessments</a>
+              <a href="certification.html" class="footer__link">Credentials</a>
+              <a href="marketplace.html" class="footer__link">Marketplace</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="footer__col-title">Legal</h4>
+            <div class="footer__links">
+              <a href="certification-roadmap.html" class="footer__link">SEBI Disclaimer</a>
+              <a href="#" class="footer__link">Terms of Service</a>
+              <a href="#" class="footer__link">Privacy Policy</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <span>&copy; 2026 FingenIQ. All rights reserved.</span>
+          <span>Designed for modern professional standards.</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/main.js?v=3"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('modules-preview-root');
+      if (container && window.FQ) {
+        container.innerHTML = window.FQ.MODULES.map(m => `
+          <div class="module-tile animate-fadeUp">
+            <div class="module-tile__num">M${m.order}</div>
+            <div class="module-tile__icon">${m.icon}</div>
+            <h3 class="module-tile__title">${m.title}</h3>
+            <div class="module-tile__count">${m.lessonIds.length} Lessons</div>
+          </div>
+        `).join('');
+      }
+    });
+  </script>
+</body>
+</html>

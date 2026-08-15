@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Candidates — FinGeniQ</title>
+  <meta name="description" content="Search verified financial analyst candidates, filtered by certification credentials.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <main class="page-main">
+      <div class="employer-search">
+        <div class="container">
+          <div class="section-header animate-fadeUp">
+            <span class="section-label">Verified Talent Network</span>
+            <h1 class="section-title">Find Certified Analysts</h1>
+            <p class="section-subtitle">Search and filter validated program graduates. All certifications are cryptographicly verifiable.</p>
+          </div>
+
+          <div class="search-layout">
+            <!-- Sidebar: Filters -->
+            <aside class="filter-sidebar animate-fadeUp delay-100">
+              <div class="form-group">
+                <label class="form-label" for="search-input">Search Candidates</label>
+                <input type="text" id="search-input" class="form-input" placeholder="Type a name or skill...">
+              </div>
+
+              <div class="filter-group">
+                <div class="filter-group__label">Credential Tier</div>
+                <div class="filter-option" id="tier-all">
+                  <div class="filter-option__check"></div>
+                  <span class="filter-option__label">All Tiers</span>
+                </div>
+                <div class="filter-option" id="tier-distinction">
+                  <div class="filter-option__check"></div>
+                  <span class="filter-option__label text-brass">Distinction Only</span>
+                </div>
+              </div>
+
+              <div class="filter-group">
+                <div class="filter-group__label">Capstone Track</div>
+                <div class="filter-option" id="cap-a">
+                  <div class="filter-option__check"></div>
+                  <span class="filter-option__label">Track A (Independence)</span>
+                </div>
+                <div class="filter-option" id="cap-b">
+                  <div class="filter-option__check"></div>
+                  <span class="filter-option__label">Track B (Thesis)</span>
+                </div>
+              </div>
+            </aside>
+
+            <!-- Main: Seeker Cards List -->
+            <div class="lessons-content animate-fadeUp delay-200">
+              <div class="seekers-grid" id="seekers-container">
+                <!-- Dynamically Injected Seekers -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('seekers-container');
+      const search = document.getElementById('search-input');
+
+      let currentFilters = { text: '', tier: 'all', capstone: 'all' };
+
+      function render() {
+        if (!container || !window.FQ) return;
+        const filtered = window.FQ.SEEKERS.filter(s => {
+          const matchText = !currentFilters.text || s.name.toLowerCase().includes(currentFilters.text.toLowerCase()) || s.skills.some(sk => sk.toLowerCase().includes(currentFilters.text.toLowerCase()));
+          const matchTier = currentFilters.tier === 'all' || s.credentialTier.toLowerCase() === currentFilters.tier.toLowerCase();
+          const matchCapstone = currentFilters.capstone === 'all' || s.capstoneTrack.toLowerCase() === currentFilters.capstone.toLowerCase();
+          return matchText && matchTier && matchCapstone;
+        });
+
+        if (filtered.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state__icon">🔍</div>
+              <h2 class="empty-state__title">No Candidates Found</h2>
+              <p class="empty-state__desc">Try adjusting your filters or search keywords.</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = filtered.map(s => `
+          <div class="seeker-card" onclick="location.href='marketplace-profile.html?id=${s.id}'">
+            <div class="seeker-card__avatar ${s.credentialTier === 'Distinction' ? 'seeker-card__avatar--brass' : ''}">
+              ${s.initials}
+            </div>
+            <div class="seeker-card__body">
+              <div class="seeker-card__name">${s.name}</div>
+              <div class="seeker-card__track">Capstone: <em>"${s.capstoneTitle}"</em></div>
+              <div class="seeker-card__certs">
+                <span class="badge ${s.credentialTier==='Distinction'?'badge--brass':'badge--in-progress'}">${s.credentialTier}</span>
+                ${s.professionalTracks.map(t => `<span class="badge badge--module">${t.split(' ')[0]}</span>`).join('')}
+              </div>
+            </div>
+            <div class="flex flex-col justify-between items-end">
+              <span class="text-xs text-muted">Score: <strong class="num">${s.overallScore}%</strong></span>
+              <button class="btn btn--outline btn--sm mt-4">View Profile</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Event hookups
+      search?.addEventListener('input', FQ_UI.debounce((e) => {
+        currentFilters.text = e.target.value;
+        render();
+      }, 200));
+
+      const tAll = document.getElementById('tier-all');
+      const tDist = document.getElementById('tier-distinction');
+      const capA = document.getElementById('cap-a');
+      const capB = document.getElementById('cap-b');
+
+      tAll?.addEventListener('click', () => {
+        tAll.classList.add('active'); tDist.classList.remove('active');
+        currentFilters.tier = 'all'; render();
+      });
+      tDist?.addEventListener('click', () => {
+        tDist.classList.add('active'); tAll.classList.remove('active');
+        currentFilters.tier = 'distinction'; render();
+      });
+
+      capA?.addEventListener('click', () => {
+        capA.classList.toggle('active'); capB.classList.remove('active');
+        currentFilters.capstone = capA.classList.contains('active') ? 'a' : 'all'; render();
+      });
+      capB?.addEventListener('click', () => {
+        capB.classList.toggle('active'); capA.classList.remove('active');
+        currentFilters.capstone = capB.classList.contains('active') ? 'b' : 'all'; render();
+      });
+
+      // Init list
+      tAll?.classList.add('active');
+      render();
+    });
+  </script>
+</body>
+</html>

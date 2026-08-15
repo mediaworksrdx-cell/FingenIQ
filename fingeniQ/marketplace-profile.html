@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyst Profile — FinGeniQ</title>
+  <meta name="description" content="View verified analyst credentials and portfolio details.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <main class="page-main">
+      <div class="profile-page">
+        <div class="container" id="profile-root">
+          <!-- Dynamically Injected Profile Data -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('profile-root');
+      const params = new URLSearchParams(window.location.search);
+      const targetId = params.get('id') || 'S003';
+
+      if (!root || !window.FQ) return;
+      const s = window.FQ.SEEKERS.find(cand => cand.id === targetId) || window.FQ.SEEKERS[0];
+      const verifyCode = FQ_UI.generateVerificationCode(s.id, '1735689600');
+
+      root.innerHTML = `
+        <div class="profile-header animate-fadeUp">
+          <div class="profile-avatar ${s.credentialTier==='Distinction'?'profile-avatar--brass':''}">
+            ${s.initials}
+          </div>
+          <div class="profile-info">
+            <h1 class="profile-name">${s.name}</h1>
+            <div class="profile-location">📍 ${s.location} · Class of ${s.graduationYear}</div>
+            <div class="profile-certs">
+              <span class="badge ${s.credentialTier==='Distinction'?'badge--brass':'badge--in-progress'}">${s.credentialTier}</span>
+              ${s.professionalTracks.map(t => `<span class="badge badge--module">${t}</span>`).join('')}
+            </div>
+          </div>
+          <div class="profile-actions">
+            <button class="btn btn--brass" onclick="FQ_UI.showToast({title:'Introduction Requested',message:'A notification has been sent to candidate.',type:'brass'})">Request Introduction</button>
+            <button class="btn btn--outline" onclick="FQ_UI.showToast({title:'Link Copied',message:'Verified link copied to clipboard.',type:'success'})">Share Profile</button>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <div class="animate-fadeUp delay-100">
+            <!-- Capstone Details -->
+            <div class="card mb-6">
+              <h3 class="text-lg font-semi text-primary mb-4">Capstone Thesis Project</h3>
+              <div class="badge badge--module mb-3">Track ${s.capstoneTrack}</div>
+              <h4 class="serif text-xl font-bold mb-3" style="color:var(--ink-50)">"${s.capstoneTitle}"</h4>
+              <p class="text-sm text-secondary mb-4">${s.bio}</p>
+              <div class="equiv-note">
+                <span>📹</span>
+                <span>Includes a 10-minute video presentation walkthrough (graded by AI evaluator rubric)</span>
+              </div>
+            </div>
+
+            <!-- Skills Inventory -->
+            <div class="card">
+              <h3 class="text-lg font-semi text-primary mb-4">Expertise & Skills</h3>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--sp-2)">
+                ${s.skills.map(sk => `<span class="badge badge--not-started" style="font-size:var(--text-xs)">${sk}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+
+          <aside class="animate-fadeUp delay-200">
+            <!-- Verification Card -->
+            <div class="card card--credential flex flex-col gap-4 text-center p-6">
+              <span class="text-xs uppercase font-bold tracking-wider text-brass">Cryptographic Verification</span>
+              <div class="num" style="font-size:var(--text-base);font-weight:700;color:var(--ink-100)">${verifyCode}</div>
+              <div class="badge badge--completed mx-auto">Status: Authenticated</div>
+            </div>
+          </aside>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>

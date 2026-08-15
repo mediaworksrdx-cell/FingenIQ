@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talent Marketplace — FinGeniQ</title>
+  <meta name="description" content="Connect certified finance candidates with top institutions and recruiters on FinGeniQ.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <main class="page-main">
+      <div class="container">
+        <!-- Role Picker Hero -->
+        <section class="marketplace-landing animate-fadeUp">
+          <div class="role-picker">
+            <span class="section-label">Connect Verified Talent</span>
+            <h1 class="role-picker__title">FinGeniQ Talent Network</h1>
+            <p class="role-picker__subtitle">Bridging the gap between certified analytical excellence and premier financial institutions.</p>
+
+            <div class="role-cards">
+              <a href="marketplace-profile.html" class="role-card">
+                <div class="role-card__icon">🎓</div>
+                <h3 class="role-card__title">I'm looking for work</h3>
+                <p class="role-card__desc">Showcase your verified certification tiers, professional-track badges, and capstone work directly to recruiters.</p>
+                <div class="mt-4 text-sm font-semi text-primary" style="color:var(--sapphire-400)">View My Profile →</div>
+              </a>
+
+              <a href="marketplace-search.html" class="role-card role-card--employer">
+                <div class="role-card__icon">🏢</div>
+                <h3 class="role-card__title">I'm hiring</h3>
+                <p class="role-card__desc">Search our directory of certified financial analysts filtered by verified scores, track credentials, and capstone topics.</p>
+                <div class="mt-4 text-sm font-semi text-brass">Find Candidates →</div>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Featured Job Openings -->
+        <section class="py-12 animate-fadeUp delay-100">
+          <h2 class="text-2xl font-semi text-primary mb-6">Recent Job Postings</h2>
+          <div class="grid gap-4" id="jobs-container" style="grid-template-columns:repeat(auto-fill, minmax(320px, 1fr))">
+            <!-- Dynamic jobs injection -->
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('jobs-container');
+      if (container && window.FQ) {
+        container.innerHTML = window.FQ.JOB_POSTINGS.slice(0,3).map(j => `
+          <div class="job-card" onclick="location.href='marketplace-search.html'">
+            <div class="job-card__header">
+              <div>
+                <h3 class="job-card__title">${j.title}</h3>
+                <div class="job-card__company">${j.company} · ${j.location}</div>
+              </div>
+              <span class="badge badge--brass">${j.requiredTier}</span>
+            </div>
+            <p class="text-sm text-secondary line-clamp-2">${j.description}</p>
+            <div class="job-card__meta">
+              <span class="job-card__meta-item">💰 ${j.salary}</span>
+              <span class="job-card__meta-item">⏱ ${j.type}</span>
+              <span class="job-card__meta-item">📅 ${j.posted}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+    });
+  </script>
+</body>
+</html>

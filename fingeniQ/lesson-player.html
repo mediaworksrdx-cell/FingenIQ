@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson Player — FinGeniQ</title>
+  <meta name="description" content="Complete guided pathway lesson player for FinGeniQ, featuring a 20-step framework and persistent AI Tutor panel.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body class="page-lesson-player">
+  <div id="nav-root"></div>
+
+  <!-- Lesson Player Layout -->
+  <div class="lesson-player" style="height:calc(100vh - var(--nav-height));margin-top:var(--nav-height)">
+    <!-- Column 1: Step Rail -->
+    <aside class="player-rail">
+      <div class="player-rail-header">
+        <div class="player-rail-header__module" id="rail-module-name">Module 1 · Personal Finance</div>
+        <div class="player-rail-header__lesson" id="rail-lesson-name">Lesson 1: Foundations</div>
+      </div>
+      <div class="step-rail" id="step-rail">
+        <!-- Injected by lesson-player.js -->
+      </div>
+    </aside>
+
+    <!-- Column 2: Content Player -->
+    <section class="player-content" id="player-content">
+      <div class="player-content__inner">
+        <div id="player-content-area">
+          <div class="empty-state">
+            <h2 class="empty-state__title">Loading Lesson...</h2>
+          </div>
+        </div>
+
+        <!-- Sticky Navigation Footer -->
+        <div class="player-nav">
+          <button id="prev-step-btn" class="btn btn--outline" onclick="goToStep(currentStep - 1)" disabled>← Previous</button>
+          <span id="step-info" class="player-nav__step-info">Step 1 of 20</span>
+          <button id="next-step-btn" class="btn btn--primary" onclick="goToStep(currentStep + 1)">Next Step →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Column 3: AI Tutor Panel -->
+    <aside class="ai-panel">
+      <div class="ai-panel__header">
+        <div class="ai-panel__avatar">🤖</div>
+        <div>
+          <div class="ai-panel__title">AI Tutor</div>
+          <div class="ai-panel__subtitle" id="current-step-name">Contextualised</div>
+        </div>
+        <div class="ai-panel__status"></div>
+      </div>
+      <div class="ai-panel__messages" id="ai-messages">
+        <!-- Injected by lesson-player.js -->
+      </div>
+      <div class="ai-panel__input-area">
+        <div class="ai-panel__input-row">
+          <textarea id="ai-input" class="ai-panel__textarea" rows="2" placeholder="Ask about this step..."></textarea>
+          <button id="ai-send-btn" class="btn btn--primary btn--sm">↑</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--sp-2);margin-top:var(--sp-3)">
+          <button class="btn btn--ghost btn--xs" style="justify-content:flex-start;font-size:var(--text-xs);text-align:left" onclick="document.getElementById('ai-input').value='Explain the Sequencing Imperative with an example'">"Explain the Sequencing Imperative..."</button>
+          <button class="btn btn--ghost btn--xs" style="justify-content:flex-start;font-size:var(--text-xs);text-align:left" onclick="document.getElementById('ai-input').value='Why does protection precede accumulation?'">"Why does protection precede accumulation?"</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/lesson-player.js"></script>
+</body>
+</html>

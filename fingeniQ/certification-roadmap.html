@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEBI-Equivalence Roadmap — FinGeniQ</title>
+  <meta name="description" content="View FinGeniQ's strategic pathway, milestone tracker, and disclaimer information regarding regulatory audit and alignment.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <main class="page-main">
+      <div class="roadmap-page">
+        <div class="container container--narrow">
+          <!-- Page Header -->
+          <div class="section-header text-center animate-fadeUp">
+            <span class="section-label">Regulatory Alignment</span>
+            <h1 class="section-title">SEBI-Equivalence Roadmap</h1>
+            <p class="section-subtitle mx-auto">Our structured pathway toward seeking future SEBI recognition for research analyst and advisor modules.</p>
+          </div>
+
+          <!-- Strict Cautious Disclaimer -->
+          <div class="roadmap-disclaimer animate-fadeUp">
+            <strong>Important Regulatory Notice</strong>
+            FinGeniQ is currently an independent educational platform. The milestones mapped on this page represent our internal audit, compliance, and proctoring objectives. No official SEBI recognition or regulatory equivalence currently exists. Review and potential determination are completely at SEBI's discretion, and no claims of current parity are implied.
+          </div>
+
+          <!-- Milestones Stepper -->
+          <div class="card p-6 mb-8 animate-fadeUp delay-100">
+            <div class="milestone-stepper" id="roadmap-stepper">
+              <!-- Dynamically populated from FQ.SEBI_MILESTONES -->
+            </div>
+          </div>
+
+          <!-- Why This Matters Section -->
+          <div class="card card--elevated mb-8 animate-fadeUp delay-200">
+            <h3 class="text-xl font-semi text-primary mb-4">Why We Build Toward This Standard</h3>
+            <p class="text-sm text-secondary mb-4">
+              Our curriculum has been structured to meet and exceed the theoretical benchmarks set by Indian securities regulation. By subjecting our platform to proctoring infrastructure, question bank audits, and independent boards, we guarantee that FinGeniQ certified students have skills equivalent to industry practitioners.
+            </p>
+            <div style="display:flex;gap:var(--sp-4)">
+              <a href="certification.html" class="btn btn--primary">View Certifications</a>
+              <a href="lessons.html" class="btn btn--outline">Browse Lessons</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const stepper = document.getElementById('roadmap-stepper');
+      if (stepper && window.FQ) {
+        stepper.innerHTML = window.FQ.SEBI_MILESTONES.map(m => {
+          let statusClass = 'milestone--planned';
+          if (m.status === 'achieved') statusClass = 'milestone--achieved';
+          if (m.status === 'active') statusClass = 'milestone--active';
+
+          return `
+            <div class="milestone ${statusClass}">
+              <div class="milestone__node">${m.icon}</div>
+              <div class="milestone__content">
+                <span class="milestone__status">${m.status}</span>
+                <h3 class="milestone__title">${m.title}</h3>
+                <p class="milestone__desc">${m.description}</p>
+                <div class="milestone__meta">
+                  <div class="milestone__meta-item"><strong>Target Date</strong> ${m.targetDate}</div>
+                  <div class="milestone__meta-item"><strong>Owner</strong> ${m.owner}</div>
+                </div>
+                ${m.notes ? `<div style="font-size:var(--text-xs);color:var(--ink-500);margin-top:var(--sp-3)">* ${m.notes}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    });
+  </script>
+</body>
+</html>

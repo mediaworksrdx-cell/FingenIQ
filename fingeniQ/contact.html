@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us — FingenIQ</title>
+  <meta name="description" content="Get in touch with FingenIQ for admissions inquiries, enterprise cohort pricing, technical support, and partnership opportunities.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body class="landing">
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <main class="page-main">
+
+      <!-- Page Hero -->
+      <section class="hero" id="contact-hero" style="min-height:50vh">
+        <div class="hero__bg"></div>
+        <div class="hero__grid"></div>
+        <div class="container relative">
+          <div class="hero__content animate-fadeUp" style="max-width:620px">
+            <div class="hero__eyebrow">✉️ Support &amp; Inquiries</div>
+            <h1 class="hero__title">Contact <em>Us</em></h1>
+            <p class="hero__subtitle">
+              Have questions about admissions, enterprise cohort pricing, platform technical support, or partnership opportunities? Our team is here to help.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section class="py-20" id="contact-main">
+        <div class="container">
+          <div class="grid" style="grid-template-columns: 1fr 1.4fr; gap: var(--sp-12); align-items: start;">
+
+            <!-- Left: Contact Details -->
+            <div class="animate-fadeUp">
+              <h2 class="section-title mb-8">Get in Touch</h2>
+
+              <div class="flex flex-col gap-6">
+                <div class="card p-5 flex items-start gap-4">
+                  <span style="font-size:1.5rem;flex-shrink:0">🏢</span>
+                  <div>
+                    <div class="font-semi text-primary mb-1">Platform Headquarters</div>
+                    <div class="text-sm text-secondary">BKC Financial District</div>
+                    <div class="text-sm text-secondary">Bandra East, Mumbai — 400051</div>
+                    <div class="text-xs text-muted mt-1">Maharashtra, India</div>
+                  </div>
+                </div>
+
+                <div class="card p-5 flex items-start gap-4">
+                  <span style="font-size:1.5rem;flex-shrink:0">✉️</span>
+                  <div>
+                    <div class="font-semi text-primary mb-1">Support &amp; Admissions Email</div>
+                    <div class="text-sm text-brass">admissions@fingeniq.com</div>
+                    <div class="text-xs text-muted mt-1">Response within 1–2 business days</div>
+                  </div>
+                </div>
+
+                <div class="card p-5 flex items-start gap-4">
+                  <span style="font-size:1.5rem;flex-shrink:0">📞</span>
+                  <div>
+                    <div class="font-semi text-primary mb-1">Admissions Hotline</div>
+                    <div class="text-sm text-brass">+91 22 5592 1084</div>
+                    <div class="text-xs text-muted mt-1">Mon–Fri, 9:00 AM – 6:00 PM IST</div>
+                  </div>
+                </div>
+
+                <div class="card p-5 flex items-start gap-4">
+                  <span style="font-size:1.5rem;flex-shrink:0">💼</span>
+                  <div>
+                    <div class="font-semi text-primary mb-1">Enterprise &amp; Institutional</div>
+                    <div class="text-sm text-brass">enterprise@fingeniq.com</div>
+                    <div class="text-xs text-muted mt-1">For bulk cohort licensing and B2B pricing</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Inquiry types -->
+              <div class="mt-8">
+                <h3 class="font-semi text-sm text-primary mb-4">We handle inquiries about:</h3>
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-2 text-xs text-secondary"><span class="text-brass">→</span> Individual admissions and enrollment</div>
+                  <div class="flex items-center gap-2 text-xs text-secondary"><span class="text-brass">→</span> Enterprise cohort and institutional pricing</div>
+                  <div class="flex items-center gap-2 text-xs text-secondary"><span class="text-brass">→</span> Technical platform support</div>
+                  <div class="flex items-center gap-2 text-xs text-secondary"><span class="text-brass">→</span> Certification verification requests</div>
+                  <div class="flex items-center gap-2 text-xs text-secondary"><span class="text-brass">→</span> Recruiter and marketplace access</div>
+                  <div class="flex items-center gap-2 text-xs text-secondary"><span class="text-brass">→</span> Partnership and curriculum collaboration</div>
+                  <div class="flex items-center gap-2 text-xs text-secondary"><span class="text-brass">→</span> Media and press inquiries</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Contact Form -->
+            <div class="card p-8 animate-fadeUp delay-100">
+              <h3 class="text-xl font-semi text-brass mb-6">Send Us a Message</h3>
+              <form id="contact-form" onsubmit="handleContactSubmit(event)" class="flex flex-col gap-5">
+
+                <div class="grid" style="grid-template-columns:1fr 1fr;gap:var(--sp-4)">
+                  <div class="form-group">
+                    <label class="form-label" for="contact-name">Full Name <span style="color:var(--brass-500)">*</span></label>
+                    <input type="text" id="contact-name" class="form-input" required placeholder="Arjun Mehta">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="contact-email">Email Address <span style="color:var(--brass-500)">*</span></label>
+                    <input type="email" id="contact-email" class="form-input" required placeholder="name@domain.com">
+                  </div>
+                </div>
+
+                <div class="grid" style="grid-template-columns:1fr 1fr;gap:var(--sp-4)">
+                  <div class="form-group">
+                    <label class="form-label" for="contact-phone">Phone Number</label>
+                    <input type="tel" id="contact-phone" class="form-input" placeholder="+91 XXXXX XXXXX">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="contact-type">Inquiry Type <span style="color:var(--brass-500)">*</span></label>
+                    <select id="contact-type" class="form-input" required style="cursor:pointer">
+                      <option value="" disabled selected>Select a category</option>
+                      <option value="admissions">Admissions &amp; Enrollment</option>
+                      <option value="enterprise">Enterprise / Institutional</option>
+                      <option value="technical">Technical Support</option>
+                      <option value="certification">Certification Verification</option>
+                      <option value="recruiter">Recruiter / Marketplace</option>
+                      <option value="partnership">Partnership Inquiry</option>
+                      <option value="media">Media &amp; Press</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="contact-subject">Subject</label>
+                  <input type="text" id="contact-subject" class="form-input" placeholder="Brief summary of your inquiry">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="contact-message">Message Details <span style="color:var(--brass-500)">*</span></label>
+                  <textarea id="contact-message" class="form-input" style="min-height:140px;resize:vertical" required placeholder="Provide as much detail as possible so we can assist you efficiently."></textarea>
+                </div>
+
+                <div class="flex items-center gap-3" style="margin-top:var(--sp-2)">
+                  <button type="submit" class="btn btn--brass" style="flex:1">
+                    Submit Inquiry →
+                  </button>
+                  <button type="reset" class="btn btn--outline">
+                    Clear
+                  </button>
+                </div>
+
+                <p class="text-xs text-muted" style="margin-top:var(--sp-2)">
+                  By submitting this form, you agree to our Privacy Policy. We do not share your information with third parties. Typical response time is 1–2 business days.
+                </p>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="py-20 bg-900 border-muted" id="faq">
+        <div class="container container--narrow">
+          <div class="section-header text-center animate-fadeUp">
+            <span class="section-label">Common Questions</span>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+          </div>
+          <div class="flex flex-col gap-4 animate-fadeUp">
+            <div class="card p-5">
+              <h4 class="font-semi text-primary mb-2">How do I enroll in FingenIQ?</h4>
+              <p class="text-xs text-secondary">Click "Enter FingenIQ" from the homepage to access the platform. Account creation and enrollment can be completed directly from the dashboard without contacting support.</p>
+            </div>
+            <div class="card p-5">
+              <h4 class="font-semi text-primary mb-2">Is FingenIQ certification recognised by employers?</h4>
+              <p class="text-xs text-secondary">FingenIQ credentials are verifiable via a tamper-proof code system. Employers can validate credentials through our marketplace portal. Our SEBI-equivalence roadmap is aspirational and under active development.</p>
+            </div>
+            <div class="card p-5">
+              <h4 class="font-semi text-primary mb-2">Do you offer bulk pricing for organisations?</h4>
+              <p class="text-xs text-secondary">Yes. We offer enterprise cohort licensing for corporates, universities, and financial institutions. Contact enterprise@fingeniq.com for custom pricing and white-label options.</p>
+            </div>
+            <div class="card p-5">
+              <h4 class="font-semi text-primary mb-2">How long does certification take?</h4>
+              <p class="text-xs text-secondary">The full curriculum consists of 44 lessons across 8 modules with a 20-step framework per lesson. Most learners complete the Completion tier in 3–4 months at a pace of 2–3 lessons per week.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer__inner">
+          <div>
+            <a href="index.html" class="nav__logo" style="margin-bottom:var(--sp-4)">
+              <div class="nav__logo-mark"><span class="nav__logo-glyph">F</span></div>
+              <span class="nav__logo-text">Fingen<span>IQ</span></span>
+            </a>
+            <p class="footer__brand-desc">Institution-grade financial learning, certification, and marketplace engine.</p>
+          </div>
+          <div>
+            <h4 class="footer__col-title">Company</h4>
+            <div class="footer__links">
+              <a href="about.html" class="footer__link">About Us</a>
+              <a href="contact.html" class="footer__link">Contact Us</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="footer__col-title">Platform</h4>
+            <div class="footer__links">
+              <a href="lessons.html" class="footer__link">Curriculum</a>
+              <a href="assessments.html" class="footer__link">Assessments</a>
+              <a href="certification.html" class="footer__link">Credentials</a>
+              <a href="marketplace.html" class="footer__link">Marketplace</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="footer__col-title">Legal</h4>
+            <div class="footer__links">
+              <a href="certification-roadmap.html" class="footer__link">SEBI Disclaimer</a>
+              <a href="#" class="footer__link">Terms of Service</a>
+              <a href="#" class="footer__link">Privacy Policy</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <span>&copy; 2026 FingenIQ. All rights reserved.</span>
+          <span>Designed for modern professional standards.</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/main.js?v=3"></script>
+  <script>
+    function handleContactSubmit(event) {
+      event.preventDefault();
+      const name = document.getElementById('contact-name').value;
+      const email = document.getElementById('contact-email').value;
+
+      if (window.FQ_UI) {
+        FQ_UI.showToast({
+          title: 'Message Submitted ✉️',
+          message: `Thank you, ${name}. Our team will respond to ${email} within 1–2 business days.`,
+          type: 'brass',
+          duration: 6000
+        });
+      }
+
+      document.getElementById('contact-form').reset();
+    }
+  </script>
+</body>
+</html>

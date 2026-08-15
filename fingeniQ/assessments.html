@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assessment Hub — FinGeniQ</title>
+  <meta name="description" content="View and manage all financial assessments, quizzes, and proctored module exams.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <main class="page-main">
+      <div class="assessment-hub">
+        <div class="container">
+          <div class="assessment-hub__header animate-fadeUp">
+            <span class="section-label">Performance Metrics</span>
+            <h1 class="section-title">Assessment Hub</h1>
+            <p class="section-subtitle">Track your Knowledge Checks, Lesson/Module Quizzes, and proctorable Module Assessments.</p>
+          </div>
+
+          <!-- Tabs -->
+          <div class="tabs animate-fadeUp">
+            <button class="tab active" data-panel="knowledge-checks-panel">Knowledge Checks</button>
+            <button class="tab" data-panel="quizzes-panel">Lesson Quizzes</button>
+            <button class="tab" data-panel="modules-panel">Module Assessments</button>
+          </div>
+
+          <div class="assessment-tabs-content animate-fadeUp delay-100">
+            <!-- Tab 1: Knowledge Checks -->
+            <div class="assessment-panel" id="knowledge-checks-panel">
+              <div class="equivalence-table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Lesson</th>
+                      <th>Module</th>
+                      <th>Status</th>
+                      <th>Attempts</th>
+                      <th>Score</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>L01: The Financial Freedom Framework</td>
+                      <td>M1</td>
+                      <td><span class="badge badge--completed">Completed</span></td>
+                      <td class="num">1</td>
+                      <td class="num score-cell text-emerald">88%</td>
+                      <td><a href="lesson-player.html?id=L1" class="btn btn--outline btn--xs">Review</a></td>
+                    </tr>
+                    <tr>
+                      <td>L02: Income, Expenses & Cash Flow</td>
+                      <td>M1</td>
+                      <td><span class="badge badge--completed">Completed</span></td>
+                      <td class="num">2</td>
+                      <td class="num score-cell text-emerald">92%</td>
+                      <td><a href="lesson-player.html?id=L1" class="btn btn--outline btn--xs">Review</a></td>
+                    </tr>
+                    <tr>
+                      <td>L03: Budgeting Methodologies</td>
+                      <td>M1</td>
+                      <td><span class="badge badge--completed">Completed</span></td>
+                      <td class="num">1</td>
+                      <td class="num score-cell text-emerald">79%</td>
+                      <td><a href="lesson-player.html?id=L1" class="btn btn--outline btn--xs">Review</a></td>
+                    </tr>
+                    <tr>
+                      <td>L04: Emergency Funds & Liquidity</td>
+                      <td>M1</td>
+                      <td><span class="badge badge--in-progress">In Progress</span></td>
+                      <td class="num">0</td>
+                      <td class="num score-cell text-muted">—</td>
+                      <td><a href="lesson-player.html?id=L1" class="btn btn--primary btn--xs">Continue</a></td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">L05: Credit Scores & Debt Dynamics</td>
+                      <td>M1</td>
+                      <td><span class="badge badge--not-started">Locked</span></td>
+                      <td class="num">0</td>
+                      <td class="num score-cell text-muted">—</td>
+                      <td><button class="btn btn--outline btn--xs" disabled>Locked</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab 2: Quizzes -->
+            <div class="assessment-panel" id="quizzes-panel" style="display:none">
+              <!-- AI Remediation Card -->
+              <div class="card card--elevated mb-6" style="border-color:var(--amber-500)">
+                <div style="display:flex;align-items:center;gap:var(--sp-3)">
+                  <span style="font-size:1.5rem">🤖</span>
+                  <div>
+                    <h3 class="text-base font-semi text-amber">AI Remediation Plan Active</h3>
+                    <p class="text-xs text-secondary mt-1">Review plan generated for L03 Budgeting Methodologies (last score: 79%).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="equivalence-table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Quiz</th>
+                      <th>Module</th>
+                      <th>Status</th>
+                      <th>Attempts Used</th>
+                      <th>Best Score</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>L01 Quiz: Foundations</td>
+                      <td>M1</td>
+                      <td><span class="badge badge--completed">Passed</span></td>
+                      <td class="num">1/3</td>
+                      <td class="num score-cell text-emerald">88%</td>
+                      <td><button class="btn btn--outline btn--xs" onclick="FQ_UI.showToast({title:'Review',message:'Reviewing L01 quiz...',type:'info'})">Review</button></td>
+                    </tr>
+                    <tr>
+                      <td>L02 Quiz: Cash Flow</td>
+                      <td>M1</td>
+                      <td><span class="badge badge--completed">Passed</span></td>
+                      <td class="num">1/3</td>
+                      <td class="num score-cell text-emerald">92%</td>
+                      <td><button class="btn btn--outline btn--xs" onclick="FQ_UI.showToast({title:'Review',message:'Reviewing L02 quiz...',type:'info'})">Review</button></td>
+                    </tr>
+                    <tr>
+                      <td>L03 Quiz: Budgeting</td>
+                      <td>M1</td>
+                      <td><span class="badge badge--completed">Passed</span></td>
+                      <td class="num">2/3</td>
+                      <td class="num score-cell text-emerald">79%</td>
+                      <td><button class="btn btn--outline btn--xs" onclick="FQ_UI.showToast({title:'Review',message:'Reviewing L03 quiz...',type:'info'})">Review</button></td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">L04 Quiz: Emergency Funds</td>
+                      <td>M1</td>
+                      <td><span class="badge badge--not-started">Not Attempted</span></td>
+                      <td class="num">0/3</td>
+                      <td class="num score-cell text-muted">—</td>
+                      <td><button class="btn btn--outline btn--xs" disabled>Locked</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab 3: Module Assessments -->
+            <div class="assessment-panel" id="modules-panel" style="display:none">
+              <div class="equiv-note">
+                <span>🛡️</span>
+                <span>Module Assessments are proctored. Enabling your webcam and adhering to tab-locking is required to generate verifiable credentials.</span>
+              </div>
+
+              <div class="equivalence-table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Module Exam</th>
+                      <th>Integrity Type</th>
+                      <th>Status</th>
+                      <th>Cooldown Remaining</th>
+                      <th>Score</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>M1 Assessment: Personal Finance Foundations</td>
+                      <td><span class="badge badge--proctorable">Proctorable</span></td>
+                      <td><span class="badge badge--in-progress">Eligible</span></td>
+                      <td class="num">—</td>
+                      <td class="num score-cell text-muted">—</td>
+                      <td><button class="btn btn--brass btn--xs" onclick="FQ_UI.showToast({title:'Exam Launching',message:'Starting webcam and verification checks...',type:'brass'})">Begin Exam</button></td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">M2 Assessment: Banking & Institutions</td>
+                      <td><span class="badge badge--proctorable">Proctorable</span></td>
+                      <td><span class="badge badge--not-started">Locked</span></td>
+                      <td class="num">—</td>
+                      <td class="num score-cell text-muted">—</td>
+                      <td><button class="btn btn--outline btn--xs" disabled>Locked</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Tab switcher implementation
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(t => {
+        t.addEventListener('click', () => {
+          tabs.forEach(tab => tab.classList.remove('active'));
+          document.querySelectorAll('.assessment-panel').forEach(p => p.style.display = 'none');
+
+          t.classList.add('active');
+          const panelId = t.getAttribute('data-panel');
+          const panel = document.getElementById(panelId);
+          if (panel) panel.style.display = 'block';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

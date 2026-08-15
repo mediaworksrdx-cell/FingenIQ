@@ -1,0 +1,161 @@
+{
+  "id": "L1",
+  "moduleId": "M1",
+  "order": 1,
+  "title": "Financial Mindset & Wealth Psychology",
+  "description": "Analyse behavioral biases, scarcity mindsets, and the psychological principles governing individual risk tolerances.",
+  "duration": 35,
+  "tags": [
+    "foundations",
+    "psychology"
+  ],
+  "youtubeId": "y8n21Fv_8h8",
+  "pdfPath": "/lessons/L1.pdf",
+  "steps": [
+    {
+      "stepId": 1,
+      "name": "Lesson Overview",
+      "type": "overview",
+      "description": "Mindset & Financial Goals: \"Train your mind before your money.\"\n\nWelcome to FinGeniQ Module 1, Lesson 1. In this lesson, we establish internal psychological scripts before dive into spreadsheets. We learn that beliefs decide behaviors—from budgeting to recovering from financial mistakes.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 2,
+      "name": "Introduction",
+      "type": "intro",
+      "description": "Why Mindset First?\nBeliefs decide behavior. FinGeniQ starts with internal scripts before spreadsheets. Your mindset determines:\n• Whether you attempt a budget at all.\n• How you recover from financial mistakes.\n• Whether security is \"available\" to you.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 3,
+      "name": "Learning Objectives",
+      "type": "objectives",
+      "description": "By the end of this lesson, you will be able to:\n• Growth vs Fixed Mindsets: Distinguish these mindsets using your own past statements.\n• Rewrite Beliefs: Convert limiting money beliefs into growth-oriented alternatives.\n• SMART Goals: Construct household goals with specific numbers and deadlines.\n• Habit Formation: Build a vision board and sustainable journaling habits.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 4,
+      "name": "Core Concepts",
+      "type": "concepts",
+      "description": "Mindset Architecture:\n\n1. Fixed Mindset:\n• Core belief: \"I am just bad with money.\" or \"Investing is for the born-rich.\"\n• Result: Stays stuck, avoids growth.\n\n2. Growth Mindset:\n• Core belief: \"I can learn money skills, slowly.\" and \"Mistakes are tuition for wisdom.\"\n• Result: Keeps trying, builds wealth.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 5,
+      "name": "Key Terminologies",
+      "type": "terminology",
+      "description": "SMART Goal Engineering:\n• Specific: Not \"save money\" -> \"Save 500 AED.\"\n• Measurable: Clear numbers and tracking mechanisms.\n• Achievable: Realistic relative to your current income.\n• Relevant: Tied to a core family or individual need.\n• Time-bound: A hard deadline creates action and urgency.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 6,
+      "name": "Visual Explanation",
+      "type": "visual",
+      "description": "Vision & Accountability:\n\nResearch shows that specific, written goals are pursued 70% more consistently than goals that are only thought about. Sharing goals with an accountability partner roughly doubles the odds of follow-through. The FinGeniQ Vision Board and Money Journal act as your daily financial GPS.",
+      "visualConfig": {
+        "chartType": "pie",
+        "data": [
+          30,
+          20,
+          50
+        ],
+        "labels": [
+          "Segment A",
+          "Segment B",
+          "Segment C"
+        ]
+      }
+    },
+    {
+      "stepId": 7,
+      "name": "Real-World Examples",
+      "type": "examples",
+      "description": "Naming Fear & Shame:\n\n1. Fear of Loss: \"I'll lose what little I have.\"\n→ Reframe (Start Tiny): Even 10 dirhams saved is a real win. Small wins build the saver identity.\n\n2. Burden of Shame: \"My mistakes prove I'm uneducated.\"\n→ Reframe (Feedback Loop): Everyone starts from zero. Mistakes are feedback, not a verdict on your intelligence.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 8,
+      "name": "Case Study",
+      "type": "casestudy",
+      "description": "Ray Dalio: From Caddie Tips to World-Class Investor\n\n• The Start: At age 12, Ray Dalio earned tips caddying at a local golf club.\n• The Pivot: Instead of spending, he invested small amounts in stocks and studied early bad trades as tuition.\n• The Result: Founded Bridgewater Associates, one of the world's largest hedge funds.\n• Lesson: The starting point matters less than the immediate growth mindset.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 9,
+      "name": "Did You Know?",
+      "type": "didyouknow",
+      "description": "Did you know that writing down your goals increases your probability of success by 70%? Putting pen to paper triggers cognitive encoding in the brain, turning abstract desires into concrete targets.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 10,
+      "name": "AI Tutor",
+      "type": "ai-tutor",
+      "description": "Connect to your FingenIQ AI Tutor. You can ask for dynamic mindset checks, query how to reframe a limiting financial belief, or request a customized SMART goal evaluation.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 11,
+      "name": "Knowledge Check",
+      "type": "kc",
+      "description": "True or False: A Fixed Mindset views mistakes as tuition for wisdom, whereas a Growth Mindset views them as proof of a lack of financial capability.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 12,
+      "name": "Practice Activity",
+      "type": "practice",
+      "description": "Sustainable Habits:\n• Vision Board: Display goals for Health, Happiness, and Wealth in a communal family space.\n• Money Journal: Establish a weekly checkpoint to track habit changes and express financial gratitude.\n• Family Dialogue: Open conversations reduce fear and build collective accountability.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 13,
+      "name": "Lesson Summary",
+      "type": "summary",
+      "description": "Lesson 1 Summary:\nYour mindset is the foundation of structural wealth creation. Transitioning from fixed financial patterns to growth-oriented metrics enables active budgeting, SMART goal follow-through, and resilient risk mitigation.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 14,
+      "name": "Key Takeaways",
+      "type": "takeaways",
+      "description": "Key Takeaways:\n1. Mindset precedes math. Beliefs decide financial behavior.\n2. Apply the SMART framework to all cash goals (e.g. Save 500 AED by end of month).\n3. Reframe fear and shame into small wins and active feedback loops.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 15,
+      "name": "Flashcards",
+      "type": "flashcards",
+      "description": "Flashcard Sets:\n- Fixed Mindset <=> Avoids risks; views traits as permanent.\n- Growth Mindset <=> Embraces challenges; views money as a skill to be developed.\n- SMART Goals <=> Specific, Measurable, Achievable, Relevant, Time-bound.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 16,
+      "name": "Quiz",
+      "type": "quiz",
+      "description": "Lesson 1 Quiz:\nComplete 8 scenario-based questions to prove your mindset retention. A score of 70% or higher is required for module progression.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 17,
+      "name": "Assignment",
+      "type": "assignment",
+      "description": "Write down 3 SMART financial goals for your household for the next 30, 90, and 180 days. Ensure each goal is Specific and Time-bound (e.g., \"Save ₹10,000 for emergency fund by August 31st\").",
+      "visualConfig": null
+    },
+    {
+      "stepId": 18,
+      "name": "Revision Notes",
+      "type": "revision",
+      "description": "Mindset Revision Checklist:\n• Fixed vs Growth mindset characteristics.\n• 5 criteria of SMART goals.\n• Written goal success multipliers.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 19,
+      "name": "Next Lesson",
+      "type": "next",
+      "description": "Ready for Lesson 2?\nYour mindset is primed. Next, we understand the financial system and fiat currencies. The journey to abundance starts with one small step!",
+      "visualConfig": null
+    }
+  ]
+}

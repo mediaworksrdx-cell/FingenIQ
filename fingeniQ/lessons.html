@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson Library — FinGeniQ</title>
+  <meta name="description" content="Browse all 44 FinGeniQ lessons across 8 professional finance modules. Filter by module, status, or duration. Track your learning progress in real time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+  <style>
+    /* ── Lesson Library Page Styles ─────────────────────────── */
+    .ll-page {
+      padding: var(--sp-8) 0 var(--sp-16);
+    }
+
+    /* Page header */
+    .ll-header {
+      background: linear-gradient(
+        180deg,
+        rgba(26,52,112,0.12) 0%,
+        transparent 100%
+      );
+      border-bottom: var(--border-subtle);
+      padding: var(--sp-8) 0 var(--sp-6);
+      margin-bottom: var(--sp-8);
+    }
+
+    .ll-header__inner {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--sp-6);
+      flex-wrap: wrap;
+    }
+
+    .ll-header__eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--sapphire-400);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      margin-bottom: var(--sp-2);
+    }
+
+    .ll-header__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-4xl);
+      color: var(--ink-50);
+      line-height: var(--leading-tight);
+      margin-bottom: var(--sp-2);
+    }
+
+    .ll-header__subtitle {
+      font-size: var(--text-sm);
+      color: var(--ink-400);
+      max-width: 52ch;
+    }
+
+    .ll-header__controls {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      flex-shrink: 0;
+    }
+
+    /* Search bar */
+    .ll-search-wrap {
+      position: relative;
+      width: 320px;
+    }
+
+    .ll-search-wrap__icon {
+      position: absolute;
+      left: var(--sp-4);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-500);
+      font-size: var(--text-sm);
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    .ll-search {
+      width: 100%;
+      background: var(--ink-850);
+      border: var(--border-muted);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-10);
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      color: var(--ink-100);
+      transition:
+        border-color var(--dur-base) var(--ease-out),
+        box-shadow var(--dur-base) var(--ease-out);
+    }
+
+    .ll-search::placeholder {
+      color: var(--ink-600);
+    }
+
+    .ll-search:focus {
+      outline: none;
+      border-color: var(--sapphire-500);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+
+    /* View toggle */
+    .view-toggle {
+      display: flex;
+      align-items: center;
+      background: var(--ink-850);
+      border: var(--border-muted);
+      border-radius: var(--radius-lg);
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .view-toggle__btn {
+      padding: var(--sp-2) var(--sp-3);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      color: var(--ink-500);
+      transition:
+        background var(--dur-base) var(--ease-out),
+        color var(--dur-base) var(--ease-out);
+      line-height: 1;
+    }
+
+    .view-toggle__btn.active {
+      background: var(--ink-700);
+      color: var(--ink-100);
+    }
+
+    /* Main two-column layout */
+    .ll-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: var(--sp-8);
+      align-items: start;
+    }
+
+    /* Filter Sidebar */
+    .ll-sidebar {
+      position: sticky;
+      top: calc(var(--nav-height) + var(--sp-6));
+      background: var(--ink-900);
+      border: var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: var(--sp-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      max-height: calc(100vh - var(--nav-height) - var(--sp-12));
+      overflow-y: auto;
+    }
+
+    .ll-sidebar__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ll-sidebar__title {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: var(--ink-400);
+    }
+
+    .ll-sidebar__count {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--sapphire-400);
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.15);
+      padding: 2px var(--sp-2);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+    }
+
+    .ll-clear-btn {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--ink-500);
+      transition: color var(--dur-base) var(--ease-out);
+      padding: 2px 0;
+    }
+
+    .ll-clear-btn:hover {
+      color: var(--rose-400);
+    }
+
+    /* Sidebar search (mobile-friendly; hidden on desktop where top bar is shown) */
+    .ll-sidebar__search-wrap {
+      position: relative;
+    }
+
+    .ll-sidebar__search-icon {
+      position: absolute;
+      left: var(--sp-3);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-500);
+      font-size: var(--text-sm);
+      pointer-events: none;
+    }
+
+    .ll-sidebar__search {
+      width: 100%;
+      background: var(--ink-850);
+      border: var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-8);
+      font-family: var(--font-sans);
+      font-size: var(--text-xs);
+      color: var(--ink-100);
+      transition: border-color var(--dur-base) var(--ease-out);
+    }
+
+    .ll-sidebar__search::placeholder {
+      color: var(--ink-600);
+    }
+
+    .ll-sidebar__search:focus {
+      outline: none;
+      border-color: var(--sapphire-500);
+    }
+
+    /* Filter groups */
+    .ll-filter-group {
+      border-top: var(--border-subtle);
+      padding-top: var(--sp-4);
+    }
+
+    .ll-filter-group__label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: var(--ink-500);
+      margin-bottom: var(--sp-3);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    .ll-filter-group__options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+    }
+
+    /* Checkbox items */
+    .ll-checkbox {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      cursor: pointer;
+      padding: var(--sp-1) 0;
+      border-radius: var(--radius-sm);
+      transition: opacity var(--dur-fast) var(--ease-out);
+    }
+
+    .ll-checkbox:hover .ll-checkbox__label {
+      color: var(--ink-100);
+    }
+
+    .ll-checkbox input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--ink-800);
+      border: 1px solid var(--ink-600);
+      border-radius: var(--radius-xs);
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition:
+        background var(--dur-fast) var(--ease-out),
+        border-color var(--dur-fast) var(--ease-out);
+    }
+
+    .ll-checkbox input[type="checkbox"]:checked {
+      background: var(--sapphire-600);
+      border-color: var(--sapphire-500);
+    }
+
+    .ll-checkbox input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 9px;
+      color: white;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .ll-checkbox input[type="checkbox"]:focus-visible {
+      outline: 2px solid var(--sapphire-400);
+      outline-offset: 2px;
+    }
+
+    .ll-checkbox__label {
+      font-size: var(--text-xs);
+      color: var(--ink-300);
+      transition: color var(--dur-fast) var(--ease-out);
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .ll-checkbox__count {
+      font-family: var(--font-mono);
+      font-size: var(--text-2xs);
+      color: var(--ink-600);
+      font-weight: 500;
+    }
+
+    /* Module dot indicator in filter */
+    .ll-checkbox__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    /* Lesson content area */
+    .ll-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-6);
+      min-width: 0;
+    }
+
+    /* Result count bar */
+    .ll-result-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      padding: var(--sp-3) var(--sp-5);
+      background: var(--ink-900);
+      border: var(--border-subtle);
+      border-radius: var(--radius-lg);
+    }
+
+    .ll-result-bar__text {
+      font-size: var(--text-sm);
+      color: var(--ink-400);
+    }
+
+    .ll-result-bar__text strong {
+      color: var(--ink-100);
+      font-family: var(--font-mono);
+    }
+
+    .ll-result-bar__actions {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+    }
+
+    .ll-expand-all {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--sapphire-400);
+      padding: var(--sp-1) var(--sp-3);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: var(--radius-md);
+      background: rgba(59,130,246,0.06);
+      transition:
+        background var(--dur-fast) var(--ease-out),
+        border-color var(--dur-fast) var(--ease-out);
+    }
+
+    .ll-expand-all:hover {
+      background: rgba(59,130,246,0.12);
+      border-color: rgba(59,130,246,0.35);
+    }
+
+    /* Module section */
+    .ll-module-section {
+      background: var(--ink-900);
+      border: var(--border-subtle);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: border-color var(--dur-base) var(--ease-out);
+    }
+
+    .ll-module-section:has(.ll-module-header[aria-expanded="true"]) {
+      border-color: var(--ink-700);
+    }
+
+    /* Module header */
+    .ll-module-header {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      padding: var(--sp-5) var(--sp-6);
+      cursor: pointer;
+      transition: background var(--dur-base) var(--ease-out);
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      position: relative;
+    }
+
+    .ll-module-header::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--navy-700);
+      border-radius: 0 2px 2px 0;
+      transition: background var(--dur-base) var(--ease-out);
+    }
+
+    .ll-module-header:hover {
+      background: rgba(255,255,255,0.025);
+    }
+
+    .ll-module-header[aria-expanded="true"]::before {
+      background: var(--sapphire-500);
+    }
+
+    .ll-module-header__icon {
+      font-size: var(--text-xl);
+      line-height: 1;
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ink-800);
+      border-radius: var(--radius-lg);
+      border: var(--border-subtle);
+    }
+
+    .ll-module-header__info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ll-module-header__eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--text-2xs);
+      font-weight: 600;
+      color: var(--ink-600);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      margin-bottom: var(--sp-1);
+    }
+
+    .ll-module-header__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-xl);
+      color: var(--ink-100);
+      line-height: var(--leading-snug);
+      margin-bottom: var(--sp-1);
+    }
+
+    .ll-module-header__subtitle {
+      font-size: var(--text-xs);
+      color: var(--ink-500);
+    }
+
+    .ll-module-header__right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--sp-3);
+      flex-shrink: 0;
+    }
+
+    .ll-module-header__progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+    }
+
+    .ll-module-header__progress-label {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--ink-500);
+      white-space: nowrap;
+    }
+
+    .ll-module-header__progress-bar {
+      width: 80px;
+      height: 4px;
+      background: var(--ink-800);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .ll-module-header__progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 1s var(--ease-out);
+    }
+
+    .ll-module-header__chevron {
+      font-size: var(--text-xs);
+      color: var(--ink-600);
+      transition: transform var(--dur-base) var(--ease-out);
+      line-height: 1;
+    }
+
+    .ll-module-header[aria-expanded="true"] .ll-module-header__chevron {
+      transform: rotate(180deg);
+    }
+
+    /* Lesson grid inside a module */
+    .ll-lessons-grid {
+      padding: var(--sp-5) var(--sp-6) var(--sp-6);
+      border-top: var(--border-subtle);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: var(--sp-4);
+    }
+
+    .ll-lessons-grid--collapsed {
+      display: none;
+    }
+
+    .ll-lessons-list {
+      padding: var(--sp-3) var(--sp-6) var(--sp-5);
+      border-top: var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+    }
+
+    .ll-lessons-list--collapsed {
+      display: none;
+    }
+
+    /* Lesson card wrapper */
+    .lesson-card-wrapper {
+      display: contents;
+    }
+
+    /* Individual lesson card */
+    .lesson-card {
+      background: var(--ink-850);
+      border: var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: var(--sp-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition:
+        border-color var(--dur-base) var(--ease-out),
+        box-shadow var(--dur-base) var(--ease-out),
+        transform var(--dur-slow) var(--ease-out);
+    }
+
+    .lesson-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--ink-600);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .lesson-card:focus-visible {
+      outline: 2px solid var(--sapphire-400);
+      outline-offset: 2px;
+    }
+
+    .lesson-card--completed {
+      border-color: rgba(16,185,129,0.12);
+    }
+
+    .lesson-card--completed:hover {
+      border-color: rgba(16,185,129,0.28);
+    }
+
+    .lesson-card--in-progress {
+      border-color: rgba(245,158,11,0.15);
+    }
+
+    .lesson-card--in-progress:hover {
+      border-color: rgba(245,158,11,0.35);
+    }
+
+    .lesson-card--locked {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .lesson-card--locked:hover {
+      transform: translateY(0);
+      border-color: rgba(244,63,94,0.15);
+    }
+
+    /* Completed shimmer strip */
+    .lesson-card--completed::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--emerald-600), var(--emerald-400), var(--emerald-600));
+    }
+
+    /* In-progress pulse strip */
+    .lesson-card--in-progress::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--amber-600), var(--amber-400), var(--amber-600));
+    }
+
+    .lesson-card__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--sp-2);
+    }
+
+    .lesson-card__num {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--ink-600);
+      letter-spacing: var(--tracking-wider);
+      transition: color var(--dur-base) var(--ease-out);
+    }
+
+    .lesson-card:hover .lesson-card__num {
+      color: var(--brass-400);
+    }
+
+    .lesson-card__score {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--emerald-500);
+      font-weight: 600;
+    }
+
+    .lesson-card__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-base);
+      color: var(--ink-100);
+      line-height: var(--leading-snug);
+      flex: 1;
+    }
+
+    .lesson-card__desc {
+      font-size: var(--text-xs);
+      color: var(--ink-500);
+      line-height: var(--leading-relaxed);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    /* Tags row */
+    .lesson-card__tags {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-1);
+      flex-wrap: wrap;
+    }
+
+    .lesson-tag {
+      font-family: var(--font-mono);
+      font-size: var(--text-2xs);
+      color: var(--ink-600);
+      background: var(--ink-800);
+      border: 1px solid var(--ink-750);
+      padding: 1px 5px;
+      border-radius: var(--radius-xs);
+      white-space: nowrap;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .lesson-tag--more {
+      color: var(--ink-500);
+      background: transparent;
+      border-color: transparent;
+    }
+
+    /* Bottom meta row */
+    .lesson-card__meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-2);
+      padding-top: var(--sp-3);
+      border-top: var(--border-subtle);
+      margin-top: auto;
+    }
+
+    .lesson-card__duration {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-1);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--ink-500);
+      font-weight: 500;
+    }
+
+    .lesson-card__duration-icon {
+      opacity: 0.6;
+      font-size: 11px;
+    }
+
+    .lesson-card__action {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    /* Lock icon for locked cards */
+    .lock-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(244,63,94,0.1);
+      border: 1px solid rgba(244,63,94,0.2);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      color: var(--rose-400);
+    }
+
+    /* Test out link */
+    .test-out-link {
+      font-size: var(--text-2xs);
+      font-weight: 600;
+      color: var(--brass-400);
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(201,168,76,0.3);
+      padding-bottom: 1px;
+      transition: color var(--dur-fast) var(--ease-out);
+      white-space: nowrap;
+    }
+
+    .test-out-link:hover {
+      color: var(--brass-300);
+    }
+
+    /* Tooltip for locked lessons */
+    .lesson-card__tooltip {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--ink-800);
+      border: var(--border-muted);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-3) var(--sp-4);
+      font-size: var(--text-xs);
+      color: var(--ink-300);
+      width: 220px;
+      text-align: center;
+      line-height: var(--leading-snug);
+      z-index: var(--z-tooltip);
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--dur-base) var(--ease-out);
+    }
+
+    .lesson-card__tooltip::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 5px 5px 5px;
+      border-style: solid;
+      border-color: transparent transparent var(--ink-800) transparent;
+    }
+
+    .lesson-card--locked:hover .lesson-card__tooltip {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* LIST VIEW card variant */
+    .lesson-list-item {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      padding: var(--sp-3) var(--sp-5);
+      background: var(--ink-850);
+      border: var(--border-subtle);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition:
+        border-color var(--dur-base) var(--ease-out),
+        background var(--dur-base) var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+    }
+
+    .lesson-list-item:hover {
+      transform: translateX(2px);
+      border-color: var(--ink-600);
+      background: var(--ink-800);
+    }
+
+    .lesson-list-item:focus-visible {
+      outline: 2px solid var(--sapphire-400);
+      outline-offset: 2px;
+    }
+
+    .lesson-list-item--locked {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .lesson-list-item--locked:hover {
+      transform: none;
+    }
+
+    .lesson-list-item__num {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--ink-600);
+      font-weight: 600;
+      width: 36px;
+      flex-shrink: 0;
+    }
+
+    .lesson-list-item__info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .lesson-list-item__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-sm);
+      color: var(--ink-100);
+      line-height: var(--leading-snug);
+      margin-bottom: 2px;
+    }
+
+    .lesson-list-item__desc {
+      font-size: var(--text-xs);
+      color: var(--ink-500);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lesson-list-item__right {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      flex-shrink: 0;
+    }
+
+    .lesson-list-item__duration {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--ink-600);
+      white-space: nowrap;
+    }
+
+    /* No results */
+    .ll-no-results {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-4);
+      padding: var(--sp-16) var(--sp-8);
+      text-align: center;
+      background: var(--ink-900);
+      border: var(--border-subtle);
+      border-radius: var(--radius-xl);
+    }
+
+    .ll-no-results.visible {
+      display: flex;
+    }
+
+    .ll-no-results__icon {
+      font-size: 3rem;
+      opacity: 0.4;
+    }
+
+    .ll-no-results__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-2xl);
+      color: var(--ink-400);
+    }
+
+    .ll-no-results__text {
+      font-size: var(--text-sm);
+      color: var(--ink-600);
+      max-width: 32ch;
+    }
+
+    /* Module color dots */
+    .m1-dot { background: #3b82f6; }
+    .m2-dot { background: #8b5cf6; }
+    .m3-dot { background: #10b981; }
+    .m4-dot { background: #f59e0b; }
+    .m5-dot { background: #ef4444; }
+    .m6-dot { background: #06b6d4; }
+    .m7-dot { background: #f97316; }
+    .m8-dot { background: #c9a84c; }
+
+    /* Progress fill colors */
+    .progress-fill--emerald { background: var(--emerald-500); }
+    .progress-fill--amber   { background: var(--amber-500); }
+    .progress-fill--sapphire { background: var(--sapphire-500); }
+    .progress-fill--muted   { background: var(--ink-700); }
+
+    /* Empty state badge for locked module */
+    .locked-module-notice {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-4) var(--sp-5);
+      background: rgba(244,63,94,0.05);
+      border: 1px solid rgba(244,63,94,0.12);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-xs);
+      color: var(--ink-500);
+      margin: var(--sp-3) var(--sp-6) var(--sp-5);
+    }
+
+    .locked-module-notice__icon {
+      font-size: var(--text-sm);
+      flex-shrink: 0;
+    }
+
+    /* ── Stats row ───────────── */
+    .ll-stats-row {
+      display: flex;
+      align-items: stretch;
+      gap: var(--sp-4);
+      margin-bottom: var(--sp-2);
+    }
+
+    .ll-stat {
+      flex: 1;
+      background: var(--ink-900);
+      border: var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: var(--sp-4) var(--sp-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-1);
+    }
+
+    .ll-stat__label {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--ink-500);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wide);
+    }
+
+    .ll-stat__value {
+      font-family: var(--font-mono);
+      font-size: var(--text-2xl);
+      font-weight: 600;
+      color: var(--ink-50);
+      line-height: 1;
+    }
+
+    .ll-stat__sub {
+      font-size: var(--text-xs);
+      color: var(--ink-600);
+    }
+
+    .ll-stat--emerald .ll-stat__value { color: var(--emerald-400); }
+    .ll-stat--amber .ll-stat__value   { color: var(--amber-400); }
+    .ll-stat--sapphire .ll-stat__value { color: var(--sapphire-400); }
+
+    /* ── Responsive ────────── */
+    @media (max-width: 1100px) {
+      .ll-layout {
+        grid-template-columns: 200px 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .ll-layout {
+        grid-template-columns: 1fr;
+      }
+      .ll-sidebar {
+        position: static;
+        max-height: none;
+      }
+      .ll-search-wrap {
+        width: 100%;
+      }
+      .ll-header__inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .ll-lessons-grid {
+        grid-template-columns: 1fr;
+      }
+      .ll-stats-row {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <!-- PAGE HEADER -->
+    <div class="ll-header">
+      <div class="container container--wide">
+        <div class="ll-header__inner">
+          <div>
+            <div class="ll-header__eyebrow">📚 Curriculum</div>
+            <h1 class="ll-header__title">Lesson Library</h1>
+            <p class="ll-header__subtitle">44 lessons across 8 professional modules — from personal finance foundations to regulatory compliance and ethics.</p>
+          </div>
+          <div class="ll-header__controls">
+            <div class="ll-search-wrap">
+              <span class="ll-search-wrap__icon" aria-hidden="true">🔍</span>
+              <input
+                type="search"
+                id="lesson-search"
+                class="ll-search"
+                placeholder="Search lessons, topics, tags…"
+                aria-label="Search lessons"
+                autocomplete="off"
+                spellcheck="false"
+              >
+            </div>
+            <div class="view-toggle" role="group" aria-label="View mode">
+              <button class="view-toggle__btn active" id="view-grid-btn" aria-label="Grid view" title="Grid view" aria-pressed="true">⊞</button>
+              <button class="view-toggle__btn" id="view-list-btn" aria-label="List view" title="List view" aria-pressed="false">☰</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main class="page-main ll-page">
+      <div class="container container--wide">
+
+        <!-- Stats row -->
+        <div class="ll-stats-row animate-fadeUp">
+          <div class="ll-stat ll-stat--emerald">
+            <div class="ll-stat__label">Completed</div>
+            <div class="ll-stat__value" id="stat-completed">3</div>
+            <div class="ll-stat__sub">of 44 lessons</div>
+          </div>
+          <div class="ll-stat ll-stat--amber">
+            <div class="ll-stat__label">In Progress</div>
+            <div class="ll-stat__value">1</div>
+            <div class="ll-stat__sub">Lesson L4 · Step 7/20</div>
+          </div>
+          <div class="ll-stat ll-stat--sapphire">
+            <div class="ll-stat__label">Progress</div>
+            <div class="ll-stat__value">7%</div>
+            <div class="ll-stat__sub">Module 1 · 50% complete</div>
+          </div>
+          <div class="ll-stat">
+            <div class="ll-stat__label">Avg. Score</div>
+            <div class="ll-stat__value">86</div>
+            <div class="ll-stat__sub">Across completed lessons</div>
+          </div>
+          <div class="ll-stat">
+            <div class="ll-stat__label">Total Duration</div>
+            <div class="ll-stat__value">38h</div>
+            <div class="ll-stat__sub">~2,280 minutes of content</div>
+          </div>
+        </div>
+
+        <!-- Two-column layout -->
+        <div class="ll-layout">
+
+          <!-- FILTER SIDEBAR -->
+          <aside class="ll-sidebar" aria-label="Lesson filters">
+
+            <div class="ll-sidebar__header">
+              <span class="ll-sidebar__title">Filters</span>
+              <button class="ll-clear-btn" id="clear-filters-btn" aria-label="Clear all filters">Clear all</button>
+            </div>
+
+            <!-- Sidebar search (synced with top search) -->
+            <div class="ll-sidebar__search-wrap">
+              <span class="ll-sidebar__search-icon" aria-hidden="true">🔍</span>
+              <input
+                type="search"
+                id="sidebar-search"
+                class="ll-sidebar__search"
+                placeholder="Search…"
+                aria-label="Search lessons (sidebar)"
+                autocomplete="off"
+              >
+            </div>
+
+            <!-- Result count -->
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <span style="font-size:var(--text-xs);color:var(--ink-500);">Showing</span>
+              <span class="ll-sidebar__count" id="filter-count">44 of 44</span>
+            </div>
+
+            <!-- Filter: By Module -->
+            <div class="ll-filter-group">
+              <div class="ll-filter-group__label">
+                <span>📦</span> Module
+              </div>
+              <div class="ll-filter-group__options" id="module-filters">
+                <!-- Injected by JS -->
+              </div>
+            </div>
+
+            <!-- Filter: By Status -->
+            <div class="ll-filter-group">
+              <div class="ll-filter-group__label">
+                <span>🎯</span> Status
+              </div>
+              <div class="ll-filter-group__options">
+                <label class="ll-checkbox">
+                  <input type="checkbox" class="filter-status" value="completed" aria-label="Filter: Completed">
+                  <span class="ll-checkbox__label">Completed</span>
+                  <span class="ll-checkbox__count">3</span>
+                </label>
+                <label class="ll-checkbox">
+                  <input type="checkbox" class="filter-status" value="in-progress" aria-label="Filter: In Progress">
+                  <span class="ll-checkbox__label">In Progress</span>
+                  <span class="ll-checkbox__count">1</span>
+                </label>
+                <label class="ll-checkbox">
+                  <input type="checkbox" class="filter-status" value="not-started" aria-label="Filter: Not Started">
+                  <span class="ll-checkbox__label">Not Started</span>
+                  <span class="ll-checkbox__count">10</span>
+                </label>
+                <label class="ll-checkbox">
+                  <input type="checkbox" class="filter-status" value="locked" aria-label="Filter: Locked">
+                  <span class="ll-checkbox__label">Locked</span>
+                  <span class="ll-checkbox__count">30</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Filter: By Duration -->
+            <div class="ll-filter-group">
+              <div class="ll-filter-group__label">
+                <span>⏱</span> Duration
+              </div>
+              <div class="ll-filter-group__options">
+                <label class="ll-checkbox">
+                  <input type="checkbox" class="filter-duration" value="short" aria-label="Filter: Under 40 minutes">
+                  <span class="ll-checkbox__label">&lt; 40 min</span>
+                  <span class="ll-checkbox__count">9</span>
+                </label>
+                <label class="ll-checkbox">
+                  <input type="checkbox" class="filter-duration" value="medium" aria-label="Filter: 40 to 50 minutes">
+                  <span class="ll-checkbox__label">40 – 50 min</span>
+                  <span class="ll-checkbox__count">21</span>
+                </label>
+                <label class="ll-checkbox">
+                  <input type="checkbox" class="filter-duration" value="long" aria-label="Filter: Over 50 minutes">
+                  <span class="ll-checkbox__label">50+ min</span>
+                  <span class="ll-checkbox__count">14</span>
+                </label>
+              </div>
+            </div>
+
+          </aside>
+
+          <!-- LESSON CONTENT AREA -->
+          <div class="ll-content" id="lesson-content">
+
+            <!-- Result bar -->
+            <div class="ll-result-bar">
+              <p class="ll-result-bar__text">
+                Showing <strong id="visible-count">44</strong> of <strong>44</strong> lessons
+              </p>
+              <div class="ll-result-bar__actions">
+                <button class="ll-expand-all" id="expand-all-btn">Expand All</button>
+              </div>
+            </div>
+
+            <!-- Module sections injected by JS -->
+            <div id="modules-container">
+              <!-- Generated below -->
+            </div>
+
+            <!-- No results state -->
+            <div class="ll-no-results" id="no-results" aria-live="polite">
+              <div class="ll-no-results__icon" aria-hidden="true">🔍</div>
+              <h3 class="ll-no-results__title">No lessons found</h3>
+              <p class="ll-no-results__text">Try adjusting your search or clearing filters to see all lessons.</p>
+              <button class="btn btn--outline btn--sm" id="clear-no-results-btn">Clear Filters</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Data & main scripts -->
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/main.js?v=2"></script>
+
+  <!-- Page-specific script -->
+  <script>
+  (function() {
+    'use strict';
+
+    const { MODULES, LESSONS, USER_STATE } = window.FQ;
+
+    /* ── Data: resolve lesson status accounting for module lock ── */
+    const MODULE_DOTS = {
+      M1: 'm1-dot', M2: 'm2-dot', M3: 'm3-dot', M4: 'm4-dot',
+      M5: 'm5-dot', M6: 'm6-dot', M7: 'm7-dot', M8: 'm8-dot'
+    };
+
+    const MODULE_LOCK_LABELS = {
+      M2: 'Complete Module 1 to unlock',
+      M3: 'Complete Module 1 to unlock',
+      M4: 'Complete Modules 1 & 3 to unlock',
+      M5: 'Complete Modules 3 & 4 to unlock',
+      M6: 'Complete Modules 2 & 5 to unlock',
+      M7: 'Complete Modules 5 & 6 to unlock',
+      M8: 'Complete all Modules 1–7 to unlock'
+    };
+
+    // Determine effective status for each lesson
+    function getEffectiveStatus(lesson, module) {
+      // M1 lessons use actual status
+      if (module.id === 'M1') return lesson.status;
+      // All other modules are locked (prerequisites not met)
+      return 'locked';
+    }
+
+    // Format lesson number as L01
+    function fmtNum(id) {
+      const n = parseInt(id.slice(1));
+      return 'L' + String(n).padStart(2, '0');
+    }
+
+    // Duration bucket
+    function durationBucket(min) {
+      if (min < 40) return 'short';
+      if (min <= 50) return 'medium';
+      return 'long';
+    }
+
+    // Badge HTML
+    function statusBadge(status) {
+      const map = {
+        'completed':   { cls: 'badge--completed',   label: 'Completed' },
+        'in-progress': { cls: 'badge--in-progress',  label: 'In Progress' },
+        'not-started': { cls: 'badge--not-started',  label: 'Not Started' },
+        'locked':      { cls: 'badge--locked',        label: 'Locked' }
+      };
+      const s = map[status] || map['not-started'];
+      return `<span class="badge ${s.cls}">${s.label}</span>`;
+    }
+
+    // Action button / lock icon
+    function actionArea(lesson, effStatus, module) {
+      if (effStatus === 'locked') {
+        const lockTip = MODULE_LOCK_LABELS[module.id] || 'Complete prerequisites to unlock';
+        return `
+          <div style="display:flex;align-items:center;gap:var(--sp-2);">
+            <a href="assessments.html?testout=${module.id}" class="test-out-link" title="Test out to skip" tabindex="-1">Test Out</a>
+            <div class="lock-icon" aria-hidden="true">🔒</div>
+          </div>
+        `;
+      }
+      if (effStatus === 'completed') {
+        return `<a href="lesson-player.html?id=${lesson.id}" class="btn btn--outline btn--sm" aria-label="Review ${lesson.title}">Review</a>`;
+      }
+      if (effStatus === 'in-progress') {
+        return `<a href="lesson-player.html?id=${lesson.id}" class="btn btn--primary btn--sm" aria-label="Continue ${lesson.title}">Continue →</a>`;
+      }
+      return `<a href="lesson-player.html?id=${lesson.id}" class="btn btn--primary btn--sm" aria-label="Start ${lesson.title}">Learn →</a>`;
+    }
+
+    // Tags HTML (max 2 visible)
+    function tagsHtml(tags) {
+      if (!tags || tags.length === 0) return '';
+      const visible = tags.slice(0, 2);
+      const extra = tags.length - visible.length;
+      let html = visible.map(t => `<span class="lesson-tag">${t}</span>`).join('');
+      if (extra > 0) {
+        html += `<span class="lesson-tag lesson-tag--more">+${extra}</span>`;
+      }
+      return html;
+    }
+
+    // Score chip
+    function scoreChip(lesson, effStatus) {
+      if (effStatus === 'completed' && lesson.score != null) {
+        return `<span class="lesson-card__score">${lesson.score}%</span>`;
+      }
+      return '';
+    }
+
+    // Tooltip for locked card
+    function lockTooltip(module, effStatus) {
+      if (effStatus !== 'locked') return '';
+      const msg = MODULE_LOCK_LABELS[module.id] || 'Complete prerequisites to unlock this lesson.';
+      return `<div class="lesson-card__tooltip" role="tooltip">${msg}</div>`;
+    }
+
+    // Module progress fill color
+    function progressFillClass(modState) {
+      if (!modState) return 'progress-fill--muted';
+      if (modState.status === 'in-progress') return 'progress-fill--amber';
+      if (modState.status === 'completed') return 'progress-fill--emerald';
+      return 'progress-fill--muted';
+    }
+
+    // Module progress label
+    function progressLabel(modState) {
+      if (!modState) return '0 / ? lessons';
+      return `${modState.lessonsCompleted} / ${modState.totalLessons} lessons`;
+    }
+
+    /* ── BUILD GRID CARD ─────────────────────────── */
+    function buildGridCard(lesson, module, effStatus) {
+      const cardClasses = [
+        'lesson-card',
+        `card card--lesson card--interactive`,
+        `lesson-card--${effStatus}`
+      ].join(' ');
+
+      const locked = effStatus === 'locked';
+      const searchData = [
+        lesson.title,
+        lesson.description,
+        ...(lesson.tags || [])
+      ].join(' ').toLowerCase();
+
+      return `
+        <div class="lesson-card-wrapper"
+             data-lesson-id="${lesson.id}"
+             data-module-id="${module.id}"
+             data-status="${effStatus}"
+             data-duration-bucket="${durationBucket(lesson.duration)}">
+          <article
+            class="${cardClasses}"
+            data-search="${searchData.replace(/"/g, '&quot;')}"
+            role="article"
+            tabindex="${locked ? -1 : 0}"
+            aria-label="${lesson.title} — ${effStatus}"
+            ${locked ? 'aria-disabled="true"' : ''}
+            onclick="${locked ? '' : `window.location='lesson-player.html?id=${lesson.id}'`}"
+            onkeydown="if(!${locked} && (event.key==='Enter'||event.key===' ')){window.location='lesson-player.html?id=${lesson.id}';}"
+          >
+            <div class="lesson-card__header">
+              <span class="lesson-card__num">${fmtNum(lesson.id)}</span>
+              ${scoreChip(lesson, effStatus)}
+            </div>
+            ${statusBadge(effStatus)}
+            <h3 class="lesson-card__title">${lesson.title}</h3>
+            <p class="lesson-card__desc">${lesson.description}</p>
+            <div class="lesson-card__tags">${tagsHtml(lesson.tags)}</div>
+            <div class="lesson-card__meta">
+              <div class="lesson-card__duration">
+                <span class="lesson-card__duration-icon" aria-hidden="true">⏱</span>
+                ${lesson.duration} min
+              </div>
+              <div class="lesson-card__action">
+                ${actionArea(lesson, effStatus, module)}
+              </div>
+            </div>
+            ${lockTooltip(module, effStatus)}
+          </article>
+        </div>
+      `;
+    }
+
+    /* ── BUILD LIST ITEM ─────────────────────────── */
+    function buildListItem(lesson, module, effStatus) {
+      const locked = effStatus === 'locked';
+      const searchData = [
+        lesson.title,
+        lesson.description,
+        ...(lesson.tags || [])
+      ].join(' ').toLowerCase();
+
+      return `
+        <div class="lesson-card-wrapper"
+             data-lesson-id="${lesson.id}"
+             data-module-id="${module.id}"
+             data-status="${effStatus}"
+             data-duration-bucket="${durationBucket(lesson.duration)}">
+          <article
+            class="lesson-list-item ${locked ? 'lesson-list-item--locked' : ''}"
+            data-search="${searchData.replace(/"/g, '&quot;')}"
+            role="article"
+            tabindex="${locked ? -1 : 0}"
+            aria-label="${lesson.title} — ${effStatus}"
+            ${locked ? 'aria-disabled="true"' : ''}
+            onclick="${locked ? '' : `window.location='lesson-player.html?id=${lesson.id}'`}"
+            onkeydown="if(!${locked} && (event.key==='Enter'||event.key===' ')){window.location='lesson-player.html?id=${lesson.id}';}"
+          >
+            <span class="lesson-list-item__num">${fmtNum(lesson.id)}</span>
+            <div class="lesson-list-item__info">
+              <div class="lesson-list-item__title">${lesson.title}</div>
+              <div class="lesson-list-item__desc">${lesson.description}</div>
+            </div>
+            <div class="lesson-list-item__right">
+              ${statusBadge(effStatus)}
+              <span class="lesson-list-item__duration">${lesson.duration} min</span>
+              ${locked
+                ? `<div class="lock-icon" aria-hidden="true">🔒</div>`
+                : `<a href="lesson-player.html?id=${lesson.id}" class="btn btn--primary btn--sm" tabindex="-1" aria-label="Open ${lesson.title}">${effStatus === 'completed' ? 'Review' : effStatus === 'in-progress' ? 'Continue' : 'Learn'} →</a>`
+              }
+            </div>
+          </article>
+        </div>
+      `;
+    }
+
+    /* ── BUILD MODULE SECTION ──────────────────── */
+    function buildModuleSection(module, viewMode) {
+      const modState = USER_STATE.progress.modules[module.id];
+      const pct = modState ? modState.pct : 0;
+      const fillClass = progressFillClass(modState);
+      const lessons = LESSONS.filter(l => l.moduleId === module.id);
+      const isLocked = module.id !== 'M1';
+      const isExpanded = module.id === 'M1'; // Only M1 open by default
+
+      let cardsHtml = '';
+      if (viewMode === 'grid') {
+        cardsHtml = lessons.map(l => buildGridCard(l, module, getEffectiveStatus(l, module))).join('');
+      } else {
+        cardsHtml = lessons.map(l => buildListItem(l, module, getEffectiveStatus(l, module))).join('');
+      }
+
+      const gridClass = viewMode === 'grid'
+        ? `ll-lessons-grid${isExpanded ? '' : ' ll-lessons-grid--collapsed'}`
+        : `ll-lessons-list${isExpanded ? '' : ' ll-lessons-list--collapsed'}`;
+
+      const lockNotice = isLocked ? `
+        <div class="locked-module-notice" aria-label="Module prerequisites notice">
+          <span class="locked-module-notice__icon">🔒</span>
+          <span>${MODULE_LOCK_LABELS[module.id] || 'Complete prerequisites to unlock this module.'} <a href="assessments.html?testout=${module.id}" class="test-out-link" style="font-size:var(--text-xs);">Test Out →</a></span>
+        </div>
+      ` : '';
+
+      return `
+        <div class="ll-module-section animate-fadeUp"
+             data-module-id="${module.id}"
+             id="module-section-${module.id}">
+          <button
+            class="ll-module-header"
+            aria-expanded="${isExpanded}"
+            aria-controls="module-grid-${module.id}"
+            id="module-header-${module.id}"
+            onclick="toggleModule('${module.id}')"
+          >
+            <div class="ll-module-header__icon" aria-hidden="true">${module.icon}</div>
+            <div class="ll-module-header__info">
+              <div class="ll-module-header__eyebrow">${module.id} · ${lessons.length} Lessons</div>
+              <div class="ll-module-header__title">${module.title}</div>
+              <div class="ll-module-header__subtitle">${module.subtitle}</div>
+            </div>
+            <div class="ll-module-header__right">
+              <div class="ll-module-header__progress-wrap">
+                <span class="ll-module-header__progress-label">${progressLabel(modState)}</span>
+                <div class="ll-module-header__progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${module.title} progress ${pct}%">
+                  <div class="ll-module-header__progress-fill ${fillClass} progress-bar__fill" data-pct="${pct}" style="width:0%;"></div>
+                </div>
+              </div>
+              <span class="ll-module-header__chevron" aria-hidden="true">▾</span>
+            </div>
+          </button>
+
+          ${lockNotice}
+
+          <div
+            class="${gridClass}"
+            id="module-grid-${module.id}"
+            role="region"
+            aria-labelledby="module-header-${module.id}"
+          >
+            ${cardsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    /* ── BUILD MODULE FILTER CHECKBOXES ───────── */
+    function buildModuleFilters() {
+      const container = document.getElementById('module-filters');
+      if (!container) return;
+
+      container.innerHTML = MODULES.map(m => {
+        const lessonCount = m.lessonIds.length;
+        return `
+          <label class="ll-checkbox">
+            <input type="checkbox" class="filter-module" value="${m.id}" aria-label="Filter: ${m.title}">
+            <span class="ll-checkbox__dot ${MODULE_DOTS[m.id] || ''}"></span>
+            <span class="ll-checkbox__label">${m.id}: ${m.title.split(':')[0].split('&')[0].trim()}</span>
+            <span class="ll-checkbox__count">${lessonCount}</span>
+          </label>
+        `;
+      }).join('');
+    }
+
+    /* ── RENDER ALL MODULES ─────────────────── */
+    let currentView = 'grid';
+
+    function renderModules(viewMode) {
+      const container = document.getElementById('modules-container');
+      if (!container) return;
+      container.innerHTML = MODULES.map(m => buildModuleSection(m, viewMode)).join('');
+
+      // Animate progress bars
+      setTimeout(() => {
+        document.querySelectorAll('.ll-module-header__progress-fill').forEach(bar => {
+          const pct = parseFloat(bar.getAttribute('data-pct') || 0);
+          bar.style.transition = 'width 1.2s cubic-bezier(0,0,0.2,1)';
+          bar.style.width = pct + '%';
+        });
+      }, 100);
+
+      // Stagger card animations
+      document.querySelectorAll('.ll-module-section').forEach((section, i) => {
+        section.style.animationDelay = `${i * 60}ms`;
+      });
+    }
+
+    /* ── TOGGLE MODULE COLLAPSE ──────────────── */
+    window.toggleModule = function(moduleId) {
+      const header = document.getElementById(`module-header-${moduleId}`);
+      const grid   = document.getElementById(`module-grid-${moduleId}`);
+      if (!header || !grid) return;
+
+      const isOpen = header.getAttribute('aria-expanded') === 'true';
+      header.setAttribute('aria-expanded', String(!isOpen));
+
+      const colClass = currentView === 'grid' ? 'll-lessons-grid--collapsed' : 'll-lessons-list--collapsed';
+
+      if (isOpen) {
+        grid.classList.add(colClass);
+      } else {
+        grid.classList.remove(colClass);
+      }
+    };
+
+    /* ── EXPAND / COLLAPSE ALL ───────────────── */
+    let allExpanded = false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const expandBtn = document.getElementById('expand-all-btn');
+      if (expandBtn) {
+        expandBtn.addEventListener('click', function() {
+          allExpanded = !allExpanded;
+          expandBtn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+
+          const colClass = currentView === 'grid' ? 'll-lessons-grid--collapsed' : 'll-lessons-list--collapsed';
+
+          MODULES.forEach(m => {
+            const header = document.getElementById(`module-header-${m.id}`);
+            const grid   = document.getElementById(`module-grid-${m.id}`);
+            if (!header || !grid) return;
+            header.setAttribute('aria-expanded', String(allExpanded));
+            if (allExpanded) {
+              grid.classList.remove(colClass);
+            } else {
+              grid.classList.add(colClass);
+            }
+          });
+        });
+      }
+    });
+
+    /* ── SEARCH LOGIC ────────────────────────── */
+    function debounce(fn, delay) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    function getAllCardWrappers() {
+      return document.querySelectorAll('.lesson-card-wrapper');
+    }
+
+    function getActiveFilters() {
+      const modules    = [...document.querySelectorAll('.filter-module:checked')].map(el => el.value);
+      const statuses   = [...document.querySelectorAll('.filter-status:checked')].map(el => el.value);
+      const durations  = [...document.querySelectorAll('.filter-duration:checked')].map(el => el.value);
+      const searchQ    = (document.getElementById('lesson-search')?.value || '').toLowerCase().trim();
+      return { modules, statuses, durations, searchQ };
+    }
+
+    function applyFilters() {
+      const { modules, statuses, durations, searchQ } = getActiveFilters();
+      const wrappers = getAllCardWrappers();
+      let visibleCount = 0;
+
+      wrappers.forEach(wrapper => {
+        const card        = wrapper.querySelector('[data-search]');
+        const modId       = wrapper.getAttribute('data-module-id');
+        const status      = wrapper.getAttribute('data-status');
+        const durBucket   = wrapper.getAttribute('data-duration-bucket');
+        const searchText  = card ? card.getAttribute('data-search') : '';
+
+        let show = true;
+
+        // Search filter
+        if (searchQ && !searchText.includes(searchQ)) show = false;
+
+        // Module filter
+        if (modules.length && !modules.includes(modId)) show = false;
+
+        // Status filter
+        if (statuses.length && !statuses.includes(status)) show = false;
+
+        // Duration filter
+        if (durations.length && !durations.includes(durBucket)) show = false;
+
+        wrapper.style.display = show ? '' : 'none';
+        if (show) visibleCount++;
+      });
+
+      // Update count displays
+      const countEl       = document.getElementById('filter-count');
+      const visibleCountEl = document.getElementById('visible-count');
+      if (countEl)       countEl.textContent = `${visibleCount} of 44`;
+      if (visibleCountEl) visibleCountEl.textContent = visibleCount;
+
+      // Show/hide no-results
+      const noResults = document.getElementById('no-results');
+      if (noResults) {
+        noResults.classList.toggle('visible', visibleCount === 0);
+      }
+
+      // Auto-expand modules that have visible lessons when filtering
+      if (searchQ || modules.length || statuses.length || durations.length) {
+        MODULES.forEach(m => {
+          const header = document.getElementById(`module-header-${m.id}`);
+          const grid   = document.getElementById(`module-grid-${m.id}`);
+          if (!header || !grid) return;
+          const colClass = currentView === 'grid' ? 'll-lessons-grid--collapsed' : 'll-lessons-list--collapsed';
+
+          // Check if any lesson in this module is visible
+          const hasVisible = [...document.querySelectorAll(`.lesson-card-wrapper[data-module-id="${m.id}"]`)]
+            .some(w => w.style.display !== 'none');
+
+          if (hasVisible) {
+            header.setAttribute('aria-expanded', 'true');
+            grid.classList.remove(colClass);
+          }
+        });
+      }
+    }
+
+    const debouncedFilter = debounce(applyFilters, 200);
+
+    /* ── VIEW TOGGLE ─────────────────────────── */
+    function setView(mode) {
+      if (mode === currentView) return;
+      currentView = mode;
+
+      const gridBtn = document.getElementById('view-grid-btn');
+      const listBtn = document.getElementById('view-list-btn');
+
+      if (gridBtn && listBtn) {
+        gridBtn.classList.toggle('active', mode === 'grid');
+        listBtn.classList.toggle('active', mode === 'list');
+        gridBtn.setAttribute('aria-pressed', String(mode === 'grid'));
+        listBtn.setAttribute('aria-pressed', String(mode === 'list'));
+      }
+
+      renderModules(mode);
+      applyFilters();
+    }
+
+    /* ── SYNC SEARCHES ───────────────────────── */
+    function syncSearchInputs(sourceId, targetId, value) {
+      const target = document.getElementById(targetId);
+      if (target && target.value !== value) target.value = value;
+    }
+
+    /* ── INIT ────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', function() {
+      // Build module filter checkboxes
+      buildModuleFilters();
+
+      // Render initial grid view
+      renderModules('grid');
+
+      // View toggle buttons
+      document.getElementById('view-grid-btn')?.addEventListener('click', () => setView('grid'));
+      document.getElementById('view-list-btn')?.addEventListener('click', () => setView('list'));
+
+      // Search inputs
+      const topSearch     = document.getElementById('lesson-search');
+      const sidebarSearch = document.getElementById('sidebar-search');
+
+      topSearch?.addEventListener('input', debounce(() => {
+        syncSearchInputs('lesson-search', 'sidebar-search', topSearch.value);
+        applyFilters();
+      }, 200));
+
+      sidebarSearch?.addEventListener('input', debounce(() => {
+        syncSearchInputs('sidebar-search', 'lesson-search', sidebarSearch.value);
+        applyFilters();
+      }, 200));
+
+      // Filter checkboxes
+      document.querySelectorAll('.filter-module, .filter-status, .filter-duration').forEach(cb => {
+        cb.addEventListener('change', applyFilters);
+      });
+
+      // Clear filters
+      function clearFilters() {
+        document.querySelectorAll('.filter-module, .filter-status, .filter-duration').forEach(cb => {
+          cb.checked = false;
+        });
+        const topSearch     = document.getElementById('lesson-search');
+        const sidebarSearch = document.getElementById('sidebar-search');
+        if (topSearch)     topSearch.value = '';
+        if (sidebarSearch) sidebarSearch.value = '';
+        applyFilters();
+
+        FQ_UI.showToast({ title: 'Filters cleared', type: 'info', duration: 2000 });
+      }
+
+      document.getElementById('clear-filters-btn')?.addEventListener('click', clearFilters);
+      document.getElementById('clear-no-results-btn')?.addEventListener('click', clearFilters);
+
+      // Keyboard: global search shortcut (/)
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+          e.preventDefault();
+          document.getElementById('lesson-search')?.focus();
+        }
+        if (e.key === 'Escape') {
+          const topSearch = document.getElementById('lesson-search');
+          if (document.activeElement === topSearch && topSearch.value) {
+            topSearch.value = '';
+            const sidebarSearch = document.getElementById('sidebar-search');
+            if (sidebarSearch) sidebarSearch.value = '';
+            applyFilters();
+          }
+        }
+      });
+
+      // Animate stat counter
+      const statComp = document.getElementById('stat-completed');
+      if (statComp && window.FQ_UI) {
+        FQ_UI.animateCounter(statComp, 3, 1200, '');
+      }
+    });
+
+  })();
+  </script>
+</body>
+</html>

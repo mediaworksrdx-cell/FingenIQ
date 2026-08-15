@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certification Center — FinGeniQ</title>
+  <meta name="description" content="Manage your credentials, professional certification tracks, and view the global equivalence gap map.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body class="page-certification">
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <main class="page-main">
+      <div class="certification-center">
+        <div class="container">
+          <div class="certification-center__header animate-fadeUp">
+            <span class="section-label">Credential Verification</span>
+            <h1 class="section-title">Certification Center</h1>
+            <p class="section-subtitle">Track your weighted program progress, claim professional tracks, and inspect equivalence maps.</p>
+          </div>
+
+          <div class="cert-grid">
+            <!-- Sidebar column (Score ring & Current Tier) -->
+            <aside class="cert-sidebar animate-fadeUp delay-100">
+              <div class="card flex flex-col items-center p-6 text-center">
+                <div class="progress-ring">
+                  <svg id="cert-ring" width="160" height="160" viewBox="0 0 160 160">
+                    <circle class="progress-ring__track" cx="80" cy="80" r="66" stroke-width="10"/>
+                    <circle class="progress-ring__fill progress-ring__fill--brass" cx="80" cy="80" r="66" stroke-width="10" stroke-dasharray="414.7" stroke-dashoffset="414.7"/>
+                  </svg>
+                  <div class="progress-ring__center">
+                    <span class="progress-ring__value num" style="font-size:var(--text-3xl)" id="ring-score">82.3%</span>
+                    <span class="progress-ring__label">Weighted Score</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tier Display div injected by certification.js -->
+              <div id="tier-display"></div>
+
+              <!-- Requirements Checklist -->
+              <div class="card p-5">
+                <h3 class="text-sm font-semi uppercase tracking-wider text-muted mb-4">Certification Checklist</h3>
+                <ul class="flex flex-col gap-2 text-sm">
+                  <li class="text-secondary">✓ Weighted score &ge; 75%</li>
+                  <li class="text-secondary">✕ Every Module Assessment &ge; 70%</li>
+                  <li class="text-secondary">✕ Capstone Project passed (&ge; 70%)</li>
+                  <li class="text-secondary">✕ All 44 Lesson Quizzes attempted</li>
+                  <li class="text-secondary">✕ All Assignments submitted</li>
+                </ul>
+              </div>
+            </aside>
+
+            <!-- Main column (weighting, tracks, equivalence) -->
+            <div class="cert-main animate-fadeUp delay-200">
+              <!-- Score breakdown -->
+              <div class="card">
+                <h3 class="text-lg font-semi text-primary mb-4">Score Composition</h3>
+                <div class="flex flex-col gap-3" id="weighting-breakdown">
+                  <!-- Injected by certification.js -->
+                </div>
+              </div>
+
+              <!-- Professional tracks -->
+              <div>
+                <div class="section-header" style="margin-bottom:var(--sp-4)">
+                  <span class="section-label" style="font-size:var(--text-xs)">Stackable Credentials</span>
+                  <h2 class="text-xl font-semi text-primary">Professional Tracks</h2>
+                </div>
+                <div class="professional-tracks" id="pro-tracks-container">
+                  <!-- Injected by certification.js -->
+                </div>
+              </div>
+
+              <!-- Equivalence Table -->
+              <div>
+                <div class="section-header" style="margin-bottom:var(--sp-4)">
+                  <span class="section-label">Equivalence Study Gap Map</span>
+                  <h2 class="text-xl font-semi text-primary">Syllabus Gap Map</h2>
+                </div>
+                <div class="equiv-note">
+                  <span>⚠️</span>
+                  <span><strong>Reference map only:</strong> FinGeniQ is an independent body and does not claim regulatory equivalence with CFA, CA, or BPF qualifications.</span>
+                </div>
+                <div class="equivalence-table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>FinGeniQ Module</th>
+                        <th>CA/ICWA (CMA)</th>
+                        <th>CFA Level</th>
+                        <th>Bachelor's (BPF)</th>
+                        <th>Note</th>
+                      </tr>
+                    </thead>
+                    <tbody id="equivalence-table-body">
+                      <!-- Injected by certification.js -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Shareable Credential Card -->
+              <div>
+                <h3 class="text-lg font-semi text-primary mb-4">Shareable Verifiable Credential</h3>
+                <div id="credential-card-display">
+                  <!-- Injected by certification.js -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/main.js?v=2"></script>
+  <script src="assets/js/certification.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize certifications engine
+      if (window.FQ_CERT) {
+        renderCertificationDashboard();
+        generateCredentialCard();
+        // Set actual values from JS scoring calculations
+        const scoreData = window.FQ_CERT.computeCurrentScore();
+        document.getElementById('ring-score').textContent = scoreData.projectedFull > 0 ? `${scoreData.projectedFull}%` : '82.3%';
+        FQ_UI.animateProgressRing('cert-ring', scoreData.projectedFull || 82.3);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinGenIQ - Complete Development Cost, Infrastructure & High Concurrency (1k-10k CCU) Audit</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --primary: #0284c7;
+    --primary-dark: #0369a1;
+    --primary-light: #e0f2fe;
+    --accent: #10b981;
+    --accent-light: #d1fae5;
+    --warning: #f59e0b;
+    --warning-light: #fef3c7;
+    --border: #e2e8f0;
+    --surface: #f8fafc;
+    --surface-card: #ffffff;
+  }
+
+  @page {
+    size: A4;
+    margin: 14mm 12mm 14mm 12mm;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg);
+    line-height: 1.5;
+    font-size: 13px;
+    padding: 24px;
+  }
+
+  .report-header {
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .brand-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand-badge {
+    background: var(--primary);
+    color: white;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .report-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .meta-box {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--surface);
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-top: 14px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin-bottom: 10px;
+    color: var(--text-muted);
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  .summary-card .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .summary-card .value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 4px;
+  }
+
+  .summary-card .sub {
+    font-size: 10px;
+    color: var(--primary-dark);
+    margin-top: 2px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 18px;
+    font-size: 12px;
+    background: white;
+  }
+
+  th {
+    background: var(--surface);
+    color: #1e293b;
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  td {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    color: #334155;
+    vertical-align: middle;
+  }
+
+  tr:nth-child(even) {
+    background: #fafbfc;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .tag-blue { background: var(--primary-light); color: var(--primary-dark); }
+  .tag-green { background: var(--accent-light); color: #047857; }
+  .tag-amber { background: var(--warning-light); color: #b45309; }
+
+  .arch-diagram {
+    background: #0f172a;
+    color: #38bdf8;
+    padding: 14px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-x: auto;
+    margin-bottom: 18px;
+  }
+
+  .callout {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin: 14px 0;
+    font-size: 12px;
+    color: #0369a1;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .formula-box {
+    background: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #0f172a;
+    margin: 10px 0 16px 0;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  @media print {
+    body {
+      padding: 0;
+      font-size: 11.5px;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    .arch-diagram {
+      font-size: 9.5px;
+      line-height: 1.25;
+    }
+    table {
+      font-size: 10.5px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="report-header">
+    <div>
+      <div class="brand-title">
+        FinGenIQ <span class="brand-badge">Enterprise Audit</span>
+      </div>
+      <div class="report-subtitle">
+        Comprehensive Development Cost, Full Infrastructure Stack & High Concurrency (1k – 10k CCU) Audit
+      </div>
+    </div>
+    <div class="meta-box">
+      <strong>Generated:</strong> August 2026<br>
+      <strong>Stack:</strong> Next.js 16 / React 19 / Three.js 3D<br>
+      <strong>Target Scale:</strong> 1,000 to 10,000 Concurrent Users (CCU)
+    </div>
+  </div>
+
+  <!-- EXECUTIVE SUMMARY CARDS -->
+  <div class="summary-cards">
+    <div class="summary-card">
+      <div class="label">Initial Dev Cost</div>
+      <div class="value">$22,000 – $48,000</div>
+      <div class="sub">Complete MVP to Prod Build</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">1,000 CCU OpEx</div>
+      <div class="value">$280 – $780 /mo</div>
+      <div class="sub">~50k–100k Registered Users</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">10,000 CCU OpEx</div>
+      <div class="value">$1,800 – $5,900 /mo</div>
+      <div class="sub">~500k–1,000,000 Registered</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Unit Cost / User</div>
+      <div class="value">$0.006 – $0.018</div>
+      <div class="sub">Per active user / month</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: FULL DEVELOPMENT COST AUDIT -->
+  <h2>1. Full Development Cost Breakdown (CapEx)</h2>
+  <p>Engineering effort required to develop, design, test, and deploy the entire FinGenIQ platform including Three.js WebGL visualizations, interactive learning player, assessment engine, cryptographic certificate verification, admin provisioning, and multi-tier authentication.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Workstream / Component</th>
+        <th>Scope of Work</th>
+        <th>Hours</th>
+        <th>Rate ($/hr)</th>
+        <th>Total Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>UI/UX Design & 3D Assets</strong></td>
+        <td>Design system, dark/light tokens, Three.js 3D models, shader animations, responsive layouts</td>
+        <td>70 – 100 hrs</td>
+        <td>$50 – $80</td>
+        <td>$3,500 – $8,000</td>
+      </tr>
+      <tr>
+        <td><strong>Frontend & WebGL Canvas</strong></td>
+        <td>Next.js 16 App Router, React 19 client components, Three.js interactive canvas, state management</td>
+        <td>120 – 160 hrs</td>
+        <td>$65 – $100</td>
+        <td>$7,800 – $16,000</td>
+      </tr>
+      <tr>
+        <td><strong>Backend, DB & Auth Engine</strong></td>
+        <td>Admin-provisioned auth, session management, bcrypt/argon2, audit logs, renewal system, rate limiting</td>
+        <td>90 – 130 hrs</td>
+        <td>$70 – $110</td>
+        <td>$6,300 – $14,300</td>
+      </tr>
+      <tr>
+        <td><strong>Courseware & Assessments</strong></td>
+        <td>Interactive step-by-step player, capstone projects, grading, SHA-256 certificate hashing engine</td>
+        <td>60 – 80 hrs</td>
+        <td>$60 – $90</td>
+        <td>$3,600 – $7,200</td>
+      </tr>
+      <tr>
+        <td><strong>DevOps, CI/CD & Security</strong></td>
+        <td>Containerization (Docker), PgBouncer, Redis clustering, Cloudflare WAF, load testing & Pen-testing</td>
+        <td>40 – 60 hrs</td>
+        <td>$75 – $120</td>
+        <td>$3,000 – $7,200</td>
+      </tr>
+      <tr style="background: #f1f5f9; font-weight: 700;">
+        <td colspan="2">TOTAL ESTIMATED BUILD EFFORT</td>
+        <td>380 – 530 hrs</td>
+        <td>—</td>
+        <td><strong>$24,200 – $52,700</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 2: 1,000 TO 10,000 CONCURRENT USERS CONCURRENCY PHYSICS -->
+  <h2>2. Understanding 1,000 to 10,000 Concurrent Users (CCU)</h2>
+  <p>Concurrent Users (CCU) represents users interacting with the platform simultaneously at the same second. This determines CPU, memory, socket connections, and database throughput requirements.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>1,000 Concurrent Users (CCU)</th>
+        <th>5,000 Concurrent Users (CCU)</th>
+        <th>10,000 Concurrent Users (CCU)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Equivalent Registered Base</strong></td>
+        <td>50,000 – 100,000 users</td>
+        <td>250,000 – 500,000 users</td>
+        <td>500,000 – 1,000,000 users</td>
+      </tr>
+      <tr>
+        <td><strong>Peak Requests per Second (RPS)</strong></td>
+        <td>500 – 1,500 RPS</td>
+        <td>2,500 – 7,500 RPS</td>
+        <td>5,000 – 15,000 RPS</td>
+      </tr>
+      <tr>
+        <td><strong>Database Queries per Sec (QPS)</strong></td>
+        <td>1,500 – 4,500 QPS</td>
+        <td>7,500 – 22,000 QPS</td>
+        <td>15,000 – 50,000 QPS</td>
+      </tr>
+      <tr>
+        <td><strong>Active Session Memory (Redis)</strong></td>
+        <td>~250 MB in RAM</td>
+        <td>~1.2 GB in RAM</td>
+        <td>~2.5 GB in RAM</td>
+      </tr>
+      <tr>
+        <td><strong>Network Throughput (CDN Offload)</strong></td>
+        <td>150 – 350 Mbps</td>
+        <td>750 Mbps – 1.8 Gbps</td>
+        <td>1.5 Gbps – 3.8 Gbps</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 3: COMPLETE INFRASTRUCTURE STACK (BOM) -->
+  <h2>3. Complete Infrastructure Stack & Bill of Materials (BOM)</h2>
+  <p>Everything needed from Load Balancers, Redis, MongoDB/PostgreSQL, Compute clusters to CDN and Security.</p>
+
+  <div class="arch-diagram">
++----------------------------------------------------------------------------------------------------+
+|                                      GLOBAL CLIENT TRAFFIC                                         |
++----------------------------------------------------------------------------------------------------+
+                                                  │
+                                                  ▼
+                        +───────────────────────────────────────────────────+
+                        |  Cloudflare Enterprise / Pro Edge (WAF + CDN)     |
+                        |  - DDoS Mitigation & Rate Limiting at Edge        |
+                        |  - Static & 3D Asset Caching (Zero-Egress R2/S3)  |
+                        +───────────────────────────────────────────────────+
+                                                  │
+                                                  ▼
+                        +───────────────────────────────────────────────────+
+                        |  Layer 7 Application Load Balancer (ALB / NGINX)  |
+                        |  - SSL Termination + HTTP/2 & HTTP/3 + Healthcheck|
+                        +───────────────────────────────────────────────────+
+                                                  │
+                         ┌────────────────────────┼────────────────────────┐
+                         ▼                        ▼                        ▼
+               +──────────────────+     +──────────────────+     +──────────────────+
+               | Next.js SSR #1   |     | Next.js SSR #2   |     | Next.js SSR #N   |
+               | (Auto-Scaled)    |     | (Auto-Scaled)    |     | (Auto-Scaled)    |
+               +────────┬─────────+     +────────┬─────────+     +────────┬─────────+
+                        │                        │                        │
+                        ├────────────────────────┴────────────────────────┤
+                        │                                                 │
+                        ▼                                                 ▼
+           +──────────────────────────+                     +──────────────────────────+
+           | Redis Cluster (InMemory) |                     | PgBouncer Connection     |
+           | - User Sessions & Tokens |                     | Pooler (10k+ Conns)      |
+           | - Sliding Rate Limits    |                     +─────────────┬────────────+
+           | - BullMQ Async Job Queue |                                   │
+           +──────────────────────────+                                   ▼
+                                                    +──────────────────────────────────+
+                                                    | Primary PostgreSQL / MongoDB     |
+                                                    | (ACID Writes & Master Store)     |
+                                                    +─────────────────┬────────────────+
+                                                                      │ (Async Stream)
+                                                                      ▼
+                                                    +──────────────────────────────────+
+                                                    | Read Replicas (1x to 3x Nodes)   |
+                                                    | (Lesson Reads, Cert Verification)|
+                                                    +──────────────────────────────────+
+  </div>
+
+  <!-- DATABASE COMPARISON: POSTGRESQL VS MONGODB -->
+  <h3>Database Selection: PostgreSQL vs MongoDB for FinGenIQ</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Criterion</th>
+        <th>PostgreSQL (Recommended for FinGenIQ)</th>
+        <th>MongoDB Atlas (Alternative)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Data Model Fit</strong></td>
+        <td><span class="tag tag-green">Ideal</span> Strict relational schema: Users, Sessions, Audit Logs, Progress, Certs, Renewals with foreign keys.</td>
+        <td><span class="tag tag-blue">Flexible</span> Good for unstructured lesson metadata, but requires application-level integrity for relations.</td>
+      </tr>
+      <tr>
+        <td><strong>10k CCU Concurrency</strong></td>
+        <td><span class="tag tag-green">Excellent with PgBouncer</span> Handles 15k+ QPS easily with Read Replicas & MVCC.</td>
+        <td><span class="tag tag-green">Excellent</span> High write throughput with Replica Sets & Sharded Clusters.</td>
+      </tr>
+      <tr>
+        <td><strong>Audit & Compliance</strong></td>
+        <td><span class="tag tag-green">ACID Strict</span> Perfect for financial certifications, non-repudiation audit trails, and strict credentials.</td>
+        <td><span class="tag tag-amber">Document-level ACID</span> Requires multi-document transactions which increase latency under heavy load.</td>
+      </tr>
+      <tr>
+        <td><strong>Monthly Cost at 10k CCU</strong></td>
+        <td><strong>$650 – $1,200 / mo</strong> (AWS RDS Aurora / Managed PG)</td>
+        <td><strong>$750 – $1,400 / mo</strong> (MongoDB Atlas M40/M50 cluster)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- COMPLETE BILL OF MATERIALS -->
+  <h3>Complete Component-by-Component Infrastructure Specification</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Infrastructure Layer</th>
+        <th>Component & Software</th>
+        <th>1,000 CCU Sizing</th>
+        <th>10,000 CCU Sizing</th>
+        <th>Core Function</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Edge & CDN</strong></td>
+        <td>Cloudflare WAF / CDN + R2</td>
+        <td>Cloudflare Pro + 500GB R2</td>
+        <td>Cloudflare Enterprise / Business</td>
+        <td>DDoS shield, bot protection, 3D asset caching</td>
+      </tr>
+      <tr>
+        <td><strong>Load Balancers</strong></td>
+        <td>AWS ALB / HAProxy / NGINX Plus</td>
+        <td>1x Managed ALB</td>
+        <td>2x Redundant L7 ALBs</td>
+        <td>SSL termination, health checks, traffic routing</td>
+      </tr>
+      <tr>
+        <td><strong>App Compute (Next.js)</strong></td>
+        <td>Docker Containers on ECS / K8s</td>
+        <td>4x Nodes (2 vCPU, 4GB RAM)</td>
+        <td>16x – 24x Nodes (4 vCPU, 8GB RAM)</td>
+        <td>Next.js SSR, React 19, Server Actions, API routes</td>
+      </tr>
+      <tr>
+        <td><strong>In-Memory Caching</strong></td>
+        <td>Redis 7.2 Cluster / Sentinel</td>
+        <td>Primary + Replica (4GB RAM)</td>
+        <td>3-Node Sharded Cluster (16GB RAM)</td>
+        <td>Opaque session validation, IP rate limits, locks</td>
+      </tr>
+      <tr>
+        <td><strong>Connection Pooler</strong></td>
+        <td>PgBouncer (Transaction mode)</td>
+        <td>1x Container (Pool = 1,500)</td>
+        <td>2x Dedicated Nodes (Pool = 15,000+)</td>
+        <td>Prevents PostgreSQL connection exhaustion</td>
+      </tr>
+      <tr>
+        <td><strong>Primary Database</strong></td>
+        <td>PostgreSQL 16 / MongoDB Atlas</td>
+        <td>4 vCPU, 16GB RAM, 3k IOPS</td>
+        <td>16 vCPU, 64GB RAM, 10k+ IOPS</td>
+        <td>User accounts, auth logs, progress writes</td>
+      </tr>
+      <tr>
+        <td><strong>Database Replicas</strong></td>
+        <td>Streaming Read Replicas</td>
+        <td>1x Read Replica (4 vCPU, 16GB)</td>
+        <td>2x – 3x Read Replicas (8 vCPU, 32GB)</td>
+        <td>Offloads lesson reads, cert queries, admin searches</td>
+      </tr>
+      <tr>
+        <td><strong>Async Task Workers</strong></td>
+        <td>BullMQ + Node.js Workers</td>
+        <td>2x Worker Instances</td>
+        <td>6x Worker Instances</td>
+        <td>PDF cert generation, bulk emails, webhook dispatches</td>
+      </tr>
+      <tr>
+        <td><strong>Transactional Email</strong></td>
+        <td>AWS SES / Resend / Postmark</td>
+        <td>~50,000 emails/mo</td>
+        <td>~500,000 emails/mo</td>
+        <td>Activation tokens, password resets, renewal reminders</td>
+      </tr>
+      <tr>
+        <td><strong>APM & Observability</strong></td>
+        <td>Datadog / Sentry / Prometheus</td>
+        <td>Basic metrics & Sentry APM</td>
+        <td>Full APM, distributed tracing, log indexing</td>
+        <td>Real-time alerts, error detection, latency monitoring</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 4: FULL MONTHLY OPERATING EXPENSE AUDIT -->
+  <h2>4. Monthly Operating Expense Audit (OpEx)</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Infrastructure Component</th>
+        <th>1,000 CCU (AWS Managed)</th>
+        <th>1,000 CCU (Hetzner VPS)</th>
+        <th>10,000 CCU (AWS Managed)</th>
+        <th>10,000 CCU (Hetzner Bare-Metal)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Next.js App Compute</td>
+        <td>$160 / mo</td>
+        <td>$65 / mo</td>
+        <td>$1,850 / mo</td>
+        <td>$520 / mo</td>
+      </tr>
+      <tr>
+        <td>Database (Primary + Replicas)</td>
+        <td>$280 / mo</td>
+        <td>$110 / mo</td>
+        <td>$2,200 / mo</td>
+        <td>$680 / mo</td>
+      </tr>
+      <tr>
+        <td>Redis Cache & BullMQ</td>
+        <td>$65 / mo</td>
+        <td>$25 / mo</td>
+        <td>$380 / mo</td>
+        <td>$120 / mo</td>
+      </tr>
+      <tr>
+        <td>Load Balancers (ALB / Ingress)</td>
+        <td>$45 / mo</td>
+        <td>$15 / mo</td>
+        <td>$240 / mo</td>
+        <td>$50 / mo</td>
+      </tr>
+      <tr>
+        <td>Cloudflare CDN, WAF & R2 Storage</td>
+        <td>$35 / mo</td>
+        <td>$35 / mo</td>
+        <td>$450 / mo</td>
+        <td>$250 / mo</td>
+      </tr>
+      <tr>
+        <td>Transactional Email Delivery</td>
+        <td>$40 / mo</td>
+        <td>$40 / mo</td>
+        <td>$350 / mo</td>
+        <td>$350 / mo</td>
+      </tr>
+      <tr>
+        <td>APM, Metrics & Sentry Logs</td>
+        <td>$90 / mo</td>
+        <td>$40 / mo</td>
+        <td>$650 / mo</td>
+        <td>$200 / mo</td>
+      </tr>
+      <tr>
+        <td>Cold Backups & Disaster Recovery</td>
+        <td>$15 / mo</td>
+        <td>$10 / mo</td>
+        <td>$80 / mo</td>
+        <td>$30 / mo</td>
+      </tr>
+      <tr style="background: #f8fafc; font-weight: 700;">
+        <td>TOTAL MONTHLY OPEX</td>
+        <td><strong>$730 / mo</strong></td>
+        <td><strong>$340 / mo</strong></td>
+        <td><strong>$6,200 / mo</strong></td>
+        <td><strong>$2,200 / mo</strong></td>
+      </tr>
+      <tr style="background: #f1f5f9; font-weight: 800; color: var(--primary-dark);">
+        <td>ANNUALIZED INFRASTRUCTURE</td>
+        <td><strong>$8,760 / yr</strong></td>
+        <td><strong>$4,080 / yr</strong></td>
+        <td><strong>$74,400 / yr</strong></td>
+        <td><strong>$26,400 / yr</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- UNIT ECONOMICS -->
+  <h3>Unit Economics Summary</h3>
+  <div class="formula-box">
+    At 1,000 CCU (~75,000 Registered Users):  Cost = $730 / 75,000 = $0.0097 per user / month ($0.11 / user / year)<br>
+    At 10,000 CCU (~750,000 Registered Users): Cost = $6,200 / 750,000 = $0.0082 per user / month ($0.098 / user / year)
+  </div>
+
+  <!-- SECTION 5: CRITICAL CODEBASE OPTIMIZATIONS -->
+  <h2>5. Critical Codebase Refactors Required for 10k CCU</h2>
+
+  <div class="callout">
+    <div class="callout-title">1. SQLite to PostgreSQL / MongoDB Migration (Mandatory)</div>
+    The current <code>better-sqlite3</code> implementation will hard-lock with <code>SQLITE_BUSY</code> errors under simultaneous write transactions. Replace with PostgreSQL using connection pooling (PgBouncer) and indexed foreign keys.
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">2. In-Memory Session & Rate Limiting Offload</div>
+    Currently, FinGenIQ queries <code>sessions</code> and writes to <code>ip_rate_limits</code> on disk for every HTTP request. Moving these to a <strong>Redis Cluster</strong> reduces latency from ~25ms disk I/O to &lt; 0.8ms in-memory lookups.
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">3. Three.js Static Asset CDN Offloading</div>
+    Ensure all WebGL geometries, textures, and heavy client JavaScript chunks have strict caching headers (<code>max-age=31536000, immutable</code>) so that 10,000 simultaneous users download 3D assets directly from Cloudflare Edge rather than hitting your Next.js application servers.
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">4. Asynchronous Queue for Certificate & Email Generation</div>
+    Cryptographic SHA-256 certificate generation and transactional emails should be offloaded to <strong>BullMQ workers</strong> rather than processed synchronously during learner completion requests.
+  </div>
+
+</body>
+</html>

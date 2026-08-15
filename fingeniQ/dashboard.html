@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — FinGeniQ</title>
+  <meta name="description" content="View your progress, current weighted score, module indicators, and upcoming retakes on the FinGeniQ dashboard.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrapper">
+    <main class="page-main">
+      <div class="dashboard">
+        <div class="container">
+          <div class="dashboard__header animate-fadeUp">
+            <div class="dashboard__greeting">Good evening,</div>
+            <h1 class="dashboard__name">Arjun Mehta</h1>
+          </div>
+
+          <div class="dashboard__grid">
+            <!-- Sidebar: Analytics & Quick Stats -->
+            <aside class="dashboard__sidebar animate-fadeUp delay-100">
+              <!-- Progress Ring -->
+              <div class="card flex flex-col items-center p-6 text-center">
+                <div class="progress-ring">
+                  <svg id="main-ring" width="120" height="120">
+                    <circle class="progress-ring__track" cx="60" cy="60" r="50" stroke-width="8"/>
+                    <circle class="progress-ring__fill progress-ring__fill--sapphire" cx="60" cy="60" r="50" stroke-width="8"/>
+                  </svg>
+                  <div class="progress-ring__center">
+                    <span class="progress-ring__value num" style="font-size:var(--text-2xl)">3/44</span>
+                    <span class="progress-ring__label">Lessons</span>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <span class="text-sm font-medium text-primary">Overall Program Progress</span>
+                </div>
+              </div>
+
+              <!-- Credential Tier Card -->
+              <div class="card card--credential p-5">
+                <div class="credential-mini">
+                  <div class="credential-mini__icon">🎓</div>
+                  <div class="credential-mini__info">
+                    <div class="credential-mini__status">Current Tier</div>
+                    <div class="credential-mini__tier">No Tier Yet</div>
+                    <div class="credential-mini__delta">Earn 75% to unlock Proficiency</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Recommendations -->
+              <div class="card p-5">
+                <h3 class="text-sm font-semi uppercase tracking-wider text-muted mb-3">Recommended Track</h3>
+                <div class="flex items-center gap-3">
+                  <span style="font-size:1.5rem">🏦</span>
+                  <div>
+                    <div class="text-sm font-semi text-primary">Banking Professional</div>
+                    <div class="text-xs text-muted">Requires Modules 2 & 6</div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="dashboard__main animate-fadeUp delay-200">
+              <!-- Continue Where You Left Off -->
+              <div class="continue-card">
+                <div class="continue-card__label">Continue Learning</div>
+                <h3 class="continue-card__lesson">L04: Emergency Funds & Liquidity Management</h3>
+                <div class="continue-card__step">Step 7 of 20 · Visual Explanation</div>
+                <a href="lesson-player.html?id=L1" class="btn btn--primary btn--lg">Resume Learning →</a>
+              </div>
+
+              <!-- Score Breakdown Grid -->
+              <div class="score-breakdown">
+                <h3 class="score-breakdown__title">Weighted Score Breakdown</h3>
+                <div class="score-breakdown__items" id="score-breakdown-root">
+                  <!-- Dynamic scoring injection -->
+                </div>
+              </div>
+
+              <!-- Module Progress List -->
+              <div>
+                <h3 class="text-lg font-semi text-primary mb-4">Module Progress</h3>
+                <div class="module-progress-list" id="module-progress-root">
+                  <!-- Dynamic module progress injection -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/main.js?v=2"></script>
+  <script src="assets/js/certification.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate and animate overall progress
+      const progressPercent = (3 / 44) * 100;
+      FQ_UI.animateProgressRing('main-ring', progressPercent);
+
+      // Render score breakdown
+      const breakdownRoot = document.getElementById('score-breakdown-root');
+      if (breakdownRoot && window.FQ) {
+        const u = FQ.USER_STATE.progress;
+        const weights = FQ.CERTIFICATION_CONFIG.weights;
+        const comps = [
+          { name: 'Knowledge Checks', score: u.knowledgeChecks, weight: weights.knowledgeChecks, color: 'var(--sapphire-500)' },
+          { name: 'Assignments', score: u.assignments, weight: weights.assignments, color: 'var(--emerald-500)' },
+          { name: 'Lesson Quizzes', score: u.quizzes, weight: weights.quizzes, color: 'var(--amber-500)' },
+          { name: 'Module Assessments', score: u.moduleAssessments || 0, weight: weights.moduleAssessments, color: 'var(--rose-500)' },
+          { name: 'Capstone Project', score: u.capstone || 0, weight: weights.capstone, color: 'var(--brass-500)' }
+        ];
+
+        breakdownRoot.innerHTML = comps.map(c => `
+          <div class="weight-component">
+            <div class="weight-component__dot" style="background:${c.color}"></div>
+            <div class="weight-component__name">${c.name}</div>
+            <div class="weight-component__weight">${(c.weight*100)}% wt</div>
+            <div class="weight-component__bar">
+              <div class="weight-component__bar-fill" data-pct="${c.score}" style="background:${c.color};width:0%"></div>
+            </div>
+            <div class="weight-component__score">${c.score > 0 ? c.score + '%' : '—'}</div>
+          </div>
+        `).join('');
+      }
+
+      // Render module progress
+      const moduleProgressRoot = document.getElementById('module-progress-root');
+      if (moduleProgressRoot && window.FQ) {
+        moduleProgressRoot.innerHTML = window.FQ.MODULES.map(m => {
+          const userMod = window.FQ.USER_STATE.progress.modules[m.id] || { pct: 0, status: 'not-started' };
+          let badgeClass = 'badge--not-started';
+          if (userMod.status === 'in-progress') badgeClass = 'badge--in-progress';
+          if (userMod.status === 'completed') badgeClass = 'badge--completed';
+
+          return `
+            <div class="module-progress-item">
+              <span class="module-progress-item__icon">${m.icon}</span>
+              <div class="module-progress-item__info">
+                <div class="module-progress-item__name">${m.title}</div>
+              </div>
+              <div class="module-progress-item__bar progress-bar progress-bar--sapphire">
+                <div class="progress-bar__fill" data-pct="${userMod.pct}" style="width:0%"></div>
+              </div>
+              <span class="module-progress-item__pct num">${userMod.pct}%</span>
+              <span class="badge ${badgeClass}" style="margin-left:var(--sp-3)">${userMod.status}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Animate all elements
+      setTimeout(() => {
+        FQ_UI.animateProgressBars();
+      }, 100);
+    });
+  </script>
+</body>
+</html>

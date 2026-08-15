@@ -1,0 +1,160 @@
+{
+  "id": "L15",
+  "moduleId": "M2",
+  "order": 15,
+  "title": "Budgeting & Cash Flow Management",
+  "description": "Evaluate zero-based, cash envelope, and 50/30/20 budget frameworks. Structure personal balance sheets.",
+  "duration": 45,
+  "tags": [
+    "budgeting",
+    "cash-flow"
+  ],
+  "youtubeId": "3L2b0-x6X2A",
+  "steps": [
+    {
+      "stepId": 1,
+      "name": "Lesson Overview",
+      "type": "overview",
+      "description": "Welcome to Lesson 15: Budgeting & Cash Flow Management. This lesson will cover the foundational principles and practical applications of this topic.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 2,
+      "name": "Introduction",
+      "type": "intro",
+      "description": "An introduction to Budgeting & Cash Flow Management. We discuss the historical context and why mastering this subject is essential for modern finance.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 3,
+      "name": "Learning Objectives",
+      "type": "objectives",
+      "description": "1. Understand the core dynamics of Budgeting & Cash Flow Management.\n2. Learn to apply quantitative models in real-world scenarios.\n3. Evaluate case studies of historical success/failures.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 4,
+      "name": "Core Concepts",
+      "type": "concepts",
+      "description": "Here we dive deep into the fundamental theories, academic papers, and mathematical frameworks governing Budgeting & Cash Flow Management.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 5,
+      "name": "Key Terminologies",
+      "type": "terminology",
+      "description": "Key terms:\n- Term 1: Detailed definition.\n- Term 2: Detailed definition.\n- Term 3: Detailed definition.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 6,
+      "name": "Visual Explanation",
+      "type": "visual",
+      "description": "Interactive visual charts, SVG diagrams, and asset distribution graphs representing the core metrics.",
+      "visualConfig": {
+        "chartType": "pie",
+        "data": [
+          30,
+          20,
+          50
+        ],
+        "labels": [
+          "Segment A",
+          "Segment B",
+          "Segment C"
+        ]
+      }
+    },
+    {
+      "stepId": 7,
+      "name": "Real-World Examples",
+      "type": "examples",
+      "description": "Case example: Detailed walkthrough of a practical scenario showing these principles in action.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 8,
+      "name": "Case Study",
+      "type": "casestudy",
+      "description": "Analysis of a major company or historical event where these models were applied successfully or failed catastrophically.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 9,
+      "name": "Did You Know?",
+      "type": "didyouknow",
+      "description": "Interesting trivia, historical facts, or counter-intuitive statistics related to this subject.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 10,
+      "name": "AI Tutor Interaction",
+      "type": "ai-tutor",
+      "description": "Contextual guidance interface connecting you to the FingenIQ AI Tutor engine.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 11,
+      "name": "Knowledge Check",
+      "type": "kc",
+      "description": "Select the correct answer to reinforce your understanding.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 12,
+      "name": "Practice Activity",
+      "type": "practice",
+      "description": "Hands-on spreadsheet exercise or calculation sandbox to test your skills.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 13,
+      "name": "Lesson Summary",
+      "type": "summary",
+      "description": "A high-level synthesis of all concepts covered in this lesson.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 14,
+      "name": "Key Takeaways",
+      "type": "takeaways",
+      "description": "1. Core takeaway one.\n2. Core takeaway two.\n3. Core takeaway three.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 15,
+      "name": "Flashcards",
+      "type": "flashcards",
+      "description": "Interactive revision cards matching key terms to definitions.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 16,
+      "name": "Quiz Assessment",
+      "type": "quiz",
+      "description": "Standardised multiple-choice quiz for grading and tracking progress.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 17,
+      "name": "Assignment",
+      "type": "assignment",
+      "description": "Practical written assignment or model build to submit to the instructor.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 18,
+      "name": "Revision Notes",
+      "type": "revision",
+      "description": "Condensed bullet points for quick review before assessments.",
+      "visualConfig": null
+    },
+    {
+      "stepId": 19,
+      "name": "Next Lesson",
+      "type": "next",
+      "description": "Transition guidelines and prerequisites for the upcoming curriculum module.",
+      "visualConfig": null
+    }
+  ]
+}
