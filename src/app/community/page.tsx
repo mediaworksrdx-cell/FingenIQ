@@ -1,245 +1,302 @@
 'use client';
 import PublicNav from '@/components/nav/PublicNav';
 import Footer from '@/components/layout/Footer';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { communityLogoutAction } from '@/app/actions/communityAuthActions';
 
-const INITIAL_NOTES = [
-  {
-    id: 'RN001', author: 'Priya Sharma', initials: 'PS',
-    company: 'Reliance Industries', sector: 'Energy & Retail',
-    concept: 'Capital Structure & Valuation', rating: 'Highly Commended', score: 8.5,
-    title: 'Post-Jio Capital Restructuring & Free Cash Flow Analysis',
-    summary: "Evaluating RIL's strategic balance sheet shift post-Jio. EBITDA growth projections map against interest expense scales across three financial statement horizons.",
-    linkedCompanies: ['Jio Financial Services', 'HDFC Bank'],
-    date: '12 Jul 2026',
-  },
-  {
-    id: 'RN002', author: 'Aryan Gupta', initials: 'AG',
-    company: 'Tata Motors', sector: 'Automobile',
-    concept: 'Supply Chain Risk & Leverage', rating: 'Top Tier', score: 9.0,
-    title: 'EV Transition Dynamics: Capital Expenditure vs Debt Projections',
-    summary: "Analysing capital structure leverage parameters supporting Jaguar Land Rover's EV pivot and battery manufacturing capital allocation timelines.",
-    linkedCompanies: ['Tata Power', 'CRISIL'],
-    date: '8 Jul 2026',
-  },
-  {
-    id: 'RN003', author: 'Meera Iyer', initials: 'MI',
-    company: 'HDFC Bank', sector: 'Banking & NBFC',
-    concept: 'NIM Compression & Credit Risk', rating: 'Commended', score: 7.8,
-    title: 'Post-Merger NIM Compression Analysis: HDFC Ltd Integration',
-    summary: "A quantitative assessment of Net Interest Margin dynamics following the merger. Evaluates deposit mobilization vs loan book repricing over four quarters.",
-    linkedCompanies: ['ICICI Bank', 'Kotak Mahindra Bank'],
-    date: '3 Jul 2026',
-  },
-  {
-    id: 'RN004', author: 'Vikramaditya Roy', initials: 'VR',
-    company: 'Infosys', sector: 'Technology & IT',
-    concept: 'DCF Valuation & Disruption', rating: 'Top Tier', score: 9.2,
-    title: 'AI Services Integration Impact on IT Services Operating Margins',
-    summary: "Building a 3-stage DCF model accounting for Generative AI deflationary pressure on legacy IT maintenance contracts vs high-margin transformation deals.",
-    linkedCompanies: ['TCS', 'Wipro'],
-    date: '28 Jun 2026',
-  },
-];
+/* ─── TYPES ─────────────────────────────────────────────────────────────────── */
+type AuthUser = { userId: string; name: string; role: string };
+interface Article {
+  id: number;
+  slug: string;
+  title: string;
+  summary: string;
+  author_name: string;
+  author_bio: string;
+  sector: string;
+  concept: string;
+  score: number;
+  rating: string;
+  read_time: number;
+  claps: number;
+  created_at: string;
+}
 
-type User = {
-  name: string;
-  email: string;
-  picture: string;
-};
-
+/* ─── MAIN COMPONENT ────────────────────────────────────────────────────────── */
 export default function CommunityPage() {
-  const [sectorFilter, setSectorFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [sectorFilter, setSectorFilter] = useState('all');
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loadingArticles, setLoadingArticles] = useState(true);
 
   useEffect(() => {
-    async function checkSession() {
-      try {
-        const res = await fetch('/api/auth/community-session');
-        const data = await res.json();
-        if (data.success && data.user) {
-          setUser(data.user);
+    // Check auth session
+    fetch('/api/auth/session')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          setUser({ userId: d.userId, name: d.name || 'User', role: d.role });
         }
-      } catch (err) {
-        console.error('Failed to fetch session', err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    checkSession();
+      })
+      .catch(() => {});
+
+    // Fetch articles
+    fetch('/api/community/articles')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) setArticles(d.articles || []);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingArticles(false));
   }, []);
 
-  const filteredNotes = useMemo(() => {
-    return INITIAL_NOTES.filter(note => {
-      const matchSector = sectorFilter === 'all' || note.sector.toLowerCase().includes(sectorFilter.toLowerCase());
-      const matchQuery = !searchQuery || 
-        note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        note.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        note.concept.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredArticles = useMemo(() => {
+    return articles.filter(a => {
+      const matchSector = sectorFilter === 'all' || (a.sector && a.sector.toLowerCase().includes(sectorFilter.toLowerCase()));
+      const matchQuery = !searchQuery ||
+        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (a.author_name && a.author_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (a.sector && a.sector.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (a.concept && a.concept.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchSector && matchQuery;
     });
-  }, [sectorFilter, searchQuery]);
+  }, [sectorFilter, searchQuery, articles]);
 
+  // Dynamically build sector list from articles
+  const sectors = useMemo(() => {
+    const sectorSet = new Set<string>();
+    articles.forEach(a => {
+      if (a.sector) {
+        // Extract primary sector keyword
+        const primary = a.sector.split('&')[0].trim().split(' ')[0];
+        sectorSet.add(primary);
+      }
+    });
+    return ['all', ...Array.from(sectorSet)];
+  }, [articles]);
+
+  const canPost = user && (user.role === 'admin' || user.role === 'employee');
+
+  function getInitials(name: string) {
+    return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+  }
+
+  function formatDate(dateStr: string) {
+    try {
+      return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
+  }
+
+  /* ─── ARTICLE FEED VIEW (Medium-style) ──────────────────────────────────── */
   return (
     <div className="page-wrapper">
       <PublicNav />
-      
       <main className="page-main">
-        <div className="container py-8">
-          {!isLoading && !user ? (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 'var(--sp-12) var(--sp-4)',
-              background: 'var(--ink-950)',
-              borderRadius: 'var(--radius-lg)',
-              border: 'var(--border-subtle)',
-              textAlign: 'center',
-              marginTop: 'var(--sp-8)'
-            }}>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-3xl)', color: 'var(--ink-50)', marginBottom: 'var(--sp-4)' }}>
-                Institutional Research & Peer Community
-              </h1>
-              <p style={{ fontSize: 'var(--text-md)', color: 'var(--ink-300)', maxWidth: '600px', marginBottom: 'var(--sp-8)' }}>
-                Join our exclusive peer network to explore financial case studies, capital structure models, and corporate valuation notes published by certified FinGenIQ finance professionals.
-              </p>
-              <a
-                href="/api/auth/google"
-                className="btn"
-                style={{
-                  background: '#ffffff',
-                  color: '#3c4043',
-                  border: '1px solid #dadce0',
-                  borderRadius: '4px',
-                  padding: '12px 24px',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  textDecoration: 'none',
-                  boxShadow: '0 1px 2px 0 rgba(60,64,67,0.30), 0 1px 3px 1px rgba(60,64,67,0.15)'
-                }}
-              >
-                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9082c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/>
-                  <path d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9082-2.2581c-.8059.54-1.8368.859-3.0482.859-2.344 0-4.3282-1.5831-5.036-3.7104H.9574v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
-                  <path d="M3.964 10.71c-.18-.54-.2822-1.1168-.2822-1.71s.1023-1.17.2822-1.71V4.9582H.9574C.3477 6.1732 0 7.5477 0 9s.3477 2.8268.9574 4.0418l3.0066-2.3318z" fill="#FBBC05"/>
-                  <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.8918 11.426 0 9 0 5.4818 0 2.4382 2.0168.9574 4.9582L3.964 7.29C4.6718 5.1627 6.656 3.5795 9 3.5795z" fill="#EA4335"/>
-                </svg>
-                Sign in with Google
-              </a>
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: 'var(--sp-8) var(--sp-4)' }}>
+
+          {/* Community Header */}
+          <header style={{ marginBottom: 'var(--sp-8)', textAlign: 'center' }}>
+            <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 700, color: 'var(--brass-400)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginBottom: 'var(--sp-3)' }}>
+              FinGenIQ Community
             </div>
-          ) : user ? (
-            <>
-              {/* Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--sp-8)', flexWrap: 'wrap', gap: 'var(--sp-4)' }}>
-                <div>
-                  <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--brass-400)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginBottom: 'var(--sp-2)' }}>
-                    🌐 Institutional Peer Network
-                  </div>
-                  <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-3xl)', color: 'var(--ink-50)', marginBottom: 'var(--sp-3)' }}>
-                    Institutional Research & Peer Community
-                  </h1>
-                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-300)', maxWidth: '680px' }}>
-                    Explore peer-reviewed financial case studies, capital structure models, and corporate valuation notes published by certified FinGenIQ finance professionals.
-                  </p>
-                </div>
-                
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)', background: 'var(--ink-950)', padding: 'var(--sp-3)', borderRadius: 'var(--radius-md)', border: 'var(--border-subtle)' }}>
-                  <img src={user.picture} alt={user.name} style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
-                  <div>
-                    <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-50)' }}>{user.name}</div>
-                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)' }}>{user.email}</div>
-                  </div>
-                  <a href="/api/auth/community-logout" className="btn btn--outline btn--sm" style={{ marginLeft: 'var(--sp-2)' }}>
-                    Sign Out
-                  </a>
-                </div>
-              </div>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 5vw, 2.75rem)', color: 'var(--ink-50)', lineHeight: 'var(--leading-tight)', marginBottom: 'var(--sp-3)', letterSpacing: 'var(--tracking-tight)' }}>
+              Institutional Research & Peer Insights
+            </h1>
+            <p style={{ fontSize: 'var(--text-md)', color: 'var(--ink-400)', maxWidth: 560, margin: '0 auto', lineHeight: 'var(--leading-relaxed)' }}>
+              Peer-reviewed financial case studies, valuation models, and sector analysis published by certified professionals.
+            </p>
 
-              {/* Search & Filter Bar */}
-              <div className="card p-4" style={{ marginBottom: 'var(--sp-8)', display: 'flex', gap: 'var(--sp-4)', flexWrap: 'wrap', alignItems: 'center', background: 'rgba(255,255,255,0.02)' }}>
-                <div style={{ flex: 1, minWidth: '240px' }}>
-                  <input
-                    type="text"
-                    placeholder="Search research notes by company, title, or concept..."
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: 'var(--sp-3) var(--sp-4)',
-                      background: 'var(--ink-950)',
-                      border: 'var(--border-subtle)',
-                      borderRadius: 'var(--radius-md)',
-                      color: 'var(--ink-50)',
-                      fontSize: 'var(--text-sm)',
+            {/* User bar */}
+            <div style={{ marginTop: 'var(--sp-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--sp-3)', flexWrap: 'wrap' }}>
+              {user ? (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-3)', padding: 'var(--sp-2) var(--sp-4)', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-full)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, var(--navy-700), var(--navy-900))',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '10px', fontWeight: 700, color: 'var(--brass-400)',
+                  }}>
+                    {getInitials(user.name)}
+                  </div>
+                  <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)' }}>{user.name}</span>
+                  <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--brass-400)', padding: '2px 8px', background: 'rgba(184,150,46,0.08)', borderRadius: 'var(--radius-full)' }}>
+                    {user.role === 'community_member' ? 'Member' : user.role === 'learner' ? 'Learner' : user.role === 'admin' ? 'Admin' : user.role === 'employee' ? 'Staff' : user.role}
+                  </span>
+                  <button
+                    onClick={async () => {
+                      await communityLogoutAction();
+                      setUser(null);
                     }}
-                  />
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--ink-500)',
+                      fontSize: 'var(--text-2xs)',
+                      cursor: 'pointer',
+                      padding: '2px 4px',
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    Sign Out
+                  </button>
                 </div>
+              ) : (
+                <Link
+                  href="/community/login?redirect=/community"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '8px',
+                    padding: '8px 18px',
+                    background: 'linear-gradient(135deg, #8F6E1C 0%, #B8962E 100%)',
+                    color: '#060A16', border: '1px solid #CEAE56',
+                    borderRadius: '0.5rem', fontSize: '13px', fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Sign In / Register
+                </Link>
+              )}
 
-                <div style={{ display: 'flex', gap: 'var(--sp-2)' }}>
-                  {['all', 'Energy', 'Automobile', 'Banking', 'Technology'].map(sec => (
-                    <button
-                      key={sec}
-                      onClick={() => setSectorFilter(sec)}
-                      className={`btn btn--sm ${sectorFilter === sec ? 'btn--primary' : 'btn--outline'}`}
-                      style={{ textTransform: 'capitalize' }}
-                    >
-                      {sec === 'all' ? 'All Sectors' : sec}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {canPost && (
+                <Link
+                  href="/community/new"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    padding: '8px 18px',
+                    background: 'rgba(184,150,46,0.12)',
+                    color: 'var(--brass-400)',
+                    border: '1px solid rgba(184,150,46,0.25)',
+                    borderRadius: '0.5rem', fontSize: '13px', fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
+                  ✍️ New Article
+                </Link>
+              )}
+            </div>
+          </header>
 
-              {/* Research Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 'var(--sp-6)', marginBottom: 'var(--sp-12)' }}>
-                {filteredNotes.map(note => (
-                  <div key={note.id} className="card p-6" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--sp-3)' }}>
-                      <span className="badge badge--completed" style={{ fontSize: '10px' }}>
-                        {note.sector}
-                      </span>
-                      <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--ink-500)' }}>
-                        {note.date}
-                      </span>
+          {/* Search & Sector Filters */}
+          <div style={{ display: 'flex', gap: 'var(--sp-3)', flexWrap: 'wrap', alignItems: 'center', marginBottom: 'var(--sp-8)', paddingBottom: 'var(--sp-6)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ flex: 1, minWidth: 220 }}>
+              <input
+                type="text"
+                placeholder="Search articles..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{ width: '100%', padding: '10px 16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-full)', color: 'var(--ink-100)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-sans)', outline: 'none', transition: 'border-color 0.2s' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 'var(--sp-1)', flexWrap: 'wrap' }}>
+              {sectors.map(s => (
+                <button
+                  key={s}
+                  onClick={() => setSectorFilter(s)}
+                  style={{
+                    padding: '6px 16px',
+                    borderRadius: 'var(--radius-full)',
+                    border: 'none',
+                    background: sectorFilter === s ? 'var(--ink-100)' : 'transparent',
+                    color: sectorFilter === s ? 'var(--ink-950)' : 'var(--ink-400)',
+                    fontSize: 'var(--text-xs)',
+                    fontWeight: sectorFilter === s ? 600 : 400,
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-sans)',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {s === 'all' ? 'All' : s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Loading state */}
+          {loadingArticles && (
+            <div style={{ textAlign: 'center', padding: 'var(--sp-12) 0' }}>
+              <p style={{ fontSize: 'var(--text-md)', color: 'var(--ink-500)' }}>Loading articles...</p>
+            </div>
+          )}
+
+          {/* Article Feed */}
+          {!loadingArticles && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-8)' }}>
+              {filteredArticles.map((article, idx) => (
+                <Link
+                  key={article.id}
+                  href={`/community/${article.slug}`}
+                  style={{
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    display: 'block',
+                    paddingBottom: 'var(--sp-8)',
+                    borderBottom: idx < filteredArticles.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                    transition: 'opacity 0.2s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                >
+                  {/* Author line */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg, var(--navy-700), var(--navy-900))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: 'var(--brass-400)' }}>
+                      {getInitials(article.author_name)}
                     </div>
-
-                    <h3 style={{ fontSize: 'var(--text-md)', fontWeight: 600, color: 'var(--ink-50)', marginBottom: 'var(--sp-2)', lineHeight: 'var(--leading-snug)' }}>
-                      {note.title}
-                    </h3>
-
-                    <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--sp-4)', flex: 1 }}>
-                      {note.summary}
-                    </p>
-
-                    <div style={{ paddingTop: 'var(--sp-4)', borderTop: 'var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
-                        <div className="nav__avatar" style={{ width: 28, height: 28, fontSize: '10px' }}>
-                          {note.initials}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--ink-100)' }}>{note.author}</div>
-                          <div style={{ fontSize: '10px', color: 'var(--ink-500)' }}>{note.company}</div>
-                        </div>
-                      </div>
-
-                      <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--brass-400)' }}>
-                        ★ {note.score}/10
-                      </span>
-                    </div>
+                    <span style={{ fontSize: 'var(--text-xs)', fontWeight: 500, color: 'var(--ink-300)' }}>{article.author_name}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--ink-600)' }}>·</span>
+                    <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>{formatDate(article.created_at)}</span>
                   </div>
-                ))}
-              </div>
-            </>
-          ) : null}
+
+                  {/* Title & summary */}
+                  <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', color: 'var(--ink-50)', lineHeight: 'var(--leading-snug)', marginBottom: 'var(--sp-2)', letterSpacing: 'var(--tracking-tight)' }}>
+                    {article.title}
+                  </h2>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--sp-4)', maxWidth: 640 }}>
+                    {article.summary}
+                  </p>
+
+                  {/* Bottom meta */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)', flexWrap: 'wrap' }}>
+                    {article.sector && (
+                      <span style={{ fontSize: '11px', padding: '3px 10px', borderRadius: 'var(--radius-full)', background: 'rgba(255,255,255,0.05)', color: 'var(--ink-400)' }}>{article.sector}</span>
+                    )}
+                    <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>{article.read_time} min read</span>
+                    {article.score > 0 && (
+                      <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>★ {article.score}/10</span>
+                    )}
+                    <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>👏 {article.claps}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {!loadingArticles && filteredArticles.length === 0 && (
+            <div style={{ textAlign: 'center', padding: 'var(--sp-12) 0' }}>
+              <p style={{ fontSize: 'var(--text-md)', color: 'var(--ink-500)', marginBottom: 'var(--sp-4)' }}>
+                {articles.length === 0 ? 'No articles published yet.' : 'No articles found matching your search.'}
+              </p>
+              {canPost && articles.length === 0 && (
+                <Link
+                  href="/community/new"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    padding: '10px 24px',
+                    background: 'linear-gradient(135deg, #8F6E1C 0%, #B8962E 100%)',
+                    color: '#060A16', border: '1px solid #CEAE56',
+                    borderRadius: '0.5rem', fontSize: '14px', fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
+                  ✍️ Write the First Article
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </main>
-
       <Footer />
     </div>
   );

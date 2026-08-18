@@ -6,17 +6,34 @@ export const config = {
     '/dashboard/:path*',
     '/lessons/:path*',
     '/lesson-player/:path*',
+    '/assessments/:path*',
     '/capstone/:path*',
     '/certification/:path*',
     '/marketplace/:path*',
     '/admin/:path*',
+    '/community/new',
+    '/community/edit/:path*',
   ],
 };
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // 1. Allow public routes
+  if (pathname.startsWith('/certification/verify') || pathname === '/admin/login') {
+    return NextResponse.next();
+  }
+
+  // 2. Enforce platform session token check
   const token = request.cookies.get('session_token')?.value;
 
   if (!token) {
+    // For community routes, redirect with ?redirect= to the community login page
+    if (pathname.startsWith('/community/')) {
+      const redirectUrl = new URL('/community/login', request.url);
+      redirectUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
@@ -42,8 +59,7 @@ export async function middleware(request: NextRequest) {
       return res;
     }
 
-    const { role, mustReset, userId } = auth;
-    const pathname = request.nextUrl.pathname;
+    const { role, mustReset } = auth;
 
     // Role-Based Authorization Checks
     // 1. /admin/* -> admin only
@@ -56,8 +72,14 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // 3. /dashboard, /lessons, /lesson-player, /capstone, /certification -> learner or admin
-    const learnerRoutes = ['/dashboard', '/lessons', '/lesson-player', '/capstone', '/certification'];
+    // 3. /community/new and /community/edit/* -> admin or employee only
+    if ((pathname === '/community/new' || pathname.startsWith('/community/edit/')) && 
+        role !== 'admin' && role !== 'employee') {
+      return NextResponse.redirect(new URL('/community', request.url));
+    }
+
+    // 4. /dashboard, /lessons, /lesson-player, /assessments, /capstone, /certification -> learner or admin
+    const learnerRoutes = ['/dashboard', '/lessons', '/lesson-player', '/assessments', '/capstone', '/certification'];
     if (learnerRoutes.some(route => pathname.startsWith(route)) && role !== 'learner' && role !== 'admin') {
       return NextResponse.redirect(new URL('/login', request.url));
     }

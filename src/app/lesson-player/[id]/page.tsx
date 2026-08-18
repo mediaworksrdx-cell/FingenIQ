@@ -33,9 +33,12 @@ export default function LessonPlayerComponent() {
   const router = useRouter();
   const lessonId = params.id || 'L1';
   
+  const [dynamicLesson, setDynamicLesson] = useState<any>(null);
+
   const lesson = useMemo(() => {
+    if (dynamicLesson) return dynamicLesson;
     return LESSONS.find(l => l.id === lessonId) || LESSONS[0];
-  }, [lessonId]);
+  }, [lessonId, dynamicLesson]);
 
   const module = useMemo(() => {
     return MODULES.find(m => m.id === lesson.moduleId) || MODULES[0];
@@ -47,8 +50,30 @@ export default function LessonPlayerComponent() {
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [selectedRadio, setSelectedRadio] = useState<number | null>(null);
   const [messages, setMessages] = useState<{ sender: 'user' | 'ai'; text: string; time: string }[]>([]);
+  const [allowedModules, setAllowedModules] = useState<string[] | null>(null);
 
   useEffect(() => {
+    // Fetch real-time lesson DB overrides
+    fetch(`/api/lesson/${lessonId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.lesson) {
+          setDynamicLesson(data.lesson);
+        }
+      })
+      .catch(() => {});
+
+    fetch('/api/auth/session')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.allowedModules) {
+          setAllowedModules(data.allowedModules);
+        } else {
+          setAllowedModules(['ALL']);
+        }
+      })
+      .catch(() => setAllowedModules(['ALL']));
+
     fetchUserProgress().then(res => {
       if (res.success && res.progressMap && res.progressMap[lessonId]) {
         const savedStep = res.progressMap[lessonId].currentStep || 0;
@@ -119,6 +144,33 @@ export default function LessonPlayerComponent() {
   };
 
   const progressPct = Math.round(((currentStep + 1) / LESSON_STEPS.length) * 100);
+
+  if (allowedModules && !allowedModules.includes('ALL') && !allowedModules.includes(module.id)) {
+    return (
+      <div className="platform" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <PlatformNav />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', marginTop: 'var(--nav-height)' }}>
+          <div className="card p-8" style={{ textAlign: 'center', maxWidth: 420 }}>
+            <div style={{ fontSize: '3rem', marginBottom: 'var(--sp-4)' }}>🔒</div>
+            <h2 style={{ color: 'var(--ink-50)', marginBottom: 'var(--sp-4)', fontFamily: 'var(--font-serif)', fontSize: '1.5rem' }}>Module Not Included</h2>
+            <p style={{ color: 'var(--ink-200)', marginBottom: 'var(--sp-6)', lineHeight: '1.6' }}>This module is not included in your current package. Upgrade your package to access these lessons.</p>
+            <button className="btn btn--primary" onClick={() => router.push('/lessons')} style={{ width: '100%', justifyContent: 'center' }}>← Back to Curriculum</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!allowedModules) {
+    return (
+      <div className="platform" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <PlatformNav />
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 'var(--nav-height)' }}>
+          <div style={{ color: 'var(--ink-300)', fontSize: 'var(--text-sm)' }}>Loading lesson...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="platform" style={{ overflow: 'hidden', height: '100vh' }}>

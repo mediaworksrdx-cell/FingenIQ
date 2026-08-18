@@ -42,6 +42,9 @@ async function setSessionCookie(userId: string) {
 export async function loginAction(prevState: any, formData: FormData) {
   const email = (formData.get('email') as string || '').trim().toLowerCase();
   const password = formData.get('password') as string || '';
+  const loginCategory = formData.get('loginCategory') as string || 'b2c';
+  const businessEntityId = formData.get('businessEntityId') as string || null;
+  const redirectTo = formData.get('redirectTo') as string || '';
   
   const headersList = await headers();
   const clientIp = headersList.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
@@ -61,6 +64,14 @@ export async function loginAction(prevState: any, formData: FormData) {
   if (!user) {
     recordIpAttempt(clientIp, true);
     return { success: false, error: 'Invalid credentials.' };
+  }
+
+  // Validate businessEntityId for B2B/B2B2C
+  if (loginCategory === 'b2b' || loginCategory === 'b2b2c') {
+    if (!businessEntityId || user.businessEntityId !== businessEntityId) {
+      recordIpAttempt(clientIp, true);
+      return { success: false, error: 'Invalid credentials.' };
+    }
   }
 
   // 3. Status blocks
@@ -89,20 +100,20 @@ export async function loginAction(prevState: any, formData: FormData) {
     return { success: false, error: 'Invalid credentials.' };
   }
 
-  // Check account expiration with 3-day grace period
+  // Check account expiration
   if (user.credentialExpiresAt) {
     const expiresTime = new Date(user.credentialExpiresAt).getTime();
-    const graceTime = expiresTime + 3 * 24 * 60 * 60 * 1000; // 3 days grace
     const now = Date.now();
-    if (now > graceTime) {
+    if (now > expiresTime) {
       db.prepare("UPDATE users SET accountStatus = 'expired' WHERE id = ?").run(user.id);
-      logAudit('ACCOUNT_EXPIRED_GRACE', 'SYSTEM', user.id, { status: user.accountStatus }, { status: 'expired' });
-      return { success: false, error: 'Your access period has expired. Contact your administrator to renew.' };
+      logAudit('ACCOUNT_EXPIRED', 'SYSTEM', user.id, { status: user.accountStatus }, { status: 'expired' });
+      return { success: false, error: 'Your membership has expired. Contact admin to renew.' };
     }
   }
 
   // 5. Success reset login parameters
-  db.prepare('UPDATE users SET failedLoginAttempts = 0 WHERE id = ?').run(user.id);
+  const nowStr = new Date().toISOString();
+  db.prepare('UPDATE users SET failedLoginAttempts = 0, loginTimestamp = ? WHERE id = ?').run(nowStr, user.id);
   recordIpAttempt(clientIp, false);
 
   if (user.accountStatus === 'pending_activation') {
@@ -125,6 +136,11 @@ export async function loginAction(prevState: any, formData: FormData) {
   let redirectUrl = '/dashboard';
   if (user.role === 'admin') redirectUrl = '/admin/credentials';
   if (user.role === 'employer') redirectUrl = '/marketplace';
+
+  // If a specific redirect was requested, use it (validate it's a relative path)
+  if (redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
+    redirectUrl = redirectTo;
+  }
 
   return { success: true, redirectUrl, mustReset: false };
 }

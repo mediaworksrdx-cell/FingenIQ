@@ -18,8 +18,20 @@ export default function Lessons() {
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [collapsedModules, setCollapsedModules] = useState<string[]>([]);
   const [progressMap, setProgressMap] = useState<Record<string, any>>({});
+  const [allowedModules, setAllowedModules] = useState<string[] | null>(null);
 
   useEffect(() => {
+    fetch('/api/auth/session')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.allowedModules) {
+          setAllowedModules(data.allowedModules);
+        } else {
+          setAllowedModules(['ALL']);
+        }
+      })
+      .catch(() => setAllowedModules(['ALL']));
+
     fetchUserProgress().then(res => {
       if (res.success && res.progressMap) {
         setProgressMap(res.progressMap);
@@ -187,8 +199,42 @@ export default function Lessons() {
                   const pct = Math.round((completedCount / mLessons.length) * 100);
                   const color = MODULE_COLORS[mi];
 
+                  const isAllowed = allowedModules ? (allowedModules.includes('ALL') || allowedModules.includes(m.id)) : false;
+
                   return (
-                    <div key={m.id} className="module-card" role="region" aria-labelledby={`module-${m.id}-heading`}>
+                    <div key={m.id} className="module-card" role="region" aria-labelledby={`module-${m.id}-heading`} style={{ position: 'relative' }}>
+                      {allowedModules !== null && !isAllowed && (
+                        <div style={{
+                          position: 'absolute',
+                          top: 0, left: 0, right: 0, bottom: 0,
+                          backgroundColor: 'rgba(10, 15, 28, 0.85)',
+                          backdropFilter: 'blur(4px)',
+                          zIndex: 10,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 'var(--radius-xl)'
+                        }}>
+                          <div style={{ fontSize: '2.5rem', marginBottom: 'var(--sp-4)' }}>🔒</div>
+                          <div style={{ color: 'var(--ink-50)', fontWeight: 600, fontSize: 'var(--text-lg)' }}>Upgrade your package</div>
+                          <div style={{ color: 'var(--ink-200)', fontSize: 'var(--text-sm)', marginTop: 'var(--sp-2)' }}>to access this module</div>
+                        </div>
+                      )}
+                      {allowedModules === null && (
+                        <div style={{
+                          position: 'absolute',
+                          top: 0, left: 0, right: 0, bottom: 0,
+                          backgroundColor: 'rgba(10, 15, 28, 0.3)',
+                          zIndex: 10,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 'var(--radius-xl)'
+                        }}>
+                          <div style={{ color: 'var(--ink-300)', fontSize: 'var(--text-sm)' }}>Loading access...</div>
+                        </div>
+                      )}
                       {/* Module Header */}
                       <div
                         className="module-card__header"

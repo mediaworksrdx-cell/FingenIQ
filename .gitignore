@@ -48,4 +48,5 @@ next-env.d.ts
 *.sqlite
 *.sqlite-journal
 *.zip
+*.tar.gz
 fingen_update.zip

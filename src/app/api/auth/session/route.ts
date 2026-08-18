@@ -24,7 +24,17 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Fetch full user status & role
-    const user = db.prepare('SELECT role, accountStatus, credentialExpiresAt, mustResetPassword FROM users WHERE id = ?').get(session.userId) as any;
+    const user = db.prepare(`
+      SELECT 
+        u.name, u.role, u.accountStatus, u.credentialExpiresAt, u.mustResetPassword,
+        u.loginCategory, u.businessEntityId, u.packageId,
+        p.name as packageName, p.allowedModules,
+        b.name as businessEntityName
+      FROM users u
+      LEFT JOIN packages p ON u.packageId = p.id
+      LEFT JOIN business_entities b ON u.businessEntityId = b.id
+      WHERE u.id = ?
+    `).get(session.userId) as any;
 
     if (!user) {
       return NextResponse.json({ success: false, error: 'User not found' });
@@ -45,6 +55,16 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const packageData = {
+      loginCategory: user.loginCategory || 'b2c',
+      businessEntityId: user.businessEntityId,
+      businessEntityName: user.businessEntityName,
+      packageId: user.packageId,
+      packageName: user.packageName,
+      allowedModules: user.role === 'admin' ? ['ALL'] : (user.allowedModules ? JSON.parse(user.allowedModules) : ['ALL']),
+      packageExpiresAt: user.credentialExpiresAt
+    };
+
     // Force reset check
     if (user.mustResetPassword === 1) {
       // Return must reset parameter
@@ -52,15 +72,18 @@ export async function GET(request: NextRequest) {
         success: true,
         userId: session.userId,
         role: user.role,
-        mustReset: true
+        mustReset: true,
+        ...packageData
       });
     }
 
     return NextResponse.json({
       success: true,
       userId: session.userId,
+      name: user.name,
       role: user.role,
-      mustReset: false
+      mustReset: false,
+      ...packageData
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

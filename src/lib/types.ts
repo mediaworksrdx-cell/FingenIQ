@@ -12,6 +12,7 @@ export type CapstoneTrack = 'A' | 'B';
 export interface Module {
   id: string;
   order: number;
+  number?: number;
   icon: string;
   title: string;
   subtitle: string;
@@ -26,14 +27,21 @@ export interface Lesson {
   moduleId: string;
   order: number;
   title: string;
+  subtitle?: string;
+  level?: string;
+  summary?: string;
   description: string;
-  duration: number; // minutes
+  duration: number | string; // minutes or formatted string
   status: LessonStatus;
   score: number | null;
   tags: string[];
   youtubeId?: string;
   steps?: any[];
   pdfPath?: string;
+  contentMarkdown?: string;
+  keyTakeaways?: string[];
+  quiz?: any[];
+  simulatorJson?: string;
 }
 
 export interface LessonStep {
@@ -177,4 +185,40 @@ export interface FQData {
   JOB_POSTINGS: JobPosting[];
   SEBI_MILESTONES: SebiMilestone[];
   EQUIVALENCE_MAP: EquivalenceEntry[];
+}
+
+// ── Community Types ──────────────────────────────────────────────────────────
+
+export type UserRole = 'learner' | 'employer' | 'admin' | 'employee' | 'community_member';
+
+export interface CommunityArticle {
+  id: number;
+  slug: string;
+  title: string;
+  summary: string;
+  body: string;
+  author_id: string;
+  author_name: string;
+  author_bio: string;
+  company: string;
+  sector: string;
+  concept: string;
+  rating: string;
+  score: number;
+  read_time: number;
+  claps: number;
+  linked_companies: string; // JSON array string
+  published: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CommunityComment {
+  id: number;
+  article_id: number;
+  user_id: string;
+  user_name: string;
+  body: string;
+  likes: number;
+  created_at: string;
 }

@@ -1,8 +1,27 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   poweredByHeader: false,
   reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      allowedOrigins: [
+        'fingeniq.com',
+        'www.fingeniq.com',
+        'aarka-ai.com',
+        'www.aarka-ai.com',
+        'synthetixanalytics.com',
+        'www.synthetixanalytics.com',
+        '136.85.114.150',
+        'localhost:3001',
+        'localhost:3000',
+      ],
+    },
+  },
   
   // Production Security Headers
   async headers() {

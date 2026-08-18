@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 const PUBLIC_LINKS = [
   { href: '/', label: 'Home' },
+  { href: '/aarkaai', label: 'Aarkaa AI' },
   { href: '/community', label: 'Community' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },

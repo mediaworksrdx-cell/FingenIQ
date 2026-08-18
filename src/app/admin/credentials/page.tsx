@@ -1,50 +1,200 @@
 'use client';
 
-import { useActionState, useState, useEffect, useTransition } from 'react';
-import { createCredentialAction, toggleAccountStatusAction, forceResetAction, renewCredentialAction, updateLessonResourcesAction } from '@/app/actions/adminActions';
+import React, { useState, useEffect, useTransition, useMemo } from 'react';
+import { 
+  createCredentialAction, bulkCreateCredentialsAction, toggleAccountStatusAction, forceResetAction, 
+  renewCredentialAction, batchRenewCredentialsAction, createBusinessEntityAction, toggleEntityStatusAction, 
+  createPackageAction, togglePackageStatusAction, saveLessonFullContentAction, 
+  adminUpdateCommunityArticleAction, adminDeleteCommunityArticleAction, adminDeleteCommentAction,
+  saveAiKnowledgeDocAction, toggleAiKnowledgeDocAction, deleteAiKnowledgeDocAction, updateAiSettingAction,
+  adminResetUserProgressAction, BulkUserRow
+} from '@/app/actions/adminActions';
 import { logoutAction } from '@/app/actions/authActions';
-import { LESSONS } from '@/lib/data';
+import { LESSONS, MODULES } from '@/lib/data';
 import Link from 'next/link';
 
 export default function AdminCredentials() {
   const [sessionToken, setSessionToken] = useState<string>('');
-  const [selectedLessonId, setSelectedLessonId] = useState('');
-  const [selectedYoutubeId, setSelectedYoutubeId] = useState('');
-  const [selectedPdfPath, setSelectedPdfPath] = useState('');
-  const [stats, setStats] = useState({ total: 0, pending: 0, active: 0, locked: 0, disabled: 0, expiring: 0, expired: 0 });
+  const [stats, setStats] = useState({
+    total: 0, pending: 0, active: 0, locked: 0, disabled: 0, expiring: 0, expired: 0,
+    certifiedCount: 0, cohortAvgScore: 0, distinctionCount: 0, meritCount: 0, passCount: 0, needsSupportCount: 0
+  });
+  const [moduleStats, setModuleStats] = useState<Record<string, { completedCount: number; totalScore: number; gradedCount: number }>>({});
   const [usersList, setUsersList] = useState<any[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [entitiesList, setEntitiesList] = useState<any[]>([]);
+  const [packagesList, setPackagesList] = useState<any[]>([]);
+  const [articlesList, setArticlesList] = useState<any[]>([]);
+  const [commentsList, setCommentsList] = useState<any[]>([]);
+  const [lessonOverrides, setLessonOverrides] = useState<any[]>([]);
+  const [aiKnowledgeDocs, setAiKnowledgeDocs] = useState<any[]>([]);
+  const [aiSettings, setAiSettings] = useState<any[]>([]);
+  
+  // Navigation Tabs
+  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'aarkaa' | 'community' | 'entities' | 'logs'>('analytics');
+  const [selectedLoginCategory, setSelectedLoginCategory] = useState('b2c');
 
-  // Renewal state
+  // ─── USER ROSTER FILTERS & SEARCH ─────────────────────────────────────────
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [userRoleFilter, setUserRoleFilter] = useState('all');
+  const [userStatusFilter, setUserStatusFilter] = useState('all');
+  const [userEntityFilter, setUserEntityFilter] = useState('all');
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+
+  // ─── BULK CSV PROVISIONING MODAL STATE ────────────────────────────────────
+  const [showBulkCsvModal, setShowBulkCsvModal] = useState(false);
+  const [rawCsvText, setRawCsvText] = useState('');
+  const [parsedCsvRows, setParsedCsvRows] = useState<BulkUserRow[]>([]);
+  const [bulkImportResult, setBulkImportResult] = useState<any | null>(null);
+
+  // ─── LESSON STUDIO STATE ───────────────────────────────────────────────────
+  const [selectedModuleId, setSelectedModuleId] = useState('M1');
+  const [selectedLessonId, setSelectedLessonId] = useState(LESSONS[0]?.id || 'L1');
+  const [editorViewMode, setEditorViewMode] = useState<'split' | 'edit' | 'preview'>('split');
+  
+  // Lesson Form fields
+  const [lessonTitle, setLessonTitle] = useState('');
+  const [lessonSubtitle, setLessonSubtitle] = useState('');
+  const [lessonDuration, setLessonDuration] = useState('45 min');
+  const [lessonLevel, setLessonLevel] = useState('Foundational');
+  const [lessonSummary, setLessonSummary] = useState('');
+  const [lessonContentMarkdown, setLessonContentMarkdown] = useState('');
+  const [lessonYoutubeId, setLessonYoutubeId] = useState('');
+  const [lessonPdfPath, setLessonPdfPath] = useState('');
+  const [keyTakeaways, setKeyTakeaways] = useState<string[]>([]);
+  const [newTakeawayInput, setNewTakeawayInput] = useState('');
+  
+  // Simulator Parameters State
+  const [simPreset, setSimPreset] = useState<'dcf' | 'lbo' | 'multiples' | 'custom'>('dcf');
+  const [simWacc, setSimWacc] = useState(9.5);
+  const [simGrowth, setSimGrowth] = useState(2.5);
+  const [simExitMultiple, setSimExitMultiple] = useState(12.0);
+  const [simTaxRate, setSimTaxRate] = useState(25.0);
+  const [simDebtRatio, setSimDebtRatio] = useState(60.0);
+  const [customSimJson, setCustomSimJson] = useState('{}');
+
+  // Quiz Builder State
+  const [lessonQuiz, setLessonQuiz] = useState<any[]>([
+    {
+      question: 'What is the primary objective of this financial model?',
+      options: ['Determine intrinsic equity value', 'Calculate sales commission', 'Schedule audit meetings', 'Estimate payroll taxes'],
+      correctAnswer: 0,
+      explanation: 'Discounted Cash Flow determines the intrinsic enterprise and equity value of a firm based on free cash flows.'
+    }
+  ]);
+  const [lessonSaveStatus, setLessonSaveStatus] = useState<string | null>(null);
+
+  // ─── AARKAA AI STUDIO STATE ────────────────────────────────────────────────
+  const [selectedPromptMode, setSelectedPromptMode] = useState('institutional');
+  const [newDocTitle, setNewDocTitle] = useState('');
+  const [newDocCategory, setNewDocCategory] = useState('Valuation Standards');
+  const [newDocContent, setNewDocContent] = useState('');
+  const [editingDocId, setEditingDocId] = useState<string | null>(null);
+  const [aiTestPrompt, setAiTestPrompt] = useState('How does net working capital impact free cash flow to firm?');
+  const [aiTestResponse, setAiTestResponse] = useState<string | null>(null);
+  const [isAiTesting, setIsAiTesting] = useState(false);
+
+  // ─── COMMUNITY MODERATION STATE ───────────────────────────────────────────
+  const [editingArticle, setEditingArticle] = useState<any | null>(null);
+  const [editArticleTitle, setEditArticleTitle] = useState('');
+  const [editArticleContent, setEditArticleContent] = useState('');
+  const [editArticleCategory, setEditArticleCategory] = useState('Valuation');
+
+  // ─── RENEWAL STATE ────────────────────────────────────────────────────────
   const [renewUserId, setRenewUserId] = useState<string | null>(null);
   const [renewPeriod, setRenewPeriod] = useState<'monthly' | 'quarterly' | 'half_yearly' | 'annual'>('monthly');
 
-  const [createState, createFormAction, isCreatePending] = useActionState(async (state: any, formData: FormData) => {
-    const res = await createCredentialAction(sessionToken, formData);
-    if (res.success) {
-      fetchDashboardData();
-    }
-    return res;
-  }, null);
-
   const [isPending, startTransition] = useTransition();
 
+  // Load lesson data into editor when selectedLessonId changes
+  useEffect(() => {
+    const defaultLesson = LESSONS.find(l => l.id === selectedLessonId);
+    const override = lessonOverrides.find(o => o.lessonId === selectedLessonId);
+
+    if (override) {
+      setLessonTitle(override.title || defaultLesson?.title || '');
+      setLessonSubtitle(override.subtitle || defaultLesson?.subtitle || '');
+      setLessonDuration(String(override.duration || defaultLesson?.duration || '45 min'));
+      setLessonLevel(override.level || defaultLesson?.level || 'Foundational');
+      setLessonSummary(override.summary || defaultLesson?.summary || '');
+      setLessonContentMarkdown(override.contentMarkdown || defaultLesson?.contentMarkdown || '');
+      setLessonYoutubeId(override.youtubeId || defaultLesson?.youtubeId || '');
+      setLessonPdfPath(override.pdfPath || defaultLesson?.pdfPath || '');
+      
+      try {
+        if (override.keyTakeawaysJson) {
+          setKeyTakeaways(JSON.parse(override.keyTakeawaysJson));
+        } else {
+          setKeyTakeaways(defaultLesson?.keyTakeaways || []);
+        }
+      } catch {
+        setKeyTakeaways([]);
+      }
+
+      try {
+        if (override.simulatorJson) {
+          const simObj = JSON.parse(override.simulatorJson);
+          setCustomSimJson(override.simulatorJson);
+          if (simObj.wacc !== undefined) setSimWacc(simObj.wacc);
+          if (simObj.terminalGrowth !== undefined) setSimGrowth(simObj.terminalGrowth);
+          if (simObj.exitMultiple !== undefined) setSimExitMultiple(simObj.exitMultiple);
+          if (simObj.taxRate !== undefined) setSimTaxRate(simObj.taxRate);
+          if (simObj.debtRatio !== undefined) setSimDebtRatio(simObj.debtRatio);
+        }
+      } catch {
+        setCustomSimJson('{}');
+      }
+
+      try {
+        if (override.quizJson) {
+          setLessonQuiz(JSON.parse(override.quizJson));
+        } else {
+          setLessonQuiz(defaultLesson?.quiz || []);
+        }
+      } catch {
+        setLessonQuiz([]);
+      }
+    } else if (defaultLesson) {
+      setLessonTitle(defaultLesson.title);
+      setLessonSubtitle(defaultLesson.subtitle || '');
+      setLessonDuration(String(defaultLesson.duration || '45 min'));
+      setLessonLevel(defaultLesson.level || 'Foundational');
+      setLessonSummary(defaultLesson.summary || '');
+      setLessonContentMarkdown(defaultLesson.contentMarkdown || '');
+      setLessonYoutubeId(defaultLesson.youtubeId || '');
+      setLessonPdfPath(defaultLesson.pdfPath || '');
+      setKeyTakeaways(defaultLesson.keyTakeaways || []);
+      setLessonQuiz(defaultLesson.quiz || []);
+      setCustomSimJson('{}');
+    }
+    setLessonSaveStatus(null);
+  }, [selectedLessonId, lessonOverrides]);
+
   const fetchDashboardData = () => {
-    // Read session token from cookie
     const token = document.cookie
       .split('; ')
       .find(row => row.startsWith('session_token='))
       ?.split('=')[1];
     if (token) setSessionToken(token);
 
-    // Call API helper to load stats, user tables, and audit logs statefully
     fetch('/api/admin/data')
       .then(r => r.json())
       .then(data => {
         if (data.success) {
           setStats(data.stats);
-          setUsersList(data.users);
-          setAuditLogs(data.auditLogs);
+          setModuleStats(data.moduleStats || {});
+          setUsersList(data.users || []);
+          setAuditLogs(data.auditLogs || []);
+          setEntitiesList(data.entities || []);
+          setPackagesList(data.packages || []);
+          setArticlesList(data.articles || []);
+          setCommentsList(data.comments || []);
+          setLessonOverrides(data.lessonOverrides || []);
+          setAiKnowledgeDocs(data.aiKnowledgeDocs || []);
+          setAiSettings(data.aiSettings || []);
+
+          const modeSetting = (data.aiSettings || []).find((s: any) => s.settingKey === 'system_prompt_mode');
+          if (modeSetting) setSelectedPromptMode(modeSetting.settingValue);
         }
       });
   };
@@ -53,435 +203,1711 @@ export default function AdminCredentials() {
     fetchDashboardData();
   }, []);
 
-  const handleToggleStatus = (userId: string, actionType: 'lock' | 'unlock' | 'disable' | 'enable') => {
-    startTransition(async () => {
-      const res = await toggleAccountStatusAction(sessionToken, userId, actionType);
-      if (res.success) fetchDashboardData();
-      else alert(res.error);
+  // Filtered Users List with Instant Search & Multi-Criteria Filtering
+  const filteredUsers = useMemo(() => {
+    return usersList.filter(u => {
+      const matchesSearch = !userSearchQuery || 
+        u.name?.toLowerCase().includes(userSearchQuery.toLowerCase()) || 
+        u.email?.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+        u.id?.toLowerCase().includes(userSearchQuery.toLowerCase());
+      
+      const matchesRole = userRoleFilter === 'all' || u.role === userRoleFilter;
+      const matchesStatus = userStatusFilter === 'all' || (
+        userStatusFilter === 'expiring' ? (u.credentialExpiresAt && (new Date(u.credentialExpiresAt).getTime() - Date.now()) <= 14 * 86400000 && (new Date(u.credentialExpiresAt).getTime() - Date.now()) > 0) :
+        userStatusFilter === 'expired' ? (u.credentialExpiresAt && new Date(u.credentialExpiresAt).getTime() <= Date.now()) :
+        u.accountStatus === userStatusFilter
+      );
+      const matchesEntity = userEntityFilter === 'all' || u.businessEntityId === userEntityFilter;
+
+      return matchesSearch && matchesRole && matchesStatus && matchesEntity;
     });
-  };
+  }, [usersList, userSearchQuery, userRoleFilter, userStatusFilter, userEntityFilter]);
 
-  const handleForceReset = (userId: string) => {
-    startTransition(async () => {
-      const res = await forceResetAction(sessionToken, userId);
-      if (res.success) {
-        alert('Password reset forced. User will be redirected to reset password page on next action.');
-        fetchDashboardData();
-      } else {
-        alert(res.error);
-      }
-    });
-  };
-
-  const handleRenewSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!renewUserId) return;
-    const res = await renewCredentialAction(sessionToken, renewUserId, renewPeriod);
-    if (res.success) {
-      alert(`Account renewed successfully. New Expiration: ${new Date(res.newExpiresAt || '').toLocaleDateString('en-IN')}`);
-      setRenewUserId(null);
-      fetchDashboardData();
-    } else {
-      alert(res.error);
-    }
-  };
-
-  useEffect(() => {
-    if (!selectedLessonId) {
-      setSelectedYoutubeId('');
-      setSelectedPdfPath('');
+  // ── CSV PARSER & FORMULA INJECTION SANITIZER ──────────────────────────────
+  const handleParseCsv = (text: string) => {
+    setRawCsvText(text);
+    if (!text.trim()) {
+      setParsedCsvRows([]);
       return;
     }
-    const lesson = LESSONS.find(l => l.id === selectedLessonId);
-    if (lesson) {
-      setSelectedYoutubeId(lesson.youtubeId || '');
-      setSelectedPdfPath(lesson.pdfPath || '');
-    }
-  }, [selectedLessonId]);
 
-  const handleLessonUpdateSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedLessonId) return;
-    const res = await updateLessonResourcesAction(sessionToken, selectedLessonId, selectedYoutubeId, selectedPdfPath);
-    if (res.success) {
-      alert('Lesson resources updated successfully! Refresh the page or play the lesson to see the changes.');
-      const idx = LESSONS.findIndex(l => l.id === selectedLessonId);
-      if (idx !== -1) {
-        LESSONS[idx].youtubeId = selectedYoutubeId || undefined;
-        LESSONS[idx].pdfPath = selectedPdfPath || undefined;
+    const lines = text.trim().split(/\r?\n/);
+    const rows: BulkUserRow[] = [];
+
+    // Check if header line exists
+    const startIndex = lines[0].toLowerCase().includes('email') ? 1 : 0;
+
+    for (let i = startIndex; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      const cols = line.split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+      if (cols.length >= 2) {
+        rows.push({
+          name: cols[0] || 'Learner',
+          email: cols[1] || '',
+          role: (cols[2] || 'learner').toLowerCase(),
+          validityPeriod: (cols[3] || 'annual') as any,
+          deliveryMethod: (cols[4] || 'link') as any,
+          loginCategory: cols[5] || 'b2c',
+          businessEntityId: cols[6] || null,
+        });
       }
-    } else {
-      alert(res.error);
+    }
+    setParsedCsvRows(rows);
+  };
+
+  const handleExecuteBulkImport = () => {
+    if (parsedCsvRows.length === 0) return;
+    startTransition(async () => {
+      const res = await bulkCreateCredentialsAction(sessionToken, parsedCsvRows);
+      setBulkImportResult(res);
+      if (res.success) {
+        fetchDashboardData();
+      }
+    });
+  };
+
+  // Safe CSV Exporter with Formula-Injection Guard
+  const handleExportUsersCsv = () => {
+    const sanitizeForCsv = (val: any) => {
+      let str = String(val ?? '');
+      // Prevent formula injection: if starts with =, +, -, @, \t, \r, prepend a single quote
+      if (/^[=+\-@\t\r]/.test(str)) {
+        str = "'" + str;
+      }
+      return `"${str.replace(/"/g, '""')}"`;
+    };
+
+    const headers = ['User ID', 'Name', 'Email', 'Role', 'Account Status', 'Category', 'Entity ID', 'Validity', 'Lessons Completed', 'Avg Score', 'Grade Tier', 'Certified'];
+    const rows = filteredUsers.map(u => [
+      sanitizeForCsv(u.id),
+      sanitizeForCsv(u.name),
+      sanitizeForCsv(u.email),
+      sanitizeForCsv(u.role),
+      sanitizeForCsv(u.accountStatus),
+      sanitizeForCsv(u.loginCategory || 'b2c'),
+      sanitizeForCsv(u.businessEntityId || ''),
+      sanitizeForCsv(u.validityPeriod || 'annual'),
+      sanitizeForCsv(u.completedLessonsCount || 0),
+      sanitizeForCsv(u.avgScore !== null ? `${u.avgScore}%` : 'N/A'),
+      sanitizeForCsv(u.gradeTier || 'Not Graded'),
+      sanitizeForCsv(u.hasCertificate ? 'YES' : 'NO'),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `FinGenIQ_User_Roster_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // ── LESSON PUBLISHER ──────────────────────────────────────────────────────
+  const handleSaveLesson = async () => {
+    startTransition(async () => {
+      setLessonSaveStatus('Publishing curriculum updates...');
+      
+      const compiledSimulatorJson = simPreset === 'custom' ? customSimJson : JSON.stringify({
+        preset: simPreset,
+        wacc: simWacc,
+        terminalGrowth: simGrowth,
+        exitMultiple: simExitMultiple,
+        taxRate: simTaxRate,
+        debtRatio: simDebtRatio,
+      });
+
+      const res = await saveLessonFullContentAction(sessionToken, {
+        lessonId: selectedLessonId,
+        title: lessonTitle,
+        subtitle: lessonSubtitle,
+        duration: lessonDuration,
+        level: lessonLevel,
+        summary: lessonSummary,
+        contentMarkdown: lessonContentMarkdown,
+        keyTakeawaysJson: JSON.stringify(keyTakeaways),
+        youtubeId: lessonYoutubeId,
+        pdfPath: lessonPdfPath,
+        simulatorJson: compiledSimulatorJson,
+        quizJson: JSON.stringify(lessonQuiz),
+      });
+
+      if (res.success) {
+        setLessonSaveStatus('✓ Lesson, Simulator & Assessment published successfully!');
+        fetchDashboardData();
+      } else {
+        setLessonSaveStatus('❌ Error: ' + res.error);
+      }
+    });
+  };
+
+  // ── AI KNOWLEDGE BASE HANDLERS ────────────────────────────────────────────
+  const handleSaveAiDoc = () => {
+    if (!newDocTitle.trim() || !newDocContent.trim()) return;
+    startTransition(async () => {
+      const res = await saveAiKnowledgeDocAction(sessionToken, {
+        id: editingDocId || undefined,
+        title: newDocTitle,
+        category: newDocCategory,
+        content: newDocContent,
+      });
+      if (res.success) {
+        setNewDocTitle('');
+        setNewDocContent('');
+        setEditingDocId(null);
+        fetchDashboardData();
+      } else {
+        alert('Error: ' + res.error);
+      }
+    });
+  };
+
+  const handleTestAi = async () => {
+    if (!aiTestPrompt.trim() || isAiTesting) return;
+    setIsAiTesting(true);
+    setAiTestResponse(null);
+    try {
+      const res = await fetch('/api/assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: aiTestPrompt, sessionId: 'admin-preview-session' }),
+      });
+      const data = await res.json();
+      setAiTestResponse(data.response || (data.useLocalFallback ? 'Knowledge base synthesized response (fallback engine).' : 'No response generated.'));
+    } catch {
+      setAiTestResponse('Failed to reach AI service.');
+    } finally {
+      setIsAiTesting(false);
     }
   };
 
-  const handleLogout = async () => {
-    await logoutAction();
-    window.location.href = '/login';
+  // ── USER ACTIONS ──────────────────────────────────────────────────────────
+  const handleToggleUser = (id: string) => {
+    startTransition(async () => {
+      const u = usersList.find(x => x.id === id);
+      const actionType = u?.accountStatus === 'active' ? 'disable' : 'enable';
+      await toggleAccountStatusAction(sessionToken, id, actionType);
+      fetchDashboardData();
+    });
   };
+
+  const handleForceReset = (id: string) => {
+    startTransition(async () => {
+      await forceResetAction(sessionToken, id);
+      alert('Password reset link issued and registered in audit logs.');
+      fetchDashboardData();
+    });
+  };
+
+  const handleRenew = (id: string) => {
+    startTransition(async () => {
+      await renewCredentialAction(sessionToken, id, renewPeriod);
+      setRenewUserId(null);
+      fetchDashboardData();
+    });
+  };
+
+  const handleBatchRenew = () => {
+    if (selectedUserIds.length === 0) return;
+    startTransition(async () => {
+      const res = await batchRenewCredentialsAction(sessionToken, selectedUserIds, renewPeriod);
+      if (res.success) {
+        alert(`Successfully extended credentials for ${res.renewedCount} accounts.`);
+        setSelectedUserIds([]);
+        fetchDashboardData();
+      }
+    });
+  };
+
+  const filteredLessons = LESSONS.filter(l => l.moduleId === selectedModuleId);
 
   return (
-    <div className="platform surface--dark" style={{ minHeight: '100vh', background: '#050810', color: '#E8EEF8' }}>
-      {/* Header bar */}
-      <nav className="nav" style={{ background: '#08101E', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div className="nav__inner" style={{ maxWidth: 'var(--ultra-max)' }}>
-          <Link href="/" className="nav__logo">
-            <div className="nav__logo-mark"><span className="nav__logo-glyph">F</span></div>
-            <span className="nav__logo-text">Fingen<span>IQ</span></span>
-          </Link>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
-            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--dm-text-secondary)', fontWeight: 600 }}>🏛 SYSTEM ADMINISTRATOR</span>
-            <button className="btn btn--outline btn--xs" onClick={handleLogout}>Sign Out</button>
+    <div style={{
+      minHeight: '100vh',
+      background: '#060A16',
+      color: '#E6EDF6',
+      fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
+      paddingBottom: '5rem',
+    }}>
+      
+      {/* ─── TOP MASTER SUPER-ADMIN BAR ────────────────────────────────────────── */}
+      <header style={{
+        background: 'rgba(8,16,30,0.95)',
+        borderBottom: '1px solid rgba(206,174,86,0.3)',
+        padding: '0.875rem 2rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        backdropFilter: 'blur(16px)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              width: 38,
+              height: 38,
+              borderRadius: '0.5rem',
+              background: 'linear-gradient(135deg, #1E293B, #0F172A)',
+              border: '1px solid #CEAE56',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#CEAE56',
+              fontWeight: 700,
+              fontFamily: 'Georgia, serif',
+              fontSize: '1.1rem',
+            }}>
+              F
+            </div>
+            <div>
+              <div style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                FinGenIQ Super-Admin Governance Suite
+                <span style={{ fontSize: '0.65rem', background: 'rgba(206,174,86,0.15)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', padding: '1px 8px', borderRadius: '9999px', fontWeight: 700 }}>
+                  INSTITUTIONAL ROOT
+                </span>
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#8898AA' }}>
+                Curriculum Studio · Learner Gradebook · Aarkaa AI RAG Governance · Multi-Tenant Control
+              </div>
+            </div>
           </div>
         </div>
-      </nav>
 
-      <div className="page-wrapper" style={{ paddingTop: 'calc(var(--nav-height) + var(--sp-6))' }}>
-        <main className="page-main">
-          <div className="container">
-            {/* Header Title */}
-            <div style={{ marginBottom: 'var(--sp-8)' }}>
-              <div className="page-hero__label">Control Center</div>
-              <h1 className="page-hero__title" style={{ fontSize: 'var(--text-3xl)', color: '#E8EEF8' }}>Credential Management</h1>
-              <p className="page-hero__subtitle" style={{ color: '#9AAABF' }}>
-                Create invite tokens, manual temp credentials, lock profiles, renew validity periods, and review SEBI compliance audit trails.
-              </p>
+        {/* Global Superuser Navigation Shortcut Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Link
+            href="/dashboard"
+            target="_blank"
+            style={{ fontSize: '0.75rem', color: '#8898AA', textDecoration: 'none', padding: '6px 12px', borderRadius: '0.375rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            🎓 Student Portal ↗
+          </Link>
+          <Link
+            href="/community"
+            target="_blank"
+            style={{ fontSize: '0.75rem', color: '#8898AA', textDecoration: 'none', padding: '6px 12px', borderRadius: '0.375rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            💬 Research Feed ↗
+          </Link>
+          <Link
+            href="/aarkaai"
+            target="_blank"
+            style={{ fontSize: '0.75rem', color: '#CC785C', textDecoration: 'none', padding: '6px 12px', borderRadius: '0.375rem', background: 'rgba(204,120,92,0.1)', border: '1px solid rgba(204,120,92,0.3)', fontWeight: 600 }}
+          >
+            🤖 Aarkaa AI 2.0 ↗
+          </Link>
+          <button
+            onClick={() => logoutAction()}
+            style={{
+              fontSize: '0.75rem',
+              color: '#F87171',
+              background: 'rgba(239,68,68,0.1)',
+              border: '1px solid rgba(239,68,68,0.25)',
+              padding: '6px 14px',
+              borderRadius: '0.375rem',
+              cursor: 'pointer',
+              fontWeight: 600,
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      </header>
+
+      {/* ─── MASTER KPI OVERVIEW STRIP ────────────────────────────────────────── */}
+      <div style={{ maxWidth: 1380, margin: '1.5rem auto 0', padding: '0 1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.85rem' }}>
+          {[
+            { label: 'Total Enrolled', count: stats.total, color: '#F1F5F9' },
+            { label: 'Active Learners', count: stats.active, color: '#34D399' },
+            { label: 'Cohort Avg Score', count: `${stats.cohortAvgScore}%`, color: '#60A5FA' },
+            { label: 'Certified (Track)', count: stats.certifiedCount, color: '#CEAE56' },
+            { label: 'Distinction (≥85%)', count: stats.distinctionCount, color: '#A78BFA' },
+            { label: 'Expiring in 14d', count: stats.expiring, color: '#FBBF24' },
+            { label: 'Locked / Action Req', count: stats.locked, color: '#F87171' },
+          ].map(s => (
+            <div key={s.label} style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '0.75rem', padding: '0.85rem 1.1rem' }}>
+              <div style={{ fontSize: '0.68rem', color: '#8898AA', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>{s.label}</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: s.color, marginTop: '0.2rem' }}>{s.count}</div>
             </div>
+          ))}
+        </div>
 
-            {/* Top summary stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 'var(--sp-4)', marginBottom: 'var(--sp-8)' }}>
-              {[
-                { label: 'Total Accounts', value: stats.total, color: 'var(--sapphire-400)' },
-                { label: 'Active', value: stats.active, color: 'var(--emerald-400)' },
-                { label: 'Pending Activation', value: stats.pending, color: 'var(--amber-400)' },
-                { label: 'Locked Out', value: stats.locked, color: 'var(--rose-400)' },
-                { label: 'Expiring (≤14d)', value: stats.expiring, color: 'var(--amber-500)' },
-                { label: 'Expired', value: stats.expired, color: 'var(--rose-600)' },
-              ].map((s, idx) => (
-                <div key={idx} className="card p-5" style={{ background: '#0C1628', borderColor: 'rgba(255,255,255,0.06)' }}>
-                  <div style={{ fontSize: '0.6rem', fontWeight: 700, color: '#5E6F85', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{s.label}</div>
-                  <div className="num" style={{ fontSize: '1.75rem', fontWeight: 700, color: s.color, marginTop: '4px' }}>{s.value}</div>
-                </div>
-              ))}
-            </div>
+        {/* ─── PRIMARY TAB NAVIGATION (7 DISTINCT MODULES) ────────────────────── */}
+        <div style={{ display: 'flex', gap: '0.4rem', borderBottom: '1px solid rgba(255,255,255,0.08)', marginTop: '1.75rem', paddingBottom: '0.5rem', overflowX: 'auto' }}>
+          {[
+            { id: 'analytics', label: '📊 Learner Analytics & Gradebook' },
+            { id: 'users', label: '👥 User & Credential Management' },
+            { id: 'lessons', label: '🎓 Curriculum & Simulator Studio' },
+            { id: 'aarkaa', label: '🤖 Aarkaa AI Governance & RAG' },
+            { id: 'community', label: '💬 Community Moderation' },
+            { id: 'entities', label: '🏢 Enterprise & Packages' },
+            { id: 'logs', label: '🔒 Security Audit Log' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              style={{
+                background: activeTab === tab.id ? 'rgba(206,174,86,0.15)' : 'transparent',
+                color: activeTab === tab.id ? '#CEAE56' : '#8898AA',
+                border: activeTab === tab.id ? '1px solid rgba(206,174,86,0.3)' : '1px solid transparent',
+                borderRadius: '0.5rem',
+                padding: '0.6rem 1.1rem',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-            <div className="dashboard-layout" style={{ gridTemplateColumns: '1fr 380px', gap: 'var(--sp-8)' }}>
-              {/* Left Column: Create Credentials and Users Table */}
-              <div className="dashboard-main" style={{ gap: 'var(--sp-8)' }}>
-                
-                {/* Form to issue credential */}
-                <section className="card p-6" style={{ background: '#08101E', borderColor: 'rgba(255,255,255,0.06)' }}>
-                  <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: '#E8EEF8', marginBottom: 'var(--sp-5)', fontFamily: 'var(--font-sans)' }}>
-                    Provision New Access Credential
-                  </h2>
-
-                  <form action={createFormAction} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-4)' }}>
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="name" style={{ color: '#9AAABF' }}>Full Name *</label>
-                      <input id="name" name="name" type="text" className="form-input" required placeholder="e.g. Priyesh Shah" />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="email" style={{ color: '#9AAABF' }}>Email Address *</label>
-                      <input id="email" name="email" type="email" className="form-input" required placeholder="e.g. priyesh@firm.com" />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="role" style={{ color: '#9AAABF' }}>Access Role *</label>
-                      <select id="role" name="role" className="form-input" style={{ appearance: 'auto', background: '#0C1628' }}>
-                        <option value="learner">Learner (Curriculum access)</option>
-                        <option value="employer">Employer (Marketplace access)</option>
-                        <option value="admin">Administrator (Full systems control)</option>
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="validityPeriod" style={{ color: '#9AAABF' }}>Validity Period *</label>
-                      <select id="validityPeriod" name="validityPeriod" className="form-input" style={{ appearance: 'auto', background: '#0C1628' }}>
-                        <option value="monthly">Monthly Access</option>
-                        <option value="quarterly">Quarterly Access</option>
-                        <option value="half_yearly">Half-Yearly Access</option>
-                        <option value="annual">Annual Access</option>
-                      </select>
-                    </div>
-                    <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                      <label className="form-label" style={{ color: '#9AAABF' }}>Credential Delivery Method *</label>
-                      <div style={{ display: 'flex', gap: 'var(--sp-6)', marginTop: '4px' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'var(--text-xs)', cursor: 'pointer' }}>
-                          <input type="radio" name="deliveryMethod" value="link" defaultChecked style={{ width: 16, height: 16 }} />
-                          One-Time Invite Link (Recommended)
-                        </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'var(--text-xs)', cursor: 'pointer' }}>
-                          <input type="radio" name="deliveryMethod" value="password" style={{ width: 16, height: 16 }} />
-                          Temporary Password (Manual handoff)
-                        </label>
-                      </div>
-                    </div>
-
-                    <button type="submit" className="btn btn--brass" style={{ gridColumn: 'span 2', marginTop: 'var(--sp-2)' }} disabled={isCreatePending}>
-                      {isCreatePending ? 'Generating credentials...' : 'Issue Access Credential →'}
-                    </button>
-                  </form>
-
-                  {/* Confirmation link displays */}
-                  {createState?.success && (
-                    <div style={{ marginTop: 'var(--sp-6)', padding: 'var(--sp-5)', background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 'var(--radius-lg)' }}>
-                      <h3 style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--emerald-400)', textTransform: 'uppercase', marginBottom: '8px' }}>
-                        ✓ Access Credential Provisioned
-                      </h3>
-                      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', marginBottom: 'var(--sp-4)', lineHeight: 1.5 }}>
-                        Credential is created. Copy the details below. Validity starts on first client activation.
-                      </p>
-                      {createState.tempPassword && (
-                        <div style={{ marginBottom: '12px' }}>
-                          <span style={{ fontSize: '0.65rem', color: '#5E6F85', display: 'block', textTransform: 'uppercase' }}>Temporary Password (One-Time Display)</span>
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
-                            <code style={{ fontSize: 'var(--text-sm)', color: '#E8EEF8', padding: '4px 10px', background: '#0C1628', borderRadius: 4 }}>{createState.tempPassword}</code>
-                            <button className="btn btn--outline btn--xs" onClick={() => navigator.clipboard.writeText(createState.tempPassword || '')}>Copy</button>
-                          </div>
-                        </div>
-                      )}
-                      {createState.activationLink && (
-                        <div>
-                          <span style={{ fontSize: '0.65rem', color: '#5E6F85', display: 'block', textTransform: 'uppercase' }}>Activation URL invite link</span>
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
-                            <code style={{ fontSize: 'var(--text-xs)', color: '#E8EEF8', padding: '4px 10px', background: '#0C1628', borderRadius: 4, wordBreak: 'break-all', flex: 1 }}>{createState.activationLink}</code>
-                            <button className="btn btn--outline btn--xs" onClick={() => navigator.clipboard.writeText(createState.activationLink || '')}>Copy</button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {createState?.error && (
-                    <div style={{ marginTop: 'var(--sp-4)', padding: 'var(--sp-3)', background: 'rgba(244,63,94,0.06)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 'var(--radius-lg)', color: '#FB7185', fontSize: 'var(--text-xs)' }}>
-                      ⚠️ {createState.error}
-                    </div>
-                  )}
-                </section>
-
-                {/* Users List Table */}
-                <section className="card p-7" style={{ background: '#08101E', borderColor: 'rgba(255,255,255,0.06)' }}>
-                  <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: '#E8EEF8', marginBottom: 'var(--sp-6)', fontFamily: 'var(--font-sans)' }}>
-                    Provisioned Users &amp; Expiries
-                  </h2>
-
-                  <div style={{ overflowX: 'auto' }}>
-                    <table className="data-table">
-                      <thead>
-                        <tr>
-                          <th>User</th>
-                          <th>Role</th>
-                          <th>Status</th>
-                          <th>Term</th>
-                          <th>Expires On</th>
-                          <th style={{ textAlign: 'right' }}>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {usersList.map((user: any) => {
-                          const isExpired = user.accountStatus === 'expired';
-                          const hasExpiry = !!user.credentialExpiresAt;
-                          let daysLeft = null;
-                          if (hasExpiry) {
-                            const diff = new Date(user.credentialExpiresAt).getTime() - Date.now();
-                            daysLeft = Math.ceil(diff / (24 * 60 * 60 * 1000));
-                          }
-                          const isWarning = daysLeft !== null && daysLeft <= 14 && daysLeft > 0;
-
-                          let statusBadge = 'badge--not-started';
-                          if (user.accountStatus === 'active') statusBadge = 'badge--completed';
-                          else if (user.accountStatus === 'locked' || user.accountStatus === 'disabled') statusBadge = 'badge--locked';
-                          else if (isExpired) statusBadge = 'badge--locked';
-
-                          return (
-                            <tr key={user.id} style={{ opacity: isExpired || user.accountStatus === 'disabled' ? 0.6 : 1 }}>
-                              <td>
-                                <div style={{ fontWeight: 600, color: '#E8EEF8' }}>{user.name}</div>
-                                <div style={{ fontSize: 'var(--text-2xs)', color: '#5E6F85' }}>{user.email}</div>
-                              </td>
-                              <td>
-                                <span className="tag-chip" style={{ fontSize: '10px' }}>{user.role}</span>
-                              </td>
-                              <td>
-                                <span className={`badge ${statusBadge}`}>
-                                  {user.accountStatus.replace('_', ' ')}
-                                </span>
-                              </td>
-                              <td>
-                                <span className="num" style={{ textTransform: 'capitalize' }}>{user.validityPeriod || '—'}</span>
-                              </td>
-                              <td>
-                                {hasExpiry ? (
-                                  <div>
-                                    <div className="num" style={{ fontSize: 'var(--text-xs)', color: isExpired ? 'var(--rose-400)' : isWarning ? 'var(--amber-400)' : '#E8EEF8' }}>
-                                      {new Date(user.credentialExpiresAt).toLocaleDateString('en-IN')}
-                                    </div>
-                                    <div className="num" style={{ fontSize: '9px', color: isExpired ? 'var(--rose-400)' : isWarning ? 'var(--amber-400)' : '#5E6F85' }}>
-                                      {isExpired ? 'Lapsed' : `${daysLeft} days left`}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <span style={{ color: '#5E6F85', fontSize: 'var(--text-xs)' }}>Awaiting Activation</span>
-                                )}
-                              </td>
-                              <td>
-                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                                  {user.activationToken && (
-                                    <button className="btn btn--outline btn--xs" onClick={() => {
-                                      navigator.clipboard.writeText(`${window.location.origin}/activate/${user.activationToken}`);
-                                      alert('Activation link copied!');
-                                    }}>Link</button>
-                                  )}
-                                  <button className="btn btn--outline btn--xs" style={{ color: 'var(--amber-400)' }} onClick={() => handleForceReset(user.id)}>Force Reset</button>
-                                  
-                                  {user.accountStatus === 'locked' ? (
-                                    <button className="btn btn--outline btn--xs" style={{ color: 'var(--emerald-400)' }} onClick={() => handleToggleStatus(user.id, 'unlock')}>Unlock</button>
-                                  ) : user.accountStatus === 'disabled' ? (
-                                    <button className="btn btn--outline btn--xs" style={{ color: 'var(--emerald-400)' }} onClick={() => handleToggleStatus(user.id, 'enable')}>Enable</button>
-                                  ) : (
-                                    <button className="btn btn--outline btn--xs" style={{ color: 'var(--rose-400)' }} onClick={() => handleToggleStatus(user.id, 'disable')}>Disable</button>
-                                  )}
-
-                                  <button className="btn btn--brass btn--xs" onClick={() => {
-                                    setRenewUserId(user.id);
-                                    setRenewPeriod(user.validityPeriod || 'monthly');
-                                  }}>Renew</button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-
-                {/* Lesson Resources Manager */}
-                <section className="card p-6" style={{ background: '#08101E', borderColor: 'rgba(255,255,255,0.06)', marginTop: 'var(--sp-8)' }}>
-                  <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: '#E8EEF8', marginBottom: '2px', fontFamily: 'var(--font-sans)' }}>
-                    Lesson Resources Manager
-                  </h2>
-                  <p style={{ fontSize: 'var(--text-xs)', color: '#9AAABF', marginBottom: 'var(--sp-5)' }}>
-                    Assign custom YouTube videos and PDF study/revision guides dynamically to any of the 44 decoupled syllabus lessons.
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB 1: LEARNER ANALYTICS & COHORT GRADEBOOK ───────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'analytics' && (
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            
+            {/* Cohort Grade Distribution Strip */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                    Cohort Performance & Grade Tier Distribution
+                  </h3>
+                  <p style={{ fontSize: '0.75rem', color: '#8898AA', margin: '0.2rem 0 0' }}>
+                    Institutional grading scale: Distinction (≥85%), Merit (70–84%), Pass (50–69%), Needs Support (&lt;50%).
                   </p>
-
-                  <form onSubmit={handleLessonUpdateSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--sp-4)', alignItems: 'end' }}>
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="manageLessonId" style={{ color: '#9AAABF' }}>Select Lesson *</label>
-                      <select 
-                        id="manageLessonId" 
-                        value={selectedLessonId} 
-                        onChange={e => setSelectedLessonId(e.target.value)} 
-                        className="form-input" 
-                        style={{ appearance: 'auto', background: '#0C1628', padding: '10px' }}
-                      >
-                        <option value="">-- Choose a Lesson --</option>
-                        {Array.from({ length: 44 }, (_, i) => `L${i + 1}`).map(lid => {
-                          const lesson = LESSONS.find(l => l.id === lid);
-                          return (
-                            <option key={lid} value={lid}>
-                              Lesson {lid.substring(1)}: {lesson ? lesson.title.substring(0, 24) + '...' : ''}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="manageYoutubeId" style={{ color: '#9AAABF' }}>YouTube Video ID</label>
-                      <input 
-                        id="manageYoutubeId" 
-                        type="text" 
-                        value={selectedYoutubeId} 
-                        onChange={e => setSelectedYoutubeId(e.target.value)} 
-                        className="form-input" 
-                        placeholder="e.g. y8n21Fv_8h8" 
-                        style={{ padding: '10px' }}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="managePdfPath" style={{ color: '#9AAABF' }}>PDF Path / URL</label>
-                      <input 
-                        id="managePdfPath" 
-                        type="text" 
-                        value={selectedPdfPath} 
-                        onChange={e => setSelectedPdfPath(e.target.value)} 
-                        className="form-input" 
-                        placeholder="e.g. /lessons/L1.pdf" 
-                        style={{ padding: '10px' }}
-                      />
-                    </div>
-                    
-                    <button type="submit" className="btn btn--brass" style={{ gridColumn: 'span 3', marginTop: 'var(--sp-2)' }}>
-                      Save Lesson Resources ✓
-                    </button>
-                  </form>
-                </section>
+                </div>
+                <button
+                  onClick={handleExportUsersCsv}
+                  style={{ background: 'rgba(52,211,153,0.12)', color: '#34D399', border: '1px solid rgba(52,211,153,0.3)', borderRadius: '0.375rem', padding: '6px 12px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  📥 Export Gradebook (CSV)
+                </button>
               </div>
 
-              {/* Right Column: Audit Logs & Renew Modal */}
-              <aside className="dashboard-sidebar" style={{ gap: 'var(--sp-6)' }} aria-label="Audit Logs">
-                
-                {/* Audit trail logging */}
-                <section className="card p-6" style={{ background: '#08101E', borderColor: 'rgba(255,255,255,0.06)' }}>
-                  <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: '#E8EEF8', marginBottom: 'var(--sp-5)', fontFamily: 'var(--font-sans)' }}>
-                    Compliance Audit Log
-                  </h2>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)', maxHeight: 520, overflowY: 'auto' }}>
-                    {auditLogs.map(log => {
-                      const meta = log.metadata ? JSON.parse(log.metadata) : null;
-                      return (
-                        <div key={log.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '10px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                            <span style={{ fontSize: '10px', color: 'var(--brass-400)', fontWeight: 600 }}>{log.action}</span>
-                            <span className="num" style={{ fontSize: '8px', color: '#5E6F85' }}>{new Date(log.timestamp).toLocaleTimeString('en-IN')}</span>
-                          </div>
-                          <div style={{ fontSize: 'var(--text-xs)', color: '#E8EEF8', marginTop: '2px', lineHeight: 1.4 }}>
-                            Admin <code style={{ color: '#9AAABF' }}>{log.adminId.substring(0,8)}</code> updated target <code style={{ color: '#9AAABF' }}>{(log.targetUserId || '').substring(0,8)}</code>
-                          </div>
-                          {meta && (
-                            <div style={{ background: '#050810', padding: '6px', borderRadius: 4, marginTop: '6px', fontSize: '9px', color: '#9AAABF', fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                              {JSON.stringify(meta, null, 2)}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              </aside>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                <div style={{ background: '#070E1A', border: '1px solid rgba(167,139,250,0.3)', borderRadius: '0.75rem', padding: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#A78BFA', fontWeight: 700 }}>DISTINCTION TIER (≥85%)</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F1F5F9', marginTop: '0.25rem' }}>{stats.distinctionCount} <span style={{ fontSize: '0.8rem', color: '#8898AA' }}>students</span></div>
+                  <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginTop: '0.25rem' }}>Eligible for Honors Certification</div>
+                </div>
+                <div style={{ background: '#070E1A', border: '1px solid rgba(96,165,250,0.3)', borderRadius: '0.75rem', padding: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#60A5FA', fontWeight: 700 }}>MERIT TIER (70–84%)</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F1F5F9', marginTop: '0.25rem' }}>{stats.meritCount} <span style={{ fontSize: '0.8rem', color: '#8898AA' }}>students</span></div>
+                  <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginTop: '0.25rem' }}>On track for Standard Track Certification</div>
+                </div>
+                <div style={{ background: '#070E1A', border: '1px solid rgba(52,211,153,0.3)', borderRadius: '0.75rem', padding: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#34D399', fontWeight: 700 }}>PASSING TIER (50–69%)</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F1F5F9', marginTop: '0.25rem' }}>{stats.passCount} <span style={{ fontSize: '0.8rem', color: '#8898AA' }}>students</span></div>
+                  <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginTop: '0.25rem' }}>Foundational mastery achieved</div>
+                </div>
+                <div style={{ background: '#070E1A', border: '1px solid rgba(248,113,113,0.3)', borderRadius: '0.75rem', padding: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#F87171', fontWeight: 700 }}>NEEDS SUPPORT (&lt;50%)</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F1F5F9', marginTop: '0.25rem' }}>{stats.needsSupportCount} <span style={{ fontSize: '0.8rem', color: '#8898AA' }}>students</span></div>
+                  <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginTop: '0.25rem' }}>Recommended for Aarkaa AI tutoring</div>
+                </div>
+              </div>
             </div>
-          </div>
-        </main>
-      </div>
 
-      {/* Renewal Dialog Modal */}
-      {renewUserId && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }} role="dialog">
-          <div className="card p-6" style={{ background: '#08101E', width: '100%', maxWidth: 400, border: '1px solid rgba(255,255,255,0.1)' }}>
-            <h3 style={{ fontSize: 'var(--text-base)', color: '#E8EEF8', marginBottom: 'var(--sp-4)' }}>Renew Access Period</h3>
-            <form onSubmit={handleRenewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="new-period" style={{ color: '#9AAABF' }}>Choose Term Duration</label>
-                <select 
-                  id="new-period" 
-                  className="form-input" 
-                  value={renewPeriod} 
-                  onChange={e => setRenewPeriod(e.target.value as any)} 
-                  style={{ appearance: 'auto', background: '#0C1628' }}
+            {/* Module Completion Heatmap Matrix */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '1rem' }}>
+                Curriculum Progression Matrix by Module (M1 – M8)
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
+                {MODULES.map(m => {
+                  const mStat = moduleStats[m.id] || { completedCount: 0, totalScore: 0, gradedCount: 0 };
+                  const avgMScore = mStat.gradedCount > 0 ? Math.round(mStat.totalScore / mStat.gradedCount) : 0;
+                  return (
+                    <div key={m.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.75rem' }}>
+                      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#CEAE56' }}>{m.id}</div>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#CBD5E1', marginTop: '0.1rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {m.title}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                        <span style={{ fontSize: '0.65rem', color: '#8898AA' }}>Passed:</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34D399' }}>{mStat.completedCount}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.2rem' }}>
+                        <span style={{ fontSize: '0.65rem', color: '#8898AA' }}>Avg Quiz:</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#60A5FA' }}>{avgMScore}%</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Individual Student Gradebook Table */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', overflow: 'hidden' }}>
+              <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                    Learner Gradebook & Progress Roster ({filteredUsers.length} Students)
+                  </h3>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input
+                    type="text"
+                    placeholder="Search by student name or email..."
+                    value={userSearchQuery}
+                    onChange={e => setUserSearchQuery(e.target.value)}
+                    style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '5px 10px', color: '#F1F5F9', fontSize: '0.8rem', width: 250 }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
+                  <thead>
+                    <tr style={{ background: '#070E1A', color: '#8898AA', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                      <th style={{ padding: '0.75rem 1rem' }}>Student Profile</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Curriculum Progress</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Quiz Avg</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Grade Tier</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Certification</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Last Activity</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.map(u => (
+                      <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ fontWeight: 600, color: '#F1F5F9' }}>{u.name}</div>
+                          <div style={{ color: '#8898AA', fontSize: '0.75rem' }}>{u.email}</div>
+                          <div style={{ color: '#64748B', fontSize: '0.65rem' }}>{u.id} · {u.role}</div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div style={{ flex: 1, height: 6, background: '#1E293B', borderRadius: 3, overflow: 'hidden' }}>
+                              <div style={{ width: `${u.completionPercent}%`, height: '100%', background: u.completionPercent === 100 ? '#34D399' : '#CEAE56' }} />
+                            </div>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#CBD5E1' }}>{u.completionPercent}%</span>
+                          </div>
+                          <div style={{ fontSize: '0.65rem', color: '#8898AA', marginTop: '0.2rem' }}>
+                            {u.completedLessonsCount} / 32 Lessons
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <span style={{ fontWeight: 700, color: u.avgScore !== null ? (u.avgScore >= 85 ? '#A78BFA' : u.avgScore >= 70 ? '#60A5FA' : '#34D399') : '#64748B' }}>
+                            {u.avgScore !== null ? `${u.avgScore}%` : '—'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <span style={{
+                            background: u.gradeTier === 'Distinction' ? 'rgba(167,139,250,0.15)' : u.gradeTier === 'Merit' ? 'rgba(96,165,250,0.15)' : u.gradeTier === 'Pass' ? 'rgba(52,211,153,0.15)' : 'rgba(255,255,255,0.05)',
+                            color: u.gradeTier === 'Distinction' ? '#A78BFA' : u.gradeTier === 'Merit' ? '#60A5FA' : u.gradeTier === 'Pass' ? '#34D399' : '#8898AA',
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
+                            fontWeight: 700,
+                            fontSize: '0.7rem',
+                          }}>
+                            {u.gradeTier}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          {u.hasCertificate ? (
+                            <span style={{ background: 'rgba(206,174,86,0.15)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700 }}>
+                              ✓ ISSUED
+                            </span>
+                          ) : (
+                            <span style={{ color: '#64748B', fontSize: '0.7rem' }}>Pending</span>
+                          )}
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', color: '#8898AA', fontSize: '0.75rem' }}>
+                          {u.lastActiveAt ? new Date(u.lastActiveAt).toLocaleDateString() : 'Never'}
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <button
+                            onClick={() => {
+                              if (confirm(`Reset progress for ${u.name}? All quiz scores and certifications will be cleared.`)) {
+                                startTransition(async () => {
+                                  await adminResetUserProgressAction(sessionToken, u.id);
+                                  fetchDashboardData();
+                                });
+                              }
+                            }}
+                            style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '4px', padding: '3px 8px', fontSize: '0.7rem', cursor: 'pointer' }}
+                          >
+                            Reset Progress
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB 2: USER & CREDENTIAL MANAGEMENT ───────────────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'users' && (
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            
+            {/* Action Bar: Bulk CSV Import, Export CSV & Filter Controls */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.25rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  placeholder="🔍 Search name, email, or user ID..."
+                  value={userSearchQuery}
+                  onChange={e => setUserSearchQuery(e.target.value)}
+                  style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '6px 12px', color: '#F1F5F9', fontSize: '0.82rem', minWidth: 260 }}
+                />
+                
+                <select
+                  value={userRoleFilter}
+                  onChange={e => setUserRoleFilter(e.target.value)}
+                  style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '6px 10px', color: '#F1F5F9', fontSize: '0.82rem' }}
                 >
-                  <option value="monthly">Monthly (+1 Month)</option>
-                  <option value="quarterly">Quarterly (+3 Months)</option>
-                  <option value="half_yearly">Half-Yearly (+6 Months)</option>
-                  <option value="annual">Annual (+12 Months)</option>
+                  <option value="all">All Roles</option>
+                  <option value="learner">Student / Learner</option>
+                  <option value="employee">Enterprise Employee</option>
+                  <option value="employer">Employer / Recruiter</option>
+                  <option value="admin">Administrator</option>
+                </select>
+
+                <select
+                  value={userStatusFilter}
+                  onChange={e => setUserStatusFilter(e.target.value)}
+                  style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '6px 10px', color: '#F1F5F9', fontSize: '0.82rem' }}
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="active">Active</option>
+                  <option value="pending_activation">Pending Activation</option>
+                  <option value="expiring">Expiring Soon (≤14 days)</option>
+                  <option value="expired">Expired</option>
+                  <option value="locked">Locked</option>
+                  <option value="disabled">Disabled</option>
+                </select>
+
+                <select
+                  value={userEntityFilter}
+                  onChange={e => setUserEntityFilter(e.target.value)}
+                  style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '6px 10px', color: '#F1F5F9', fontSize: '0.82rem' }}
+                >
+                  <option value="all">All Partner Entities</option>
+                  {entitiesList.map(ent => (
+                    <option key={ent.id} value={ent.id}>{ent.name}</option>
+                  ))}
                 </select>
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', marginTop: 'var(--sp-2)' }}>
-                <button type="button" className="btn btn--outline flex-1" onClick={() => setRenewUserId(null)}>Cancel</button>
-                <button type="submit" className="btn btn--brass flex-1">Apply Renewal</button>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                {selectedUserIds.length > 0 && (
+                  <button
+                    onClick={handleBatchRenew}
+                    disabled={isPending}
+                    style={{ background: 'rgba(206,174,86,0.15)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.375rem', padding: '6px 12px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    ⏱️ Renew Selected ({selectedUserIds.length})
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowBulkCsvModal(true)}
+                  style={{ background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.375rem', padding: '6px 14px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  📥 Bulk CSV Import
+                </button>
+                <button
+                  onClick={handleExportUsersCsv}
+                  style={{ background: 'rgba(52,211,153,0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.3)', borderRadius: '0.375rem', padding: '6px 12px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  📤 Export CSV
+                </button>
               </div>
-            </form>
+            </div>
+
+            {/* Individual Credential Provisioning Form */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#CEAE56', marginBottom: '1rem' }}>
+                + Provision Individual User Credential
+              </h3>
+
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const res = await createCredentialAction(sessionToken, formData);
+                if (res.success) {
+                  alert('Credential created successfully! ' + (res.activationLink ? `Activation Link: ${res.activationLink}` : `Temp Password: ${res.tempPassword}`));
+                  fetchDashboardData();
+                } else {
+                  alert('Error: ' + res.error);
+                }
+              }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Full Name</label>
+                  <input name="name" required placeholder="Jane Doe" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.82rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Email Address</label>
+                  <input name="email" type="email" required placeholder="jane@example.com" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.82rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Role</label>
+                  <select name="role" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.82rem' }}>
+                    <option value="learner">Student / Learner</option>
+                    <option value="employee">Enterprise Employee</option>
+                    <option value="employer">Employer / Recruiter</option>
+                    <option value="admin">System Administrator</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Validity Period</label>
+                  <select name="validityPeriod" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.82rem' }}>
+                    <option value="annual">Annual (365 days)</option>
+                    <option value="half_yearly">Half-Yearly (180 days)</option>
+                    <option value="quarterly">Quarterly (90 days)</option>
+                    <option value="monthly">Monthly (30 days)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Delivery Method</label>
+                  <select name="deliveryMethod" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.82rem' }}>
+                    <option value="link">One-Time Activation Link</option>
+                    <option value="password">Generate Temporary Password</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Category & Package</label>
+                  <select name="loginCategory" onChange={e => setSelectedLoginCategory(e.target.value)} style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.82rem' }}>
+                    <option value="b2c">B2C Individual</option>
+                    <option value="b2b">B2B Corporate</option>
+                    <option value="b2b2c">B2B2C University Partner</option>
+                  </select>
+                </div>
+                <input type="hidden" name="packageId" value={packagesList[0]?.id || 'PKG_B2C_PRO'} />
+                
+                <button type="submit" style={{ background: 'linear-gradient(135deg, #CEAE56 0%, #B8962E 100%)', color: '#060A16', border: 'none', borderRadius: '0.375rem', padding: '0.65rem 1rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer' }}>
+                  + Issue Credential
+                </button>
+              </form>
+            </div>
+
+            {/* Users Roster Table */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', overflow: 'hidden' }}>
+              <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F1F5F9' }}>
+                  Platform Users Directory ({filteredUsers.length} Results)
+                </div>
+              </div>
+
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
+                  <thead>
+                    <tr style={{ background: '#070E1A', color: '#8898AA', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                      <th style={{ padding: '0.75rem 1rem', width: 40 }}>
+                        <input
+                          type="checkbox"
+                          checked={selectedUserIds.length === filteredUsers.length && filteredUsers.length > 0}
+                          onChange={e => {
+                            if (e.target.checked) setSelectedUserIds(filteredUsers.map(u => u.id));
+                            else setSelectedUserIds([]);
+                          }}
+                        />
+                      </th>
+                      <th style={{ padding: '0.75rem 1rem' }}>User / Identity</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Role</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Status</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Validity Expiry</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Progress</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Lifecycle Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.map(u => {
+                      const isExpiring = u.credentialExpiresAt && (new Date(u.credentialExpiresAt).getTime() - Date.now()) <= 14 * 86400000 && (new Date(u.credentialExpiresAt).getTime() - Date.now()) > 0;
+                      const isExpired = u.credentialExpiresAt && new Date(u.credentialExpiresAt).getTime() <= Date.now();
+                      
+                      return (
+                        <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            <input
+                              type="checkbox"
+                              checked={selectedUserIds.includes(u.id)}
+                              onChange={e => {
+                                if (e.target.checked) setSelectedUserIds(prev => [...prev, u.id]);
+                                else setSelectedUserIds(prev => prev.filter(x => x !== u.id));
+                              }}
+                            />
+                          </td>
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            <div style={{ fontWeight: 600, color: '#F1F5F9' }}>{u.name}</div>
+                            <div style={{ color: '#8898AA', fontSize: '0.75rem' }}>{u.email}</div>
+                            <div style={{ color: '#64748B', fontSize: '0.65rem' }}>{u.id} · {u.loginCategory?.toUpperCase()}</div>
+                          </td>
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            <span style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px', color: '#CBD5E1' }}>
+                              {u.role}
+                            </span>
+                          </td>
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            <span style={{
+                              background: u.accountStatus === 'active' ? 'rgba(52,211,153,0.15)' : u.accountStatus === 'locked' ? 'rgba(248,113,113,0.15)' : 'rgba(251,191,36,0.15)',
+                              color: u.accountStatus === 'active' ? '#34D399' : u.accountStatus === 'locked' ? '#F87171' : '#FBBF24',
+                              padding: '2px 8px',
+                              borderRadius: '9999px',
+                              fontWeight: 700,
+                              fontSize: '0.7rem',
+                            }}>
+                              {u.accountStatus}
+                            </span>
+                            {isExpiring && (
+                              <span style={{ marginLeft: 6, fontSize: '0.65rem', background: 'rgba(251,191,36,0.2)', color: '#FBBF24', padding: '1px 5px', borderRadius: 4, fontWeight: 700 }}>
+                                ⚠️ 14d EXPIRING
+                              </span>
+                            )}
+                            {isExpired && (
+                              <span style={{ marginLeft: 6, fontSize: '0.65rem', background: 'rgba(239,68,68,0.2)', color: '#F87171', padding: '1px 5px', borderRadius: 4, fontWeight: 700 }}>
+                                EXPIRED
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ padding: '0.75rem 1rem', color: '#8898AA' }}>
+                            {u.credentialExpiresAt ? new Date(u.credentialExpiresAt).toLocaleDateString() : (u.validityPeriod || 'Permanent')}
+                          </td>
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            <span style={{ color: '#CBD5E1', fontWeight: 600 }}>{u.completedLessonsCount || 0}/32</span>
+                            {u.avgScore !== null && <span style={{ color: '#60A5FA', marginLeft: 6 }}>({u.avgScore}%)</span>}
+                          </td>
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            <div style={{ display: 'flex', gap: '0.35rem' }}>
+                              <button
+                                onClick={() => handleToggleUser(u.id)}
+                                style={{ background: 'rgba(255,255,255,0.05)', color: '#CBD5E1', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '3px 7px', cursor: 'pointer', fontSize: '0.7rem' }}
+                              >
+                                {u.accountStatus === 'active' ? 'Disable' : 'Enable'}
+                              </button>
+                              <button
+                                onClick={() => handleForceReset(u.id)}
+                                style={{ background: 'rgba(206,174,86,0.1)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.25)', borderRadius: '4px', padding: '3px 7px', cursor: 'pointer', fontSize: '0.7rem' }}
+                              >
+                                Reset
+                              </button>
+                              <button
+                                onClick={() => { setRenewUserId(u.id); }}
+                                style={{ background: 'rgba(96,165,250,0.1)', color: '#60A5FA', border: '1px solid rgba(96,165,250,0.25)', borderRadius: '4px', padding: '3px 7px', cursor: 'pointer', fontSize: '0.7rem' }}
+                              >
+                                Renew
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Renew Dialog Modal */}
+            {renewUserId && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+                <div style={{ background: '#0B1528', border: '1px solid #CEAE56', borderRadius: '1rem', padding: '1.5rem', width: 380 }}>
+                  <h3 style={{ color: '#CEAE56', fontSize: '1rem', margin: '0 0 1rem' }}>⏱️ Extend Credential Expiry</h3>
+                  <p style={{ fontSize: '0.8rem', color: '#8898AA', marginBottom: '1rem' }}>
+                    Select new subscription period for user ID: <code>{renewUserId}</code>
+                  </p>
+                  <select
+                    value={renewPeriod}
+                    onChange={e => setRenewPeriod(e.target.value as any)}
+                    style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.6rem', color: '#F1F5F9', marginBottom: '1.25rem' }}
+                  >
+                    <option value="monthly">Monthly (+30 days)</option>
+                    <option value="quarterly">Quarterly (+90 days)</option>
+                    <option value="half_yearly">Half-Yearly (+180 days)</option>
+                    <option value="annual">Annual (+365 days)</option>
+                  </select>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                    <button onClick={() => setRenewUserId(null)} style={{ background: 'transparent', border: '1px solid #334155', color: '#94A3B8', padding: '6px 12px', borderRadius: 4, cursor: 'pointer' }}>Cancel</button>
+                    <button onClick={() => handleRenew(renewUserId)} style={{ background: '#CEAE56', color: '#060A16', border: 'none', padding: '6px 14px', borderRadius: 4, fontWeight: 700, cursor: 'pointer' }}>Confirm Renewal</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Bulk CSV Modal */}
+            {showBulkCsvModal && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1.5rem' }}>
+                <div style={{ background: '#0B1528', border: '1px solid #CEAE56', borderRadius: '1rem', padding: '1.75rem', maxWidth: 700, width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ color: '#CEAE56', fontSize: '1.1rem', margin: 0 }}>📥 Bulk CSV User Provisioning Tool</h3>
+                    <button onClick={() => { setShowBulkCsvModal(false); setBulkImportResult(null); }} style={{ background: 'transparent', border: 'none', color: '#8898AA', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+                  </div>
+
+                  <p style={{ fontSize: '0.8rem', color: '#94A3B8', marginBottom: '1rem' }}>
+                    Paste CSV records below or type user rows. Expected columns: <code>name, email, role, validityPeriod, deliveryMethod, loginCategory, entityId</code>
+                  </p>
+
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                    <button
+                      onClick={() => handleParseCsv(`John Doe,john@company.com,learner,annual,link,b2c\nAlice Smith,alice@corp.com,employee,annual,password,b2b,ENT_DEMO_B2B\nBob Student,bob@univ.edu,learner,quarterly,link,b2b2c,ENT_DEMO_B2B2C`)}
+                      style={{ background: 'rgba(255,255,255,0.05)', color: '#CBD5E1', border: '1px solid #334155', borderRadius: 4, padding: '4px 8px', fontSize: '0.72rem', cursor: 'pointer' }}
+                    >
+                      📋 Load Sample 3-User Template
+                    </button>
+                  </div>
+
+                  <textarea
+                    rows={6}
+                    placeholder="Jane Doe, jane@example.com, learner, annual, link, b2c"
+                    value={rawCsvText}
+                    onChange={e => handleParseCsv(e.target.value)}
+                    style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.75rem', color: '#F1F5F9', fontSize: '0.8rem', fontFamily: 'monospace', marginBottom: '1rem' }}
+                  />
+
+                  {parsedCsvRows.length > 0 && (
+                    <div style={{ marginBottom: '1rem', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.75rem' }}>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34D399', marginBottom: '0.5rem' }}>
+                        ✓ {parsedCsvRows.length} Valid Records Parsed for Batch Provisioning:
+                      </div>
+                      <div style={{ maxHeight: 150, overflowY: 'auto', fontSize: '0.72rem', color: '#CBD5E1' }}>
+                        {parsedCsvRows.map((r, idx) => (
+                          <div key={idx} style={{ padding: '2px 0' }}>
+                            {idx + 1}. <strong>{r.name}</strong> ({r.email}) · Role: {r.role} · Mode: {r.deliveryMethod}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {bulkImportResult && (
+                    <div style={{ marginBottom: '1rem', padding: '0.75rem', borderRadius: '0.5rem', background: bulkImportResult.success ? 'rgba(52,211,153,0.15)' : 'rgba(239,68,68,0.15)', color: bulkImportResult.success ? '#34D399' : '#F87171', fontSize: '0.8rem' }}>
+                      <strong>Batch Import Summary:</strong> {bulkImportResult.summary ? `Created: ${bulkImportResult.summary.created}, Skipped: ${bulkImportResult.summary.skipped}, Errors: ${bulkImportResult.summary.errors}` : bulkImportResult.error}
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                    <button onClick={() => { setShowBulkCsvModal(false); setBulkImportResult(null); }} style={{ background: 'transparent', border: '1px solid #334155', color: '#94A3B8', padding: '6px 12px', borderRadius: 4, cursor: 'pointer' }}>Close</button>
+                    <button
+                      onClick={handleExecuteBulkImport}
+                      disabled={parsedCsvRows.length === 0 || isPending}
+                      style={{ background: 'linear-gradient(135deg, #CEAE56 0%, #B8962E 100%)', color: '#060A16', border: 'none', padding: '6px 16px', borderRadius: 4, fontWeight: 700, cursor: isPending ? 'not-allowed' : 'pointer' }}
+                    >
+                      {isPending ? 'Processing Batch...' : `Execute Bulk Import (${parsedCsvRows.length} Users)`}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
-        </div>
-      )}
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB 3: CURRICULUM & FINANCIAL SIMULATOR STUDIO ────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'lessons' && (
+          <div style={{ marginTop: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '1.5rem', alignItems: 'flex-start' }}>
+              
+              {/* Left Column: Lesson Selector */}
+              <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.25rem' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                  Select Module & Lesson
+                </div>
+                
+                <select
+                  value={selectedModuleId}
+                  onChange={e => {
+                    setSelectedModuleId(e.target.value);
+                    const firstLesson = LESSONS.find(l => l.moduleId === e.target.value);
+                    if (firstLesson) setSelectedLessonId(firstLesson.id);
+                  }}
+                  style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.6rem', color: '#F1F5F9', fontSize: '0.85rem', marginBottom: '1rem' }}
+                >
+                  {MODULES.map(m => (
+                    <option key={m.id} value={m.id}>{m.order || m.id}. {m.title}</option>
+                  ))}
+                </select>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', maxHeight: 540, overflowY: 'auto' }}>
+                  {filteredLessons.map((l, idx) => {
+                    const isSelected = l.id === selectedLessonId;
+                    const hasOverride = lessonOverrides.some(o => o.lessonId === l.id);
+                    return (
+                      <button
+                        key={l.id}
+                        onClick={() => setSelectedLessonId(l.id)}
+                        style={{
+                          textAlign: 'left',
+                          padding: '0.65rem 0.85rem',
+                          borderRadius: '0.5rem',
+                          background: isSelected ? 'rgba(206,174,86,0.15)' : '#070E1A',
+                          border: isSelected ? '1px solid rgba(206,174,86,0.4)' : '1px solid rgba(255,255,255,0.04)',
+                          color: isSelected ? '#CEAE56' : '#CBD5E1',
+                          fontSize: '0.8rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '0.5rem',
+                        }}
+                      >
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {idx + 1}. {l.title}
+                        </span>
+                        {hasOverride && (
+                          <span style={{ fontSize: '0.6rem', background: '#34D399', color: '#060A16', padding: '1px 5px', borderRadius: '4px', fontWeight: 700, flexShrink: 0 }}>
+                            EDITED
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right Column: Live Curriculum Canvas */}
+              <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.75rem' }}>
+                  <div>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                      Lesson Studio: {selectedLessonId}
+                    </h2>
+                    <p style={{ fontSize: '0.75rem', color: '#8898AA', margin: '0.2rem 0 0' }}>
+                      Configure lecture notes, financial simulator variables, reference media, and assessments.
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <Link
+                      href={`/lesson-player/${selectedLessonId}`}
+                      target="_blank"
+                      style={{ fontSize: '0.75rem', color: '#CEAE56', textDecoration: 'none', padding: '6px 12px', borderRadius: '0.375rem', background: 'rgba(206,174,86,0.1)', border: '1px solid rgba(206,174,86,0.3)' }}
+                    >
+                      Preview Player ↗
+                    </Link>
+                    <button
+                      onClick={handleSaveLesson}
+                      disabled={isPending}
+                      style={{
+                        background: 'linear-gradient(135deg, #CEAE56 0%, #B8962E 100%)',
+                        color: '#060A16',
+                        border: 'none',
+                        borderRadius: '0.375rem',
+                        padding: '6px 16px',
+                        fontSize: '0.85rem',
+                        fontWeight: 700,
+                        cursor: isPending ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      {isPending ? 'Publishing...' : '💾 Publish Changes'}
+                    </button>
+                  </div>
+                </div>
+
+                {lessonSaveStatus && (
+                  <div style={{ padding: '0.75rem 1rem', borderRadius: '0.5rem', background: lessonSaveStatus.includes('✓') ? 'rgba(52,211,153,0.15)' : 'rgba(206,174,86,0.15)', color: lessonSaveStatus.includes('✓') ? '#34D399' : '#CEAE56', fontSize: '0.85rem', fontWeight: 600 }}>
+                    {lessonSaveStatus}
+                  </div>
+                )}
+
+                {/* Core Metadata */}
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Lesson Title</label>
+                    <input
+                      type="text"
+                      value={lessonTitle}
+                      onChange={e => setLessonTitle(e.target.value)}
+                      style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.6rem', color: '#F1F5F9', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Duration</label>
+                    <input
+                      type="text"
+                      value={lessonDuration}
+                      onChange={e => setLessonDuration(e.target.value)}
+                      style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.6rem', color: '#F1F5F9', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Level</label>
+                    <select
+                      value={lessonLevel}
+                      onChange={e => setLessonLevel(e.target.value)}
+                      style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.6rem', color: '#F1F5F9', fontSize: '0.85rem' }}
+                    >
+                      <option value="Foundational">Foundational</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Subtitle & Media */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>▶ YouTube Embed ID</label>
+                    <input
+                      type="text"
+                      value={lessonYoutubeId}
+                      onChange={e => setLessonYoutubeId(e.target.value)}
+                      placeholder="e.g. dQw4w9WgXcQ"
+                      style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.6rem', color: '#F1F5F9', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>📄 Reference PDF Guide Path / URL</label>
+                    <input
+                      type="text"
+                      value={lessonPdfPath}
+                      onChange={e => setLessonPdfPath(e.target.value)}
+                      placeholder="/resources/module_guide.pdf"
+                      style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.6rem', color: '#F1F5F9', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                </div>
+
+                {/* ─── VISUAL FINANCIAL SIMULATOR CONFIGURATOR ─────────────────── */}
+                <div style={{ background: '#070E1A', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.75rem', padding: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#CEAE56' }}>
+                      🧮 Financial Valuation Simulator Configurator
+                    </div>
+                    <select
+                      value={simPreset}
+                      onChange={e => setSimPreset(e.target.value as any)}
+                      style={{ background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '4px 8px', color: '#F1F5F9', fontSize: '0.75rem' }}
+                    >
+                      <option value="dcf">Preset: Discounted Cash Flow (DCF)</option>
+                      <option value="lbo">Preset: Leveraged Buyout (LBO / PE)</option>
+                      <option value="multiples">Preset: Trading Multiples (Comps)</option>
+                      <option value="custom">Custom JSON Schema</option>
+                    </select>
+                  </div>
+
+                  {simPreset !== 'custom' ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.7rem', color: '#8898AA' }}>WACC (%)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={simWacc}
+                          onChange={e => setSimWacc(parseFloat(e.target.value) || 0)}
+                          style={{ width: '100%', background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.4rem', color: '#F1F5F9', fontSize: '0.8rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.7rem', color: '#8898AA' }}>Terminal Growth (%)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={simGrowth}
+                          onChange={e => setSimGrowth(parseFloat(e.target.value) || 0)}
+                          style={{ width: '100%', background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.4rem', color: '#F1F5F9', fontSize: '0.8rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.7rem', color: '#8898AA' }}>Exit Multiple (x)</label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          value={simExitMultiple}
+                          onChange={e => setSimExitMultiple(parseFloat(e.target.value) || 0)}
+                          style={{ width: '100%', background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.4rem', color: '#F1F5F9', fontSize: '0.8rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.7rem', color: '#8898AA' }}>Tax Rate (%)</label>
+                        <input
+                          type="number"
+                          step="1"
+                          value={simTaxRate}
+                          onChange={e => setSimTaxRate(parseFloat(e.target.value) || 0)}
+                          style={{ width: '100%', background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.4rem', color: '#F1F5F9', fontSize: '0.8rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.7rem', color: '#8898AA' }}>Debt Leverage (%)</label>
+                        <input
+                          type="number"
+                          step="5"
+                          value={simDebtRatio}
+                          onChange={e => setSimDebtRatio(parseFloat(e.target.value) || 0)}
+                          style={{ width: '100%', background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.4rem', color: '#F1F5F9', fontSize: '0.8rem' }}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <textarea
+                      rows={4}
+                      value={customSimJson}
+                      onChange={e => setCustomSimJson(e.target.value)}
+                      style={{ width: '100%', background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.5rem', color: '#F1F5F9', fontSize: '0.75rem', fontFamily: 'monospace' }}
+                    />
+                  )}
+                </div>
+
+                {/* ─── SPLIT-SCREEN MARKDOWN LECTURE THEORY ────────────────────── */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#8898AA' }}>
+                      📖 Lecture Notes & Markdown Theory
+                    </label>
+                    <div style={{ display: 'flex', gap: '0.35rem' }}>
+                      <button
+                        onClick={() => setEditorViewMode('split')}
+                        style={{ background: editorViewMode === 'split' ? '#CEAE56' : 'rgba(255,255,255,0.05)', color: editorViewMode === 'split' ? '#060A16' : '#CBD5E1', border: 'none', padding: '3px 8px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        Split Screen
+                      </button>
+                      <button
+                        onClick={() => setEditorViewMode('edit')}
+                        style={{ background: editorViewMode === 'edit' ? '#CEAE56' : 'rgba(255,255,255,0.05)', color: editorViewMode === 'edit' ? '#060A16' : '#CBD5E1', border: 'none', padding: '3px 8px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        Editor Only
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: editorViewMode === 'split' ? '1fr 1fr' : '1fr', gap: '1rem' }}>
+                    <textarea
+                      rows={10}
+                      value={lessonContentMarkdown}
+                      onChange={e => setLessonContentMarkdown(e.target.value)}
+                      style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.75rem', color: '#F1F5F9', fontSize: '0.82rem', fontFamily: 'monospace', lineHeight: 1.5 }}
+                    />
+
+                    {editorViewMode === 'split' && (
+                      <div style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.75rem', maxHeight: 220, overflowY: 'auto', fontSize: '0.82rem', color: '#CBD5E1', lineHeight: 1.6 }}>
+                        <div style={{ fontSize: '0.7rem', color: '#8898AA', textTransform: 'uppercase', marginBottom: '0.5rem', fontWeight: 700 }}>
+                          Live Rendered Preview
+                        </div>
+                        <div style={{ whiteSpace: 'pre-wrap' }}>
+                          {lessonContentMarkdown.slice(0, 500)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* ─── KEY TAKEAWAYS BUILDER ───────────────────────────────────── */}
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1rem' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#CEAE56', marginBottom: '0.5rem' }}>
+                    📌 Key Executive Takeaways ({keyTakeaways.length} points)
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                    <input
+                      type="text"
+                      placeholder="Add key takeaway summary..."
+                      value={newTakeawayInput}
+                      onChange={e => setNewTakeawayInput(e.target.value)}
+                      style={{ flex: 1, background: '#070E1A', border: '1px solid #1E293B', borderRadius: 4, padding: '0.4rem 0.6rem', color: '#F1F5F9', fontSize: '0.8rem' }}
+                    />
+                    <button
+                      onClick={() => {
+                        if (newTakeawayInput.trim()) {
+                          setKeyTakeaways(prev => [...prev, newTakeawayInput.trim()]);
+                          setNewTakeawayInput('');
+                        }
+                      }}
+                      style={{ background: '#CEAE56', color: '#060A16', border: 'none', borderRadius: 4, padding: '0.4rem 12px', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
+                    >
+                      + Add
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    {keyTakeaways.map((t, idx) => (
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#070E1A', padding: '4px 10px', borderRadius: 4, fontSize: '0.75rem' }}>
+                        <span>• {t}</span>
+                        <button
+                          onClick={() => setKeyTakeaways(prev => prev.filter((_, i) => i !== idx))}
+                          style={{ background: 'transparent', border: 'none', color: '#F87171', cursor: 'pointer', fontSize: '0.7rem' }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ─── ASSESSMENT & QUIZ BUILDER ──────────────────────────────── */}
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#CEAE56' }}>
+                      📝 Assessment & Quiz Builder ({lessonQuiz.length} Questions)
+                    </div>
+                    <button
+                      onClick={() => setLessonQuiz(prev => [...prev, { question: 'New Question ' + (prev.length + 1), options: ['Option 1', 'Option 2', 'Option 3', 'Option 4'], correctAnswer: 0, explanation: '' }])}
+                      style={{ background: 'rgba(206,174,86,0.15)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.375rem', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      + Add Question
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {lessonQuiz.map((q, qIdx) => (
+                      <div key={qIdx} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.75rem', padding: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#94A3B8' }}>Question {qIdx + 1}</span>
+                          <button
+                            onClick={() => setLessonQuiz(prev => prev.filter((_, idx) => idx !== qIdx))}
+                            style={{ background: 'transparent', border: 'none', color: '#F87171', fontSize: '0.75rem', cursor: 'pointer' }}
+                          >
+                            ✕ Remove
+                          </button>
+                        </div>
+
+                        <input
+                          type="text"
+                          value={q.question}
+                          onChange={e => setLessonQuiz(prev => prev.map((item, idx) => idx === qIdx ? { ...item, question: e.target.value } : item))}
+                          placeholder="Question text..."
+                          style={{ width: '100%', background: '#0A1324', border: '1px solid #334155', borderRadius: '0.375rem', padding: '0.5rem', color: '#F1F5F9', fontSize: '0.85rem', marginBottom: '0.75rem' }}
+                        />
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                          {q.options.map((opt: string, optIdx: number) => (
+                            <div key={optIdx} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <input
+                                type="radio"
+                                name={`quiz-opt-${qIdx}`}
+                                checked={q.correctAnswer === optIdx}
+                                onChange={() => setLessonQuiz(prev => prev.map((item, idx) => idx === qIdx ? { ...item, correctAnswer: optIdx } : item))}
+                              />
+                              <input
+                                type="text"
+                                value={opt}
+                                onChange={e => {
+                                  const val = e.target.value;
+                                  setLessonQuiz(prev => prev.map((item, idx) => {
+                                    if (idx !== qIdx) return item;
+                                    const nextOpts = [...item.options];
+                                    nextOpts[optIdx] = val;
+                                    return { ...item, options: nextOpts };
+                                  }));
+                                }}
+                                style={{ flex: 1, background: '#0A1324', border: q.correctAnswer === optIdx ? '1px solid #34D399' : '1px solid #334155', borderRadius: 4, padding: '0.4rem', color: '#F1F5F9', fontSize: '0.8rem' }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+
+                        <input
+                          type="text"
+                          value={q.explanation || ''}
+                          onChange={e => setLessonQuiz(prev => prev.map((item, idx) => idx === qIdx ? { ...item, explanation: e.target.value } : item))}
+                          placeholder="Rationale & explanation for the correct answer..."
+                          style={{ width: '100%', background: '#0A1324', border: '1px solid #334155', borderRadius: 4, padding: '0.4rem 0.6rem', color: '#94A3B8', fontSize: '0.78rem' }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB 4: AARKAA AI GOVERNANCE & CONTROLLED RAG ─────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'aarkaa' && (
+          <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+            
+            {/* Controlled Knowledge Documents Manager */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#CC785C', margin: 0 }}>
+                    🤖 Controlled RAG Knowledge Base ({aiKnowledgeDocs.length} Documents)
+                  </h3>
+                  <p style={{ fontSize: '0.75rem', color: '#8898AA', margin: '0.2rem 0 0' }}>
+                    Institutional financial guidelines and benchmark datasets ingested into Aarkaa AI context.
+                  </p>
+                </div>
+              </div>
+
+              {/* Add / Edit Doc Form */}
+              <div style={{ background: '#070E1A', border: '1px solid rgba(204,120,92,0.3)', borderRadius: '0.75rem', padding: '1rem' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#CC785C', marginBottom: '0.75rem' }}>
+                  {editingDocId ? `Edit Document: ${editingDocId}` : '+ Ingest New Knowledge Document'}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  <input
+                    type="text"
+                    placeholder="Document title / standard..."
+                    value={newDocTitle}
+                    onChange={e => setNewDocTitle(e.target.value)}
+                    style={{ background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.5rem', color: '#F1F5F9', fontSize: '0.8rem' }}
+                  />
+                  <select
+                    value={newDocCategory}
+                    onChange={e => setNewDocCategory(e.target.value)}
+                    style={{ background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.5rem', color: '#F1F5F9', fontSize: '0.8rem' }}
+                  >
+                    <option value="Valuation Standards">Valuation Standards</option>
+                    <option value="Accounting Rules">Accounting Rules</option>
+                    <option value="Institutional Research">Institutional Research</option>
+                    <option value="Curriculum Policy">Curriculum Policy</option>
+                  </select>
+                </div>
+                <textarea
+                  rows={4}
+                  placeholder="Knowledge text content or financial rule specification..."
+                  value={newDocContent}
+                  onChange={e => setNewDocContent(e.target.value)}
+                  style={{ width: '100%', background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.5rem', color: '#F1F5F9', fontSize: '0.8rem', fontFamily: 'monospace', marginBottom: '0.75rem' }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                  {editingDocId && (
+                    <button onClick={() => { setEditingDocId(null); setNewDocTitle(''); setNewDocContent(''); }} style={{ background: 'transparent', border: '1px solid #334155', color: '#8898AA', padding: '4px 10px', borderRadius: 4, fontSize: '0.75rem', cursor: 'pointer' }}>Cancel</button>
+                  )}
+                  <button
+                    onClick={handleSaveAiDoc}
+                    disabled={isPending}
+                    style={{ background: '#CC785C', color: '#FFFFFF', border: 'none', padding: '5px 14px', borderRadius: 4, fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    {editingDocId ? 'Update Document' : 'Save Document to RAG'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Docs Stream */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {aiKnowledgeDocs.map(doc => (
+                  <div key={doc.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '0.65rem', background: 'rgba(204,120,92,0.2)', color: '#CC785C', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>
+                          {doc.category}
+                        </span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F1F5F9' }}>{doc.title}</span>
+                        <span style={{ fontSize: '0.65rem', color: '#64748B' }}>v{doc.version || 1}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.35rem' }}>
+                        <button
+                          onClick={() => {
+                            setEditingDocId(doc.id);
+                            setNewDocTitle(doc.title);
+                            setNewDocCategory(doc.category);
+                            setNewDocContent(doc.content);
+                          }}
+                          style={{ background: 'rgba(255,255,255,0.05)', color: '#CBD5E1', border: '1px solid #334155', borderRadius: 4, padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => {
+                            startTransition(async () => {
+                              await toggleAiKnowledgeDocAction(sessionToken, doc.id);
+                              fetchDashboardData();
+                            });
+                          }}
+                          style={{ background: doc.isActive ? 'rgba(52,211,153,0.15)' : 'rgba(248,113,113,0.15)', color: doc.isActive ? '#34D399' : '#F87171', border: 'none', borderRadius: 4, padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer', fontWeight: 700 }}
+                        >
+                          {doc.isActive ? 'Active' : 'Disabled'}
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm('Delete this knowledge document?')) {
+                              startTransition(async () => {
+                                await deleteAiKnowledgeDocAction(sessionToken, doc.id);
+                                fetchDashboardData();
+                              });
+                            }
+                          }}
+                          style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: 'none', borderRadius: 4, padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: '0.75rem', color: '#94A3B8', margin: '0.5rem 0 0', lineHeight: 1.4 }}>
+                      {doc.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* AI Settings & Testing Playground */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              
+              {/* System Prompt Presets */}
+              <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.25rem' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '0.75rem' }}>
+                  System Prompt Behavior
+                </h3>
+                <select
+                  value={selectedPromptMode}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setSelectedPromptMode(val);
+                    startTransition(async () => {
+                      await updateAiSettingAction(sessionToken, 'system_prompt_mode', val);
+                      fetchDashboardData();
+                    });
+                  }}
+                  style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: 4, padding: '0.6rem', color: '#F1F5F9', fontSize: '0.8rem', marginBottom: '0.75rem' }}
+                >
+                  <option value="institutional">Institutional Financial Analyst (Default)</option>
+                  <option value="academic">Academic Professor / Theory Tutor</option>
+                  <option value="socratic">Socratic Mentor (Guide with Questions)</option>
+                  <option value="capstone_coach">Capstone Valuation Reviewer</option>
+                </select>
+                <p style={{ fontSize: '0.7rem', color: '#8898AA', margin: 0 }}>
+                  Controls the foundational persona and tone across the student assistant and Aarkaa AI studio.
+                </p>
+              </div>
+
+              {/* Testing Playground */}
+              <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.25rem' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '0.75rem' }}>
+                  🧪 RAG Query Simulation Test
+                </h3>
+                <textarea
+                  rows={3}
+                  value={aiTestPrompt}
+                  onChange={e => setAiTestPrompt(e.target.value)}
+                  style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: 4, padding: '0.5rem', color: '#F1F5F9', fontSize: '0.78rem', marginBottom: '0.5rem' }}
+                />
+                <button
+                  onClick={handleTestAi}
+                  disabled={isAiTesting}
+                  style={{ width: '100%', background: '#CC785C', color: '#FFFFFF', border: 'none', borderRadius: 4, padding: '6px', fontSize: '0.8rem', fontWeight: 700, cursor: isAiTesting ? 'not-allowed' : 'pointer' }}
+                >
+                  {isAiTesting ? 'Querying Aarkaa...' : 'Run Query with Ingested Docs'}
+                </button>
+
+                {aiTestResponse && (
+                  <div style={{ marginTop: '0.75rem', background: '#070E1A', border: '1px solid #1E293B', borderRadius: 4, padding: '0.75rem', fontSize: '0.75rem', color: '#CBD5E1', maxHeight: 200, overflowY: 'auto' }}>
+                    <div style={{ fontSize: '0.65rem', color: '#CC785C', fontWeight: 700, marginBottom: '0.25rem' }}>AARKAA AI TEST OUTPUT:</div>
+                    {aiTestResponse}
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB 5: COMMUNITY MODERATION ───────────────────────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'community' && (
+          <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                  Published Research & Community Articles ({articlesList.length})
+                </h3>
+                <Link href="/community/new" target="_blank" style={{ fontSize: '0.75rem', color: '#CEAE56', textDecoration: 'none', background: 'rgba(206,174,86,0.1)', border: '1px solid rgba(206,174,86,0.3)', padding: '4px 10px', borderRadius: '0.375rem' }}>
+                  + Post Editorial ↗
+                </Link>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {articlesList.map(art => (
+                  <div key={art.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.75rem', padding: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '0.65rem', background: 'rgba(206,174,86,0.15)', color: '#CEAE56', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                          {art.category || 'Valuation'}
+                        </span>
+                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#F1F5F9' }}>{art.title}</span>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button
+                          onClick={() => {
+                            if (confirm('Delete article?')) {
+                              startTransition(async () => {
+                                await adminDeleteCommunityArticleAction(sessionToken, String(art.id));
+                                fetchDashboardData();
+                              });
+                            }
+                          }}
+                          style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '0.375rem', padding: '3px 8px', fontSize: '0.75rem', cursor: 'pointer' }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+
+                    <p style={{ fontSize: '0.8rem', color: '#8898AA', margin: '0.5rem 0 0', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                      {art.summary || art.body?.slice(0, 140)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Recent Comments Feed */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.25rem' }}>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '0.75rem' }}>
+                Recent Comments Moderation Stream ({commentsList.length})
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: 420, overflowY: 'auto' }}>
+                {commentsList.map(c => (
+                  <div key={c.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.65rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#CEAE56' }}>{c.user_name || 'Member'}</span>
+                      <button
+                        onClick={() => {
+                          if (confirm('Delete comment?')) {
+                            startTransition(async () => {
+                              await adminDeleteCommentAction(sessionToken, String(c.id));
+                              fetchDashboardData();
+                            });
+                          }
+                        }}
+                        style={{ background: 'transparent', border: 'none', color: '#F87171', fontSize: '0.7rem', cursor: 'pointer' }}
+                      >
+                        ✕ Delete
+                      </button>
+                    </div>
+                    <p style={{ fontSize: '0.75rem', color: '#CBD5E1', margin: 0 }}>{c.body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB 6: ENTERPRISE & PACKAGES ──────────────────────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'entities' && (
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#CEAE56', marginBottom: '1rem' }}>
+                + Add Business Entity (B2B Corporate or B2B2C University Partner)
+              </h3>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const res = await createBusinessEntityAction(sessionToken, formData);
+                if (res.success) {
+                  alert('Business Entity registered successfully!');
+                  fetchDashboardData();
+                } else {
+                  alert('Error: ' + res.error);
+                }
+              }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Organization Name</label>
+                  <input name="name" required placeholder="e.g. Goldman Financial Group" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.85rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Type</label>
+                  <select name="type" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.85rem' }}>
+                    <option value="b2b">B2B Corporate</option>
+                    <option value="b2b2c">B2B2C University / Partner</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Contact Email</label>
+                  <input name="contactEmail" type="email" required style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.85rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Max User Quota</label>
+                  <input name="maxUsers" type="number" defaultValue={100} style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.85rem' }} />
+                </div>
+                <button type="submit" style={{ background: '#CEAE56', color: '#060A16', border: 'none', borderRadius: '0.375rem', padding: '0.65rem 1rem', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer' }}>
+                  + Register Partner
+                </button>
+              </form>
+            </div>
+
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', overflow: 'hidden' }}>
+              <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: '0.9rem', fontWeight: 700, color: '#F1F5F9' }}>
+                Active Enterprise & University Entities ({entitiesList.length})
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
+                  <thead>
+                    <tr style={{ background: '#070E1A', color: '#8898AA' }}>
+                      <th style={{ padding: '0.75rem 1rem' }}>Entity Name</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Type</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Contact</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Quota</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {entitiesList.map(e => (
+                      <tr key={e.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#F1F5F9' }}>{e.name}</td>
+                        <td style={{ padding: '0.75rem 1rem', textTransform: 'uppercase', color: '#CBD5E1' }}>{e.type}</td>
+                        <td style={{ padding: '0.75rem 1rem', color: '#8898AA' }}>{e.contactEmail}</td>
+                        <td style={{ padding: '0.75rem 1rem', color: '#CEAE56', fontWeight: 700 }}>{e.maxUsers} seats</td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <button
+                            onClick={() => startTransition(async () => { await toggleEntityStatusAction(sessionToken, e.id); fetchDashboardData(); })}
+                            style={{ background: e.isActive ? 'rgba(52,211,153,0.15)' : 'rgba(248,113,113,0.15)', color: e.isActive ? '#34D399' : '#F87171', border: 'none', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.7rem' }}
+                          >
+                            {e.isActive ? 'Active' : 'Disabled'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB 7: SECURITY & AUDIT TRAILS ────────────────────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'logs' && (
+          <div style={{ marginTop: '1.5rem' }}>
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', overflow: 'hidden' }}>
+              <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: '0.9rem', fontWeight: 700, color: '#F1F5F9' }}>
+                Immutable Security Audit Log Stream ({auditLogs.length} Events)
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.75rem' }}>
+                  <thead>
+                    <tr style={{ background: '#070E1A', color: '#8898AA' }}>
+                      <th style={{ padding: '0.6rem 1rem' }}>Timestamp</th>
+                      <th style={{ padding: '0.6rem 1rem' }}>Event Action</th>
+                      <th style={{ padding: '0.6rem 1rem' }}>Actor</th>
+                      <th style={{ padding: '0.6rem 1rem' }}>Target ID</th>
+                      <th style={{ padding: '0.6rem 1rem' }}>Diff Metadata</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {auditLogs.map(log => (
+                      <tr key={log.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td style={{ padding: '0.6rem 1rem', color: '#8898AA' }}>{new Date(log.timestamp).toLocaleString()}</td>
+                        <td style={{ padding: '0.6rem 1rem', fontWeight: 600, color: '#CEAE56' }}>{log.action}</td>
+                        <td style={{ padding: '0.6rem 1rem', color: '#CBD5E1' }}>{log.adminId}</td>
+                        <td style={{ padding: '0.6rem 1rem', color: '#8898AA' }}>{log.targetUserId || log.targetEntityId || '—'}</td>
+                        <td style={{ padding: '0.6rem 1rem', color: '#94A3B8', fontFamily: 'monospace', fontSize: '0.7rem' }}>
+                          {log.metadata ? (typeof log.metadata === 'string' ? log.metadata : JSON.stringify(log.metadata)) : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
