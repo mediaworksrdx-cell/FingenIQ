@@ -48,6 +48,13 @@ def package_fingeniq():
         shutil.copytree("./Lessons", dest_lessons)
         print("  + Copied Lessons directory")
 
+    # Ensure schema.sql is present for database initialization
+    dest_lib = os.path.join(STANDALONE_DIR, "src", "lib")
+    os.makedirs(dest_lib, exist_ok=True)
+    if os.path.exists("./src/lib/schema.sql"):
+        shutil.copy2("./src/lib/schema.sql", os.path.join(dest_lib, "schema.sql"))
+        print("  + Copied src/lib/schema.sql")
+
     if os.path.exists(ARCHIVE_NAME):
         os.remove(ARCHIVE_NAME)
 
@@ -71,17 +78,17 @@ def deploy_remote():
         return False
     print("-> Upload complete.")
 
-    print("\n[4/4] Extracting and starting FinGenIQ server on port 3001...")
+    print("\n[4/4] Extracting and restarting FinGenIQ via PM2 on port 3001...")
     remote_cmd = (
         f"cd {REMOTE_DIR} && "
         f"tar -xzf {ARCHIVE_NAME} && "
         f"rm -f {ARCHIVE_NAME} && "
         f"export NVM_DIR=\"$HOME/.nvm\" && "
         f"[ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\" && "
-        f"pkill -f 'PORT=3001 node server.js' 2>/dev/null || true && "
-        f"PORT=3001 nohup node server.js > fingeniq.log 2>&1 & "
-        f"sleep 3 && "
-        f"ps aux | grep 'server.js' | grep -v grep || true && "
+        f"PORT=3001 pm2 restart fingeniq --update-env || PORT=3001 pm2 start server.js --name fingeniq --update-env && "
+        f"pm2 save && "
+        f"sleep 2 && "
+        f"pm2 list && "
         f"curl -s -o /dev/null -w 'FinGenIQ HTTP Code: %{{http_code}}\\n' http://127.0.0.1:3001/ || true"
     )
     res = subprocess.run(["ssh"] + SSH_OPTS + [REMOTE_HOST, remote_cmd], capture_output=True, text=True)
