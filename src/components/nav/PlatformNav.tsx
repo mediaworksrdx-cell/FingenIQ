@@ -119,7 +119,7 @@ export default function PlatformNav() {
       <nav className="nav" aria-label="Platform navigation">
         <div className="nav__inner">
           {/* Logo */}
-          <Link href="/" className="nav__logo" aria-label="FingenIQ home">
+          <Link href={sessionUser?.role === 'admin' ? '/admin/credentials' : '/dashboard'} className="nav__logo" aria-label="FingenIQ platform">
             <div className="nav__logo-mark">
               <span className="nav__logo-glyph">F</span>
             </div>

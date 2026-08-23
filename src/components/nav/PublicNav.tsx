@@ -44,14 +44,6 @@ export default function PublicNav() {
       <nav
         className="nav"
         aria-label="Public navigation"
-        style={{
-          background: scrolled
-            ? 'rgba(6, 10, 22, 0.97)'
-            : 'rgba(6, 10, 22, 0.82)',
-          backdropFilter: scrolled ? 'blur(32px) saturate(200%)' : 'blur(16px) saturate(140%)',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(255,255,255,0.05)',
-          transition: 'background 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease',
-        }}
       >
         <div className="nav__inner">
           <Link href="/" className="nav__logo" aria-label="FingenIQ home">
