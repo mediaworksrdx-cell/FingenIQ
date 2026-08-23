@@ -113,11 +113,11 @@ export default function PlatformAiTutor({
         const bodyRows = tableRows.slice(2);
         elements.push(
           <div key={`table-${keyIndex}`} style={{ overflowX: 'auto', margin: '0.75rem 0' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(206,174,86,0.2)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', background: 'rgba(8,38,18,0.5)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: '6px', overflow: 'hidden' }}>
               <thead>
-                <tr style={{ background: 'rgba(206,174,86,0.1)' }}>
+                <tr style={{ background: 'rgba(74,222,128,0.18)' }}>
                   {headers.map((h, i) => (
-                    <th key={i} style={{ padding: '0.5rem 0.75rem', textAlign: 'left', color: '#CEAE56', borderBottom: '1px solid rgba(206,174,86,0.3)', fontWeight: 600 }}>
+                    <th key={i} style={{ padding: '0.5rem 0.75rem', textAlign: 'left', color: '#4ADE80', borderBottom: '1px solid rgba(74,222,128,0.35)', fontWeight: 700, fontFamily: 'var(--font-serif)' }}>
                       {h.trim()}
                     </th>
                   ))}
@@ -125,9 +125,9 @@ export default function PlatformAiTutor({
               </thead>
               <tbody>
                 {bodyRows.map((row, rIdx) => (
-                  <tr key={rIdx} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: rIdx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)' }}>
+                  <tr key={rIdx} style={{ borderBottom: '1px solid rgba(74,222,128,0.1)', background: rIdx % 2 === 0 ? 'transparent' : 'rgba(74,222,128,0.04)' }}>
                     {row.map((cell, cIdx) => (
-                      <td key={cIdx} style={{ padding: '0.5rem 0.75rem', color: '#CBD5E1', verticalAlign: 'top' }}>
+                      <td key={cIdx} style={{ padding: '0.5rem 0.75rem', color: '#DCFCE7', verticalAlign: 'top' }}>
                         {cell.trim()}
                       </td>
                     ))}
@@ -161,7 +161,7 @@ export default function PlatformAiTutor({
 
       if (trimmed.startsWith('### ')) {
         elements.push(
-          <h3 key={idx} style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: '0.75rem 0 0.35rem', borderBottom: '1px solid rgba(206,174,86,0.2)', paddingBottom: '0.25rem' }}>
+          <h3 key={idx} style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF', margin: '0.75rem 0 0.35rem', borderBottom: '1px solid rgba(74,222,128,0.3)', paddingBottom: '0.25rem', fontFamily: 'var(--font-serif)' }}>
             {trimmed.replace('### ', '')}
           </h3>
         );
@@ -169,7 +169,7 @@ export default function PlatformAiTutor({
       }
       if (trimmed.startsWith('#### ')) {
         elements.push(
-          <h4 key={idx} style={{ fontSize: '0.875rem', fontWeight: 600, color: '#CEAE56', margin: '0.6rem 0 0.25rem' }}>
+          <h4 key={idx} style={{ fontSize: '0.9rem', fontWeight: 700, color: '#4ADE80', margin: '0.6rem 0 0.25rem', fontFamily: 'var(--font-serif)' }}>
             {trimmed.replace('#### ', '')}
           </h4>
         );
@@ -177,7 +177,7 @@ export default function PlatformAiTutor({
       }
 
       if (trimmed.startsWith('---')) {
-        elements.push(<hr key={idx} style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.08)', margin: '0.75rem 0' }} />);
+        elements.push(<hr key={idx} style={{ border: 'none', borderTop: '1px solid rgba(74,222,128,0.18)', margin: '0.75rem 0' }} />);
         return;
       }
 
@@ -186,7 +186,7 @@ export default function PlatformAiTutor({
         const parts = trimmed.split('**');
         formatted = parts.map((part, i) =>
           i % 2 === 1 ? (
-            <strong key={i} style={{ color: '#E8C86A', fontWeight: 600 }}>
+            <strong key={i} style={{ color: '#86EFAC', fontWeight: 700 }}>
               {part}
             </strong>
           ) : (
@@ -197,8 +197,8 @@ export default function PlatformAiTutor({
 
       if (trimmed.startsWith('• ') || trimmed.startsWith('- ') || /^\d+\.\s/.test(trimmed)) {
         elements.push(
-          <div key={idx} style={{ display: 'flex', gap: '0.4rem', fontSize: '0.825rem', color: '#D1D5DB', lineHeight: 1.6, paddingLeft: '0.5rem' }}>
-            <span style={{ color: '#CEAE56' }}>•</span>
+          <div key={idx} style={{ display: 'flex', gap: '0.4rem', fontSize: '0.85rem', color: '#DCFCE7', lineHeight: 1.6, paddingLeft: '0.5rem' }}>
+            <span style={{ color: '#4ADE80', fontWeight: 700 }}>•</span>
             <div>{formatted}</div>
           </div>
         );
@@ -206,7 +206,7 @@ export default function PlatformAiTutor({
       }
 
       elements.push(
-        <p key={idx} style={{ margin: 0, fontSize: '0.825rem', color: '#D1D5DB', lineHeight: 1.6 }}>
+        <p key={idx} style={{ margin: 0, fontSize: '0.85rem', color: '#DCFCE7', lineHeight: 1.65 }}>
           {formatted}
         </p>
       );
@@ -224,8 +224,8 @@ export default function PlatformAiTutor({
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(3, 6, 15, 0.8)',
-        backdropFilter: 'blur(8px)',
+        background: 'rgba(3, 18, 9, 0.75)',
+        backdropFilter: 'blur(12px)',
         zIndex: 99999,
         display: 'flex',
         justifyContent: 'flex-end',
@@ -238,11 +238,13 @@ export default function PlatformAiTutor({
           width: '100%',
           maxWidth: 720,
           height: '100%',
-          background: '#0B1528',
-          borderLeft: '1px solid rgba(206,174,86,0.3)',
+          background: 'rgba(6, 28, 14, 0.88)',
+          backdropFilter: 'blur(30px) saturate(200%)',
+          WebkitBackdropFilter: 'blur(30px) saturate(200%)',
+          borderLeft: '1px solid rgba(74, 222, 128, 0.35)',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '-15px 0 50px rgba(0,0,0,0.8)',
+          boxShadow: '-15px 0 50px rgba(0,0,0,0.6), inset 1px 0 1px rgba(255,255,255,0.1)',
           animation: 'slideLeft 0.3s ease-out',
         }}
         onClick={e => e.stopPropagation()}
@@ -251,11 +253,11 @@ export default function PlatformAiTutor({
         <div
           style={{
             padding: '1.25rem 1.5rem',
-            borderBottom: '1px solid rgba(255,255,255,0.08)',
+            borderBottom: '1px solid rgba(74, 222, 128, 0.22)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: '#070E1C',
+            background: 'rgba(4, 20, 10, 0.85)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -263,38 +265,41 @@ export default function PlatformAiTutor({
               style={{
                 width: 42,
                 height: 42,
-                borderRadius: '0.5rem',
-                background: 'linear-gradient(135deg, #183070, #050F24)',
-                border: '1px solid rgba(206,174,86,0.4)',
+                borderRadius: '0.65rem',
+                background: 'linear-gradient(135deg, rgba(22, 101, 52, 0.9), rgba(6, 40, 18, 0.95))',
+                border: '1px solid rgba(74, 222, 128, 0.45)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '1.3rem',
-                color: '#CEAE56',
+                color: '#4ADE80',
+                boxShadow: '0 0 15px rgba(74, 222, 128, 0.3)',
               }}
             >
               🏛️
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', letterSpacing: '-0.01em' }}>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', fontFamily: 'var(--font-serif)' }}>
                   FinGenIQ Financial Assistance
                 </h3>
                 <span
                   style={{
                     fontSize: '0.65rem',
-                    background: 'rgba(206,174,86,0.15)',
-                    color: '#CEAE56',
-                    padding: '2px 6px',
-                    borderRadius: '4px',
-                    fontWeight: 600,
+                    background: 'rgba(74, 222, 128, 0.18)',
+                    color: '#4ADE80',
+                    border: '1px solid rgba(74, 222, 128, 0.4)',
+                    padding: '2px 8px',
+                    borderRadius: '9999px',
+                    fontWeight: 700,
                     textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
                   }}
                 >
                   Aarkaa AI
                 </span>
               </div>
-              <p style={{ margin: '2px 0 0', fontSize: '0.7rem', color: '#8898AA' }}>
+              <p style={{ margin: '2px 0 0', fontSize: '0.75rem', color: '#86EFAC' }}>
                 Live Institutional Financial &amp; Educational Intelligence
               </p>
             </div>
@@ -314,12 +319,13 @@ export default function PlatformAiTutor({
               }}
               title="Reset Session"
               style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: '#94A3B8',
-                padding: '0.35rem 0.6rem',
-                borderRadius: '0.375rem',
-                fontSize: '0.7rem',
+                background: 'rgba(74, 222, 128, 0.1)',
+                border: '1px solid rgba(74, 222, 128, 0.25)',
+                color: '#DCFCE7',
+                padding: '0.35rem 0.75rem',
+                borderRadius: '0.45rem',
+                fontSize: '0.75rem',
+                fontWeight: 600,
                 cursor: 'pointer',
               }}
             >
@@ -331,8 +337,8 @@ export default function PlatformAiTutor({
               aria-label="Close"
               style={{
                 background: 'rgba(255,255,255,0.06)',
-                border: 'none',
-                color: '#94A3B8',
+                border: '1px solid rgba(74, 222, 128, 0.2)',
+                color: '#DCFCE7',
                 width: 32,
                 height: 32,
                 borderRadius: '50%',
@@ -374,30 +380,33 @@ export default function PlatformAiTutor({
                   style={{
                     maxWidth: isUser ? '85%' : '100%',
                     padding: isUser ? '0.75rem 1rem' : '1.25rem',
-                    borderRadius: isUser ? '1rem 1rem 0.2rem 1rem' : '0.75rem',
+                    borderRadius: isUser ? '1rem 1rem 0.2rem 1rem' : '0.85rem',
                     background: isUser
-                      ? 'linear-gradient(135deg, #183070 0%, #0F204B 100%)'
-                      : '#08101E',
-                    color: isUser ? '#F1F5F9' : '#D1D5DB',
+                      ? 'linear-gradient(135deg, #15803D 0%, #166534 100%)'
+                      : 'rgba(8, 38, 18, 0.65)',
+                    color: isUser ? '#FFFFFF' : '#DCFCE7',
                     border: isUser
-                      ? '1px solid rgba(206,174,86,0.3)'
-                      : '1px solid rgba(206,174,86,0.2)',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                      ? '1px solid rgba(74, 222, 128, 0.4)'
+                      : '1px solid rgba(74, 222, 128, 0.25)',
+                    boxShadow: isUser
+                      ? '0 4px 15px rgba(21, 128, 61, 0.3)'
+                      : '0 8px 30px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.12)',
                     position: 'relative',
                   }}
                 >
                   {!isUser && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#CEAE56', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Financial Analysis Response
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(74, 222, 128, 0.15)' }}>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#4ADE80', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: 'var(--font-serif)' }}>
+                        Institutional Financial Analysis
                       </span>
                       <button
                         onClick={() => copyToClipboard(m.text, m.id)}
                         style={{
                           background: 'transparent',
                           border: 'none',
-                          color: copiedId === m.id ? '#10B981' : '#64748B',
-                          fontSize: '0.7rem',
+                          color: copiedId === m.id ? '#4ADE80' : '#86EFAC',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
                           cursor: 'pointer',
                         }}
                       >
@@ -407,17 +416,18 @@ export default function PlatformAiTutor({
                   )}
 
                   {isUser ? (
-                    <p style={{ margin: 0, fontSize: '0.85rem', lineHeight: 1.5 }}>{m.text}</p>
+                    <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.5, color: '#FFFFFF', fontWeight: 500 }}>{m.text}</p>
                   ) : (
                     renderFormattedMarkdown(m.text)
                   )}
                 </div>
                 <div
                   style={{
-                    fontSize: '0.65rem',
-                    color: '#64748B',
+                    fontSize: '0.68rem',
+                    color: '#86EFAC',
                     marginTop: '4px',
                     padding: '0 4px',
+                    opacity: 0.8,
                   }}
                 >
                   {m.timestamp}
@@ -427,7 +437,7 @@ export default function PlatformAiTutor({
           })}
 
           {isLoading && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#CEAE56', fontSize: '0.825rem', padding: '0.75rem', background: 'rgba(206,174,86,0.05)', borderRadius: '0.5rem', border: '1px solid rgba(206,174,86,0.2)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#4ADE80', fontSize: '0.85rem', padding: '0.85rem', background: 'rgba(74, 222, 128, 0.1)', borderRadius: '0.65rem', border: '1px solid rgba(74, 222, 128, 0.35)', boxShadow: '0 0 20px rgba(74, 222, 128, 0.2)' }}>
               <span>⚡</span>
               <span>Aarkaa AI is generating financial analysis and calculations...</span>
             </div>
@@ -440,8 +450,8 @@ export default function PlatformAiTutor({
         <div
           style={{
             padding: '1rem 1.25rem',
-            borderTop: '1px solid rgba(255,255,255,0.08)',
-            background: '#070E1C',
+            borderTop: '1px solid rgba(74, 222, 128, 0.22)',
+            background: 'rgba(4, 20, 10, 0.85)',
           }}
         >
           <form
@@ -449,7 +459,7 @@ export default function PlatformAiTutor({
               e.preventDefault();
               handleSend();
             }}
-            style={{ display: 'flex', gap: '0.5rem' }}
+            style={{ display: 'flex', gap: '0.6rem' }}
           >
             <input
               ref={inputRef}
@@ -460,12 +470,12 @@ export default function PlatformAiTutor({
               disabled={isLoading}
               style={{
                 flex: 1,
-                padding: '0.75rem 1rem',
-                background: '#08101E',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '0.5rem',
-                color: '#F1F5F9',
-                fontSize: '0.85rem',
+                padding: '0.8rem 1.1rem',
+                background: 'rgba(8, 38, 18, 0.75)',
+                border: '1px solid rgba(74, 222, 128, 0.28)',
+                borderRadius: '0.65rem',
+                color: '#FFFFFF',
+                fontSize: '0.88rem',
                 outline: 'none',
               }}
             />
@@ -473,18 +483,19 @@ export default function PlatformAiTutor({
               type="submit"
               disabled={isLoading || !input.trim()}
               style={{
-                padding: '0.75rem 1.5rem',
-                background: 'linear-gradient(135deg, #8F6E1C 0%, #B8962E 100%)',
-                border: '1px solid #CEAE56',
-                borderRadius: '0.5rem',
-                color: '#060A16',
-                fontWeight: 700,
-                fontSize: '0.85rem',
+                padding: '0.8rem 1.6rem',
+                background: 'linear-gradient(135deg, #16A34A 0%, #22C55E 50%, #4ADE80 100%)',
+                border: '1px solid #86EFAC',
+                borderRadius: '0.65rem',
+                color: '#022C13',
+                fontWeight: 800,
+                fontSize: '0.88rem',
                 cursor: isLoading || !input.trim() ? 'not-allowed' : 'pointer',
                 opacity: isLoading || !input.trim() ? 0.6 : 1,
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
+                boxShadow: '0 4px 20px rgba(34, 197, 94, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.5)',
               }}
             >
               <span>Analyze</span>
