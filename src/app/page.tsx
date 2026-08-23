@@ -1,6 +1,5 @@
 import PublicNav from '@/components/nav/PublicNav';
 import Footer from '@/components/layout/Footer';
-import { MODULES } from '@/lib/data';
 import Link from 'next/link';
 
 export default function Home() {
@@ -25,14 +24,9 @@ export default function Home() {
                 <p className="hero__subtitle" style={{ marginBottom: 'var(--sp-5)' }}>
                   Financial success is not determined solely by how much money you earn—it is shaped by how well you understand, manage, grow, and protect your money. In today's rapidly evolving economy, financial education has become an essential life skill that empowers individuals to make informed decisions, achieve financial independence, and build lasting wealth.
                 </p>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-300)', marginBottom: 'var(--sp-6)', lineHeight: 'var(--leading-relaxed)' }}>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-300)', marginBottom: 'var(--sp-8)', lineHeight: 'var(--leading-relaxed)' }}>
                   <strong style={{ color: 'var(--ink-100)' }}>FingenIQ</strong> is an institution-grade financial education platform dedicated to helping individuals develop financial intelligence through structured, practical, and AI-powered learning. Whether you are beginning your financial journey or expanding your expertise, FingenIQ equips you with the knowledge, confidence, and skills needed to navigate personal finance, investing, business, and wealth creation.
                 </p>
-                <div className="card" style={{ padding: 'var(--sp-4) var(--sp-5)', background: 'rgba(201,168,76,0.07)', borderColor: 'rgba(201,168,76,0.2)', marginBottom: 'var(--sp-8)' }}>
-                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-200)', lineHeight: 'var(--leading-relaxed)' }}>
-                    Our mission is simple: <strong style={{ color: 'var(--brass-400)' }}>transform financial knowledge into lifelong financial confidence, responsible wealth management, and sustainable financial freedom.</strong>
-                  </p>
-                </div>
                 <div className="hero__actions">
                   <Link href="/login" className="btn btn--brass btn--lg">Enter FingenIQ →</Link>
                   <Link href="/about" className="btn btn--outline btn--lg">Read Our Story</Link>
@@ -40,43 +34,6 @@ export default function Home() {
               </div>
             </div>
           </section>
-
-          {/* Stats Bar */}
-          <div style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)', padding: 'var(--sp-5) 0' }}>
-            <div className="container">
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 'var(--sp-6)' }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>44</div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Lessons</div>
-                </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
-                <div style={{ textAlign: 'center' }}>
-                  <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>8</div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Modules</div>
-                </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
-                <div style={{ textAlign: 'center' }}>
-                  <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>3</div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Credential Tiers</div>
-                </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
-                <div style={{ textAlign: 'center' }}>
-                  <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>20</div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Steps / Lesson</div>
-                </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
-                <div style={{ textAlign: 'center' }}>
-                  <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>AI</div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Powered Tutor</div>
-                </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
-                <div style={{ textAlign: 'center' }}>
-                  <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>SEBI</div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Equivalence Roadmap</div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Why Financial Education Matters */}
           <section className="py-20" id="why-it-matters">
@@ -146,62 +103,6 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Wealth Management */}
-          <section className="py-20" id="wealth-management">
-            <div className="container">
-              <div className="section-header text-center animate-fadeUp" style={{ marginBottom: 'var(--sp-12)' }}>
-                <span className="section-label">Structured Wealth Strategy</span>
-                <h2 className="section-title" style={{ marginTop: 'var(--sp-3)' }}>Wealth Management for Every Stage of Life</h2>
-                <p className="section-subtitle mx-auto" style={{ marginTop: 'var(--sp-4)' }}>
-                  Wealth management is not reserved for high-net-worth individuals. It is a lifelong process of growing, protecting, and transferring wealth responsibly. FingenIQ introduces learners to essential wealth management principles, including:
-                </p>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--sp-4)' }}>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '0ms' }}>
-                  <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', color: 'var(--brass-500)', marginBottom: 'var(--sp-4)' }}>Wealth Creation</div>
-                  <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Income planning</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Saving strategies</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Investment fundamentals</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Business ownership</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Long-term capital growth</li>
-                  </ul>
-                </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '80ms' }}>
-                  <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', color: 'var(--brass-500)', marginBottom: 'var(--sp-4)' }}>Wealth Growth</div>
-                  <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Portfolio diversification</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Asset allocation</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Equity and fixed-income investing</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Alternative investments</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Risk-adjusted investing</li>
-                  </ul>
-                </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '160ms' }}>
-                  <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', color: 'var(--brass-500)', marginBottom: 'var(--sp-4)' }}>Wealth Protection</div>
-                  <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Insurance planning</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Risk management</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Tax awareness</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Emergency financial planning</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Asset protection strategies</li>
-                  </ul>
-                </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '240ms' }}>
-                  <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', color: 'var(--brass-500)', marginBottom: 'var(--sp-4)' }}>Wealth Preservation</div>
-                  <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Retirement planning</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Estate planning fundamentals</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Inflation management</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Sustainable investing</li>
-                    <li style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', position: 'relative', paddingLeft: 'var(--sp-3)' }}>Long-term financial resilience</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </section>
-
           {/* Who Can Benefit */}
           <section className="py-20" id="who-benefits" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
@@ -241,43 +142,6 @@ export default function Home() {
                   <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Lifelong Learners</div>
                   <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Strengthen financial confidence, stay informed about evolving financial systems, adapt to changing economic environments, and continue developing financial intelligence throughout life.</p>
                 </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Financial Knowledge Stages */}
-          <section className="py-20" id="knowledge-stages">
-            <div className="container">
-              <div className="section-header text-center animate-fadeUp" style={{ marginBottom: 'var(--sp-10)' }}>
-                <span className="section-label">Lifelong Learning</span>
-                <h2 className="section-title" style={{ marginTop: 'var(--sp-3)' }}>Financial Knowledge for Every Stage of Life</h2>
-                <p className="section-subtitle mx-auto" style={{ marginTop: 'var(--sp-4)' }}>
-                  Financial education is valuable throughout life, helping individuals make informed decisions at every milestone.
-                </p>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--sp-3)' }}>
-                {[
-                  'Managing your first income',
-                  'Building healthy saving habits',
-                  'Creating and following a budget',
-                  'Understanding banking and digital payments',
-                  'Using credit responsibly',
-                  'Planning major purchases',
-                  'Protecting yourself through insurance',
-                  'Growing wealth through investing',
-                  'Understanding taxes and financial planning',
-                  'Preparing for retirement',
-                  'Building and managing a business',
-                  'Creating long-term financial security'
-                ].map((stage, idx) => (
-                  <div key={idx} className="card p-4 animate-fadeUp" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', animationDelay: `${idx * 40}ms` }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--brass-500)' }}>
-                      {String(idx + 1).padStart(2, '0')}
-                    </span>
-                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', lineHeight: 'var(--leading-relaxed)' }}>{stage}</span>
-                  </div>
-                ))}
               </div>
             </div>
           </section>
@@ -414,42 +278,6 @@ export default function Home() {
             </div>
           </section>
 
-          {/* 8 Structured Modules */}
-          <section className="py-20" id="modules" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
-            <div className="container">
-              <div className="section-header text-center animate-fadeUp" style={{ marginBottom: 'var(--sp-10)' }}>
-                <span className="section-label">Curriculum Overview</span>
-                <h2 className="section-title" style={{ marginTop: 'var(--sp-3)' }}>8 Structured Learning Modules</h2>
-                <p className="section-subtitle mx-auto" style={{ marginTop: 'var(--sp-4)' }}>
-                  44 lessons across 8 modules, each built on a rigorous 20-step framework covering theory, application, case studies, and assessment.
-                </p>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--sp-4)' }}>
-                {MODULES.map((m, idx) => (
-                  <div key={m.id} className="module-tile animate-fadeUp" style={{ animationDelay: `${idx * 40}ms` }}>
-                    <div className="module-tile__num">M{m.order}</div>
-                    <div className="module-tile__icon">{m.icon}</div>
-                    <h3 className="module-tile__title">{m.title}</h3>
-                    <div className="module-tile__count">{m.lessonIds.length} Lessons</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Our Vision */}
-          <section className="py-20" id="our-vision">
-            <div className="container container--narrow">
-              <div className="card animate-fadeUp" style={{ background: 'linear-gradient(135deg,rgba(8,12,24,0.95),rgba(27,35,68,0.6))', border: '1px solid rgba(201,168,76,0.18)', padding: 'var(--sp-12)', position: 'relative', overflow: 'hidden' }}>
-                <span className="section-label" style={{ position: 'relative', zIndex: 1 }}>Our North Star</span>
-                <h2 className="section-title" style={{ marginTop: 'var(--sp-4)', marginBottom: 'var(--sp-6)', position: 'relative', zIndex: 1 }}>Our Vision</h2>
-                <p style={{ fontSize: 'var(--text-base)', color: 'var(--ink-200)', lineHeight: 'var(--leading-relaxed)', position: 'relative', zIndex: 1, maxWidth: '700px' }}>
-                  To make world-class financial education accessible to everyone by empowering individuals with the knowledge, confidence, and practical skills to make informed financial decisions, manage wealth responsibly, achieve lasting financial freedom, and create a financially empowered future for themselves, their families, businesses, and communities.
-                </p>
-              </div>
-            </div>
-          </section>
-
           {/* Gateway CTA */}
           <section className="py-20" id="enter-platform" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', textAlign: 'center' }}>
             <div className="container container--narrow" style={{ position: 'relative', zIndex: 1 }}>
@@ -465,7 +293,7 @@ export default function Home() {
                   <Link href="/login" className="btn btn--brass btn--lg" style={{ fontSize: 'var(--text-base)', padding: 'var(--sp-4) var(--sp-10)' }}>
                     Enter FingenIQ →
                   </Link>
-                  <Link href="/lessons" className="btn btn--outline btn--lg">
+                  <Link href="/curriculum" className="btn btn--outline btn--lg">
                     Browse Curriculum
                   </Link>
                 </div>

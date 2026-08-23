@@ -31,7 +31,7 @@ export default function Footer() {
           <div>
             <h3 className="footer__col-title">Platform</h3>
             <div className="footer__links">
-              <Link href="/lessons" className="footer__link">Curriculum</Link>
+              <Link href="/lessons" className="footer__link">Lessons</Link>
               <Link href="/assessments" className="footer__link">Assessments</Link>
               <Link href="/capstone" className="footer__link">Capstone</Link>
               <Link href="/certification" className="footer__link">Credentials</Link>
@@ -45,6 +45,9 @@ export default function Footer() {
             <h3 className="footer__col-title">Company</h3>
             <div className="footer__links">
               <Link href="/about" className="footer__link">About FingenIQ</Link>
+              <Link href="/curriculum" className="footer__link">Curriculum</Link>
+              <Link href="/mentor" className="footer__link">Mentor Program</Link>
+              <Link href="/faq" className="footer__link">FAQ</Link>
               <Link href="/contact" className="footer__link">Contact Us</Link>
               <Link href="/certification-roadmap" className="footer__link">SEBI Roadmap</Link>
             </div>
