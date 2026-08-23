@@ -18,7 +18,7 @@ const FAQS = [
   },
   {
     question: 'Do you offer bulk pricing for organisations?',
-    answer: 'Yes. We offer enterprise cohort licensing for corporates, universities, and financial institutions. Contact enterprise@fingeniq.com for custom pricing and white-label options.',
+    answer: 'Yes. We offer enterprise cohort licensing for corporates, universities, and financial institutions. Contact support@fingeniq.com for custom pricing and white-label options.',
   },
   {
     question: 'How long does certification take?',

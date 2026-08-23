@@ -130,9 +130,17 @@ export default function Contact() {
                       <span style={{ fontSize: '1.5rem' }}>🏢</span>
                       <div>
                         <div className="font-semi text-primary mb-1">Platform Headquarters</div>
-                        <div className="text-sm text-secondary">BKC Financial District</div>
-                        <div className="text-sm text-secondary">Bandra East, Mumbai — 400051</div>
-                        <div className="text-xs text-muted mt-1">Maharashtra, India</div>
+                        <div className="text-sm text-secondary">VIVIN Synergy</div>
+                        <div className="text-xs text-muted mt-1">United Arab Emirates</div>
+                      </div>
+                    </div>
+
+                    <div className="card p-5" style={{ display: 'flex', gap: 'var(--sp-4)', alignItems: 'start' }}>
+                      <span style={{ fontSize: '1.5rem' }}>📍</span>
+                      <div>
+                        <div className="font-semi text-primary mb-1">Platform Indian Office</div>
+                        <div className="text-sm text-secondary">Chennai, Tamil Nadu</div>
+                        <div className="text-xs text-muted mt-1">India</div>
                       </div>
                     </div>
 
@@ -140,26 +148,8 @@ export default function Contact() {
                       <span style={{ fontSize: '1.5rem' }}>✉️</span>
                       <div>
                         <div className="font-semi text-primary mb-1">Support &amp; Admissions Email</div>
-                        <div className="text-sm text-brass">admissions@fingeniq.com</div>
+                        <div className="text-sm text-brass">support@fingeniq.com</div>
                         <div className="text-xs text-muted mt-1">Response within 1–2 business days</div>
-                      </div>
-                    </div>
-
-                    <div className="card p-5" style={{ display: 'flex', gap: 'var(--sp-4)', alignItems: 'start' }}>
-                      <span style={{ fontSize: '1.5rem' }}>📞</span>
-                      <div>
-                        <div className="font-semi text-primary mb-1">Admissions Hotline</div>
-                        <div className="text-sm text-brass">+91 22 5592 1084</div>
-                        <div className="text-xs text-muted mt-1">Mon–Fri, 9:00 AM – 6:00 PM IST</div>
-                      </div>
-                    </div>
-
-                    <div className="card p-5" style={{ display: 'flex', gap: 'var(--sp-4)', alignItems: 'start' }}>
-                      <span style={{ fontSize: '1.5rem' }}>💼</span>
-                      <div>
-                        <div className="font-semi text-primary mb-1">Enterprise &amp; Institutional</div>
-                        <div className="text-sm text-brass">enterprise@fingeniq.com</div>
-                        <div className="text-xs text-muted mt-1">For bulk cohort licensing and B2B pricing</div>
                       </div>
                     </div>
                   </div>
