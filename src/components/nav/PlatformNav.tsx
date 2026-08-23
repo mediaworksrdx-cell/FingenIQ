@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { USER_STATE } from '@/lib/data';
 import { logoutAction, changePasswordAction } from '@/app/actions/authActions';
+import PlatformAiTutor from '@/components/chat/PlatformAiTutor';
 
 const NAV_LINKS = [
   { href: '/dashboard',          label: 'Dashboard',    icon: '◈' },
@@ -25,6 +26,7 @@ export default function PlatformNav() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [aiTutorOpen, setAiTutorOpen] = useState(false);
   const [sessionUser, setSessionUser] = useState<{ name: string; role: string; email?: string } | null>(null);
 
   // Change password form state
@@ -140,7 +142,32 @@ export default function PlatformNav() {
           </div>
 
           {/* Right side: User & Settings */}
-          <div className="nav__user" ref={dropdownRef} style={{ position: 'relative' }}>
+          <div className="nav__user" ref={dropdownRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* AI Tutor Button */}
+            <button
+              onClick={() => setAiTutorOpen(true)}
+              aria-label="Open AI Financial Tutor"
+              style={{
+                background: 'linear-gradient(135deg, rgba(206,174,86,0.15), rgba(184,150,46,0.05))',
+                border: '1px solid rgba(206,174,86,0.4)',
+                borderRadius: '0.5rem',
+                padding: '0.4rem 0.85rem',
+                color: '#CEAE56',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = '#CEAE56'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(206,174,86,0.4)'}
+            >
+              <span>✨</span>
+              <span>AI Tutor</span>
+            </button>
+
             {/* Mobile hamburger */}
             <button
               className="nav__hamburger"
@@ -339,6 +366,30 @@ export default function PlatformNav() {
               <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--ink-500)' }}>{PROGRESS_PCT}% complete</div>
             </div>
           </div>
+
+          <button
+            onClick={() => {
+              setDrawerOpen(false);
+              setAiTutorOpen(true);
+            }}
+            style={{
+              width: '100%',
+              padding: '0.65rem',
+              background: 'rgba(206,174,86,0.12)',
+              border: '1px solid rgba(206,174,86,0.35)',
+              borderRadius: '0.5rem',
+              color: '#CEAE56',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              cursor: 'pointer',
+            }}
+          >
+            ✨ AI Financial Tutor
+          </button>
 
           <button
             onClick={() => {
@@ -615,6 +666,9 @@ export default function PlatformNav() {
           </div>
         </div>
       )}
+
+      {/* Platform AI Tutor Drawer */}
+      <PlatformAiTutor isOpen={aiTutorOpen} onClose={() => setAiTutorOpen(false)} />
     </>
   );
 }
