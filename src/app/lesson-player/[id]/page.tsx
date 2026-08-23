@@ -49,8 +49,21 @@ export default function LessonPlayerComponent() {
   const [isTyping, setIsTyping] = useState(false);
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [selectedRadio, setSelectedRadio] = useState<number | null>(null);
-  const [messages, setMessages] = useState<{ sender: 'user' | 'ai'; text: string; time: string }[]>([]);
+  const [messages, setMessages] = useState<{ id: string; sender: 'user' | 'ai'; text: string; time: string }[]>([]);
   const [allowedModules, setAllowedModules] = useState<string[] | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const resetMessages = () => {
+    const baseLesson = LESSONS.find(l => l.id === lessonId) || LESSONS[0];
+    setMessages([
+      {
+        id: `init-${Date.now()}`,
+        sender: 'ai',
+        text: `Hello! I am your contextualised AI Tutor for Lesson ${baseLesson.order}: ${baseLesson.title}. Ask me anything about this lesson, or request a practice quiz.`,
+        time: formatTime(),
+      },
+    ]);
+  };
 
   useEffect(() => {
     // Fetch real-time lesson DB overrides
@@ -84,14 +97,7 @@ export default function LessonPlayerComponent() {
       }
     });
 
-    const baseLesson = LESSONS.find(l => l.id === lessonId) || LESSONS[0];
-    setMessages([
-      {
-        sender: 'ai',
-        text: `Hello! I am your contextualised AI Tutor for Lesson ${baseLesson.order}: ${baseLesson.title}. Ask me anything about this lesson, or request a practice quiz.`,
-        time: formatTime(),
-      },
-    ]);
+    resetMessages();
   }, [lessonId]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -106,11 +112,86 @@ export default function LessonPlayerComponent() {
     await saveStepProgress(lessonId, idx);
   };
 
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const renderFormattedMarkdown = (raw: string) => {
+    const lines = raw.split('\n');
+    const elements: React.ReactNode[] = [];
+
+    lines.forEach((line, idx) => {
+      const trimmed = line.trim();
+
+      if (!trimmed) {
+        elements.push(<div key={idx} style={{ height: '0.4rem' }} />);
+        return;
+      }
+
+      if (trimmed.startsWith('### ')) {
+        elements.push(
+          <h3 key={idx} style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--ink-50)', margin: '0.6rem 0 0.25rem', borderBottom: '1px solid rgba(184,150,46,0.2)', paddingBottom: '0.2rem' }}>
+            {trimmed.replace('### ', '')}
+          </h3>
+        );
+        return;
+      }
+      if (trimmed.startsWith('#### ')) {
+        elements.push(
+          <h4 key={idx} style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--brass-400)', margin: '0.5rem 0 0.2rem' }}>
+            {trimmed.replace('#### ', '')}
+          </h4>
+        );
+        return;
+      }
+
+      if (trimmed.startsWith('---')) {
+        elements.push(<hr key={idx} style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.08)', margin: '0.5rem 0' }} />);
+        return;
+      }
+
+      let formatted: React.ReactNode = trimmed;
+      if (trimmed.includes('**')) {
+        const parts = trimmed.split('**');
+        formatted = parts.map((part, i) =>
+          i % 2 === 1 ? (
+            <strong key={i} style={{ color: 'var(--brass-300)', fontWeight: 700 }}>
+              {part}
+            </strong>
+          ) : (
+            part
+          )
+        );
+      }
+
+      if (trimmed.startsWith('• ') || trimmed.startsWith('- ') || /^\d+\.\s/.test(trimmed)) {
+        elements.push(
+          <div key={idx} style={{ display: 'flex', gap: '0.4rem', fontSize: '0.825rem', color: 'var(--ink-200)', lineHeight: 1.6, paddingLeft: '0.35rem' }}>
+            <span style={{ color: 'var(--brass-400)', fontWeight: 700 }}>•</span>
+            <div>{formatted}</div>
+          </div>
+        );
+        return;
+      }
+
+      elements.push(
+        <p key={idx} style={{ margin: '0.2rem 0', fontSize: '0.825rem', color: 'var(--ink-200)', lineHeight: 1.65 }}>
+          {formatted}
+        </p>
+      );
+    });
+
+    return elements;
+  };
+
   const sendAI = async (textOverride?: string) => {
     const text = (textOverride ?? aiInput).trim();
     if (!text || isTyping) return;
 
-    setMessages(p => [...p, { sender: 'user', text, time: formatTime() }]);
+    const userMsgId = `u-${Date.now()}`;
+    setMessages(p => [...p, { id: userMsgId, sender: 'user', text, time: formatTime() }]);
     if (!textOverride) setAiInput('');
     setIsTyping(true);
 
@@ -134,11 +215,14 @@ export default function LessonPlayerComponent() {
       } else {
         reply = `For ${lesson.title}, remember that mastering these core financial disciplines is essential. Let me know if you need any clarification on this step!`;
       }
-      setMessages(p => [...p, { sender: 'ai', text: reply, time: formatTime() }]);
+      const aiMsgId = `ai-${Date.now()}`;
+      setMessages(p => [...p, { id: aiMsgId, sender: 'ai', text: reply, time: formatTime() }]);
     } catch {
+      const errMsgId = `err-${Date.now()}`;
       setMessages(p => [
         ...p,
         {
+          id: errMsgId,
           sender: 'ai',
           text: 'The AI Tutor reasoning engine is experiencing heavy load. Please ask your question again in a moment.',
           time: formatTime(),
@@ -385,33 +469,65 @@ export default function LessonPlayerComponent() {
         {/* AI Tutor Panel */}
         <aside className="ai-panel" aria-label="AI Tutor">
           <div className="ai-panel__header">
-            <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-full)', background: 'var(--navy-700)', border: 'var(--border-sapphire)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>
+            <div style={{ width: 34, height: 34, borderRadius: 'var(--radius-full)', background: 'var(--navy-700)', border: 'var(--border-sapphire)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.95rem', flexShrink: 0 }}>
               🤖
             </div>
-            <div>
-              <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)' }}>AI Tutor</div>
-              <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--sapphire-400)' }}>Contextualised · Lesson {lesson.order}</div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>AI Tutor</div>
+              <div style={{ fontSize: '11px', color: 'var(--sapphire-400)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Contextualised · Lesson {lesson.order}</div>
             </div>
-            <div style={{ marginLeft: 'auto' }}>
-              <span className="badge badge--in-progress">Online</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)', flexShrink: 0 }}>
+              <button
+                onClick={resetMessages}
+                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--ink-400)', fontSize: '10px', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s' }}
+                title="Reset conversation"
+              >
+                Clear
+              </button>
+              <span className="badge badge--in-progress" style={{ fontSize: '10px', padding: '2px 6px' }}>Online</span>
             </div>
           </div>
 
           <div className="ai-panel__messages" aria-live="polite" aria-label="Conversation">
-            {messages.map((msg, i) => (
-              <div key={i} className={`ai-msg ai-msg--${msg.sender}`}>
-                {msg.sender === 'ai' && (
-                  <div className="ai-msg__avatar" aria-hidden="true">🤖</div>
+            {messages.map((msg) => (
+              <div key={msg.id} className={`ai-msg ai-msg--${msg.sender}`}>
+                {msg.sender === 'ai' ? (
+                  <div style={{ width: '100%', background: 'var(--ink-850)', border: '1px solid rgba(184,150,46,0.2)', borderRadius: 'var(--radius-lg)', padding: 'var(--sp-3) var(--sp-4)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--sp-2)', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 'var(--sp-1)' }}>
+                      <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--brass-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Institutional Analysis
+                      </span>
+                      <button
+                        onClick={() => handleCopy(msg.text, msg.id)}
+                        style={{ background: 'transparent', border: 'none', color: copiedId === msg.id ? 'var(--emerald-400)' : 'var(--ink-400)', fontSize: '11px', cursor: 'pointer', padding: '2px 4px', display: 'flex', alignItems: 'center', gap: '3px' }}
+                      >
+                        {copiedId === msg.id ? '✓ Copied' : '📋 Copy'}
+                      </button>
+                    </div>
+                    <div style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-100)', lineHeight: '1.6' }}>
+                      {renderFormattedMarkdown(msg.text)}
+                    </div>
+                    <div style={{ fontSize: '10px', color: 'var(--ink-500)', marginTop: 'var(--sp-2)', textAlign: 'right' }}>
+                      {msg.time}
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="ai-msg__bubble" role="note">
+                      {msg.text}
+                    </div>
+                    <div className="ai-msg__time">{msg.time}</div>
+                  </>
                 )}
-                <div className="ai-msg__bubble" role={msg.sender === 'ai' ? 'note' : undefined}>{msg.text}</div>
-                <div className="ai-msg__time">{msg.time}</div>
               </div>
             ))}
             {isTyping && (
               <div className="ai-msg ai-msg--ai" aria-live="assertive" aria-label="AI is typing">
-                <div className="ai-msg__avatar" aria-hidden="true">🤖</div>
-                <div className="ai-typing">
-                  <span /><span /><span />
+                <div style={{ background: 'var(--ink-850)', border: '1px solid rgba(184,150,46,0.2)', borderRadius: 'var(--radius-lg)', padding: 'var(--sp-3) var(--sp-4)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--brass-400)' }}>Analyzing with Aarkaa AI...</span>
+                  <div className="ai-typing" style={{ background: 'transparent', border: 'none', padding: 0 }}>
+                    <span /><span /><span />
+                  </div>
                 </div>
               </div>
             )}
@@ -420,9 +536,9 @@ export default function LessonPlayerComponent() {
 
           <div className="ai-panel__input-area">
             {/* Quick prompts */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sp-2)', marginBottom: 'var(--sp-4)' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
               {['Explain WRR', 'Sequencing Imperative?', 'Quiz me'].map(p => (
-                <button key={p} className="tag-chip" style={{ cursor: 'pointer' }} onClick={() => sendAI(p)} aria-label={`Ask: ${p}`}>
+                <button key={p} className="tag-chip" style={{ cursor: 'pointer', fontSize: '11px', padding: '3px 8px' }} onClick={() => sendAI(p)} aria-label={`Ask: ${p}`}>
                   {p}
                 </button>
               ))}
@@ -444,12 +560,12 @@ export default function LessonPlayerComponent() {
                 style={{ padding: '0 var(--sp-4)', alignSelf: 'stretch' }}
                 onClick={() => sendAI()}
                 aria-label="Send message"
-                disabled={!aiInput.trim()}
+                disabled={!aiInput.trim() || isTyping}
               >
                 ↑
               </button>
             </div>
-            <div id="ai-hint" style={{ fontSize: 'var(--text-2xs)', color: 'var(--ink-600)', marginTop: 'var(--sp-2)' }}>
+            <div id="ai-hint" style={{ fontSize: '11px', color: 'var(--ink-500)', marginTop: 'var(--sp-1)' }}>
               Press Enter to send · Shift+Enter for new line
             </div>
           </div>
