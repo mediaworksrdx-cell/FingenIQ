@@ -84,14 +84,15 @@ export default function LessonPlayerComponent() {
       }
     });
 
+    const baseLesson = LESSONS.find(l => l.id === lessonId) || LESSONS[0];
     setMessages([
       {
         sender: 'ai',
-        text: `Hello! I am your contextualised AI Tutor for Lesson ${lesson.order}: ${lesson.title}. Ask me anything about this lesson, or request a practice quiz.`,
+        text: `Hello! I am your contextualised AI Tutor for Lesson ${baseLesson.order}: ${baseLesson.title}. Ask me anything about this lesson, or request a practice quiz.`,
         time: formatTime(),
       },
     ]);
-  }, [lessonId, lesson]);
+  }, [lessonId]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -105,30 +106,47 @@ export default function LessonPlayerComponent() {
     await saveStepProgress(lessonId, idx);
   };
 
-  const sendAI = (textOverride?: string) => {
-    const text = textOverride ?? aiInput;
-    if (!text.trim()) return;
+  const sendAI = async (textOverride?: string) => {
+    const text = (textOverride ?? aiInput).trim();
+    if (!text || isTyping) return;
 
     setMessages(p => [...p, { sender: 'user', text, time: formatTime() }]);
     if (!textOverride) setAiInput('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      let reply = 'I can help clarify that! Let me break it down based on the lesson principles.';
-      if (text.toLowerCase().includes('wealth replacement')) {
-        reply = 'The Wealth Replacement Ratio (WRR) = Passive Income ÷ Lifestyle Expenses. When WRR ≥ 100%, you have achieved financial freedom — your passive income fully replaces the need for active labor income.';
-      } else if (text.toLowerCase().includes('sequencing')) {
-        reply = 'The Sequencing Imperative states that Protection (Horizon 1: term cover, health, emergency fund) MUST precede Accumulation (Horizon 2). Without protection, a distress event forces liquidation of investments at a loss.';
-      } else if (text.toLowerCase().includes('quiz') || text.toLowerCase().includes('practice')) {
-        reply = 'Practice question: True or False — An emergency fund is designed to maximise returns. (Hint: Think Liquidity vs. Return tradeoff. Emergency funds prioritise instant access, not yield.)';
-      } else if (text.toLowerCase().includes('emergency fund')) {
-        reply = 'An emergency fund should hold 6–12 months of lifestyle expenses in liquid instruments (e.g. liquid mutual funds, FDs with sweep). The exact size depends on income stability, number of dependents, and insurance cover.';
+    try {
+      const stepName = LESSON_STEPS[currentStep]?.name || 'Current Step';
+      const contextualQuery = `Context: Lesson ${lesson.order}: ${lesson.title} (Step: ${stepName}). User question: ${text}`;
+      
+      const res = await fetch('/api/assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: contextualQuery,
+          query: contextualQuery,
+        }),
+      });
+
+      const data = await res.json();
+      let reply = '';
+      if (data.success && data.response) {
+        reply = data.response;
       } else {
-        reply = `For ${lesson.title}, remember that mastering these core financial disciplines is essential for structural wealth creation and risk mitigation. Let me know if you need specific details!`;
+        reply = `For ${lesson.title}, remember that mastering these core financial disciplines is essential. Let me know if you need any clarification on this step!`;
       }
-      setIsTyping(false);
       setMessages(p => [...p, { sender: 'ai', text: reply, time: formatTime() }]);
-    }, 1200);
+    } catch {
+      setMessages(p => [
+        ...p,
+        {
+          sender: 'ai',
+          text: 'The AI Tutor reasoning engine is experiencing heavy load. Please ask your question again in a moment.',
+          time: formatTime(),
+        },
+      ]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleQuizSubmit = async () => {
