@@ -85,6 +85,7 @@ def deploy_remote():
         f"rm -f {ARCHIVE_NAME} && "
         f"export NVM_DIR=\"$HOME/.nvm\" && "
         f"[ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\" && "
+        f"(npm rebuild better-sqlite3 2>/dev/null || npm install better-sqlite3 --no-save 2>/dev/null || true) && "
         f"(pm2 delete fingeniq 2>/dev/null || true) && "
         f"PORT=3001 pm2 start server.js --name fingeniq --update-env && "
         f"pm2 save && "
