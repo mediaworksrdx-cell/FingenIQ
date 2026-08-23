@@ -253,3 +253,37 @@ export async function resetPasswordAction(prevState: any, formData: FormData) {
 
   return { success: true, redirectUrl: '/login' };
 }
+
+export async function changePasswordAction(prevState: any, formData: FormData): Promise<{ success: boolean; error?: string; message?: string }> {
+  const currentPassword = (formData.get('currentPassword') as string || '').trim();
+  const newPassword = formData.get('newPassword') as string || '';
+  const confirmPassword = formData.get('confirmPassword') as string || '';
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get('session_token')?.value;
+  if (!token) return { success: false, error: 'Unauthorized session.' };
+
+  const session = db.prepare('SELECT userId FROM sessions WHERE id = ?').get(token) as { userId: string } | undefined;
+  if (!session) return { success: false, error: 'Invalid or expired session. Please sign in again.' };
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return { success: false, error: 'All password fields are required.' };
+  }
+  if (newPassword !== confirmPassword) {
+    return { success: false, error: 'New passwords do not match.' };
+  }
+  if (!validatePasswordStrength(newPassword)) {
+    return { success: false, error: 'Password must be at least 10 characters with uppercase, lowercase, number, and special character.' };
+  }
+
+  const user = db.prepare('SELECT id, passwordHash FROM users WHERE id = ?').get(session.userId) as any;
+  if (!user || !bcrypt.compareSync(currentPassword, user.passwordHash || '')) {
+    return { success: false, error: 'Current password is incorrect.' };
+  }
+
+  const newHash = bcrypt.hashSync(newPassword, 12);
+  db.prepare('UPDATE users SET passwordHash = ? WHERE id = ?').run(newHash, user.id);
+  logAudit('PASSWORD_CHANGED', user.id, user.id, null, { action: 'user_changed_password' });
+
+  return { success: true, message: 'Password updated successfully!' };
+}

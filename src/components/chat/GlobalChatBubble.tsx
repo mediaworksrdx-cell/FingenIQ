@@ -184,6 +184,19 @@ export default function GlobalChatBubble() {
   const inputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
 
+  // Hide chat bubble inside platform routes
+  const isPlatformRoute = pathname && (
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/lessons') ||
+    pathname.startsWith('/assessments') ||
+    pathname.startsWith('/capstone') ||
+    pathname.startsWith('/certification') ||
+    pathname.startsWith('/marketplace') ||
+    pathname.startsWith('/certification-roadmap') ||
+    pathname.startsWith('/lesson-player') ||
+    pathname.startsWith('/admin')
+  );
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
@@ -194,6 +207,10 @@ export default function GlobalChatBubble() {
       setTimeout(() => inputRef.current?.focus(), 150);
     }
   }, [isOpen]);
+
+  if (isPlatformRoute) {
+    return null;
+  }
 
   const [sessionId] = useState(() => `fq-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`);
 
