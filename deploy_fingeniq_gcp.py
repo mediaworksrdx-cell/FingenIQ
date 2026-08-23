@@ -94,9 +94,9 @@ def deploy_remote():
     )
     res = subprocess.run(["ssh"] + SSH_OPTS + [REMOTE_HOST, remote_cmd], capture_output=True, text=True, errors="replace")
     if res.stdout:
-        print(res.stdout)
+        print(res.stdout.encode('ascii', errors='replace').decode('ascii'))
     if res.stderr:
-        print(res.stderr)
+        print(res.stderr.encode('ascii', errors='replace').decode('ascii'))
     return True
 
 def main():
