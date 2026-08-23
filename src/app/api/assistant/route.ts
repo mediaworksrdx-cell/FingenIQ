@@ -2,15 +2,7 @@ import { NextResponse } from 'next/server';
 
 const AARKAAI_API_URL = process.env.AARKAAI_BACKEND_URL || process.env.AARKAAI_API_URL || 'http://127.0.0.1:5000';
 
-const FINANCE_KEYWORDS = [
-  'finance', 'financial', 'invest', 'stock', 'equity', 'bond', 'mutual fund', 'etf', 'portfolio',
-  'valuation', 'dcf', 'wacc', 'cagr', 'irr', 'xirr', 'pe', 'p/e', 'ebitda', 'balance sheet',
-  'cash flow', 'income statement', 'debt', 'credit', 'loan', 'banking', 'sebi', 'nism', 'rbi',
-  'wealth', 'capital', 'risk', 'insurance', 'tax', 'retirement', 'sip', 'dividend', 'dividend yield',
-  'accounting', 'asset', 'liability', 'roe', 'roce', 'working capital', 'options', 'derivatives',
-  'market', 'lesson', 'module', 'exam', 'quiz', 'capstone', 'certificate', 'credential', 'tier',
-  'fingeniq', 'inflation', 'gdp', 'monetary policy', 'interest rate', 'currency', 'forex', 'hedge'
-];
+const FINANCE_REGEX = /\b(finance|financial|invest|investing|investment|investments|stock|stocks|equity|equities|bond|bonds|mutual\s+funds?|etf|etfs|portfolio|portfolios|valuation|valuations|dcf|wacc|cagr|irr|xirr|p\/e|pe\s+ratio|ebitda|balance\s+sheet|cash\s+flow|income\s+statement|debt|debts|credit|loan|loans|banking|sebi|nism|rbi|wealth|capital|risk|insurance|taxes?|taxation|retirement|sip|sips|dividends?|dividend\s+yield|accounting|assets?|liabilities|liability|roe|roce|working\s+capital|options?|derivatives?|markets?|lessons?|modules?|exams?|quizzes|quiz|capstones?|certificates?|certification|credentials?|fingeniq|inflation|gdp|interest\s+rates?|forex|hedging)\b/i;
 
 const OFF_TOPIC_RESPONSE = "I am specialized exclusively as your FinGenIQ Financial Education Tutor. I can only assist with topics related to finance, investments, valuation models, corporate finance, personal wealth management, capital markets, SEBI credentials, and your platform curriculum. Please ask any financial or course-related question!";
 
@@ -50,10 +42,10 @@ export async function POST(request: Request) {
     }
 
     // 2. Strict Finance Guardrail Check
-    const hasFinanceKeyword = FINANCE_KEYWORDS.some(kw => cleanLower.includes(kw));
+    const isFinanceTopic = FINANCE_REGEX.test(cleanLower);
 
-    // If query has 4+ words and absolutely zero financial keywords, reject out-of-domain
-    if (!hasFinanceKeyword && cleanLower.split(/\s+/).length >= 4) {
+    // If query does not contain financial concepts or keywords, reject immediately
+    if (!isFinanceTopic) {
       return NextResponse.json({
         success: true,
         response: OFF_TOPIC_RESPONSE,
@@ -99,10 +91,10 @@ export async function POST(request: Request) {
       console.warn('[Assistant API] AarkaaAI backend unreachable, falling back:', aarkaaErr);
     }
 
-    // 4. Return fallback response
+    // 4. Return financial fallback response
     return NextResponse.json({
       success: true,
-      response: `**FinGenIQ Financial Intelligence Concept**:\n\nRegarding **"${rawQuery}"**:\n• In financial analysis, disciplined frameworks (DCF, risk-adjusted returns, asset allocation) ensure optimal capital efficiency.\n• For full module theory, review the structured lessons in your **Lessons** tab.`,
+      response: `**FinGenIQ Financial Intelligence Concept**:\n\nRegarding **"${rawQuery}"**:\n• In financial analysis and wealth management, structured frameworks (DCF, risk-adjusted returns, asset allocation, and fundamental ratios) ensure optimal capital efficiency.\n• For full module theory, review the structured lessons in your **Lessons** tab.`,
       source: 'fingeniq-engine',
     });
   } catch (err: any) {
