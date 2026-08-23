@@ -11,7 +11,6 @@ const NAV_LINKS = [
   { href: '/assessments',        label: 'Assessments',  icon: '✎', dot: true },
   { href: '/capstone',           label: 'Capstone',     icon: '◐' },
   { href: '/certification',      label: 'Certification',icon: '⬡' },
-  { href: '/marketplace',        label: 'Marketplace',  icon: '◈' },
   { href: '/certification-roadmap', label: 'SEBI',      icon: '⬡' },
 ];
 
