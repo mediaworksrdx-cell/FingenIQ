@@ -8,10 +8,10 @@
 
 /* ─── COLOR TOKENS ──────────────────────────────────────────────────────────── */
 :root {
-  /* Ink — base dark backgrounds (green-warm tinted) */
-  --ink-950: #040C07; --ink-900: #071209; --ink-850: #0D1A0E; --ink-800: #132215;
-  --ink-750: #1B2D1D; --ink-700: #253A27; --ink-600: #354E37; --ink-500: #506452;
-  --ink-400: #7A9A7C; --ink-300: #A5BFA7; --ink-200: #C3D9C5; --ink-100: #E4EFE5; --ink-50: #F2F8F2;
+  /* Ink — base dark backgrounds (near-black with subtle green tint) */
+  --ink-950: #010402; --ink-900: #030805; --ink-850: #060E07; --ink-800: #0A1509;
+  --ink-750: #111C12; --ink-700: #182519; --ink-600: #253728; --ink-500: #3D5440;
+  --ink-400: #637A65; --ink-300: #90A892; --ink-200: #B8CEB9; --ink-100: #DDE9DE; --ink-50: #EFF6F0;
 
   /* Forest Green — primary action surfaces (replaces navy) */
   --navy-950: #021209; --navy-900: #041E0E; --navy-800: #083318; --navy-700: #0E4724; --navy-600: #145D2F; --navy-500: #1D813F; --navy-400: #27A855;
@@ -108,15 +108,15 @@
   /* ─── Z-INDEX ────────────────────────────────────────────────────────────── */
   --z-dropdown: 100; --z-sticky: 200; --z-drawer: 250; --z-modal: 300; --z-toast: 400;
 
-  /* ─── DARK-MODE SURFACE TOKENS (Green-Glass Tinted) ── */
-  --dm-bg: #030C05;
-  --dm-surface-1: #071209;
-  --dm-surface-2: #0B1A0D;
-  --dm-surface-3: #102215;
+  /* ─── DARK-MODE SURFACE TOKENS (Near-black with subtle green tint) ── */
+  --dm-bg: #010402;
+  --dm-surface-1: #030805;
+  --dm-surface-2: #060E07;
+  --dm-surface-3: #0A1509;
   --dm-border: rgba(255,255,255,0.07);
-  --dm-text-primary: #E4EFE5;
-  --dm-text-secondary: #9AAFA0;
-  --dm-text-muted: #5E7060;
+  --dm-text-primary: #DDE9DE;
+  --dm-text-secondary: #90A892;
+  --dm-text-muted: #4A6050;
 }
 
 /* ─── RESET & BASE ──────────────────────────────────────────────────────────── */
@@ -125,9 +125,8 @@ html { font-size: 16px; scroll-behavior: smooth; -webkit-font-smoothing: antiali
 body {
   background-color: var(--ink-950);
   background-image:
-    radial-gradient(ellipse 90% 60% at 15% 5%, rgba(14,71,36,0.45) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 50% at 85% 95%, rgba(11,80,35,0.30) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(4,12,7,0.8) 0%, transparent 100%);
+    radial-gradient(ellipse 90% 60% at 15% 5%, rgba(14,71,36,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 95%, rgba(11,80,35,0.10) 0%, transparent 50%);
   background-attachment: fixed;
   color: var(--ink-100);
   font-family: var(--font-sans);
@@ -387,7 +386,7 @@ code {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: var(--nav-height);
-  background: rgba(4,12,7,0.88);
+  background: rgba(1,4,2,0.92);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   border-bottom: 1px solid rgba(16,185,129,0.12);
@@ -984,9 +983,8 @@ code {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 85% 65% at 50% -5%, rgba(14,87,42,0.55) 0%, transparent 58%),
-    radial-gradient(ellipse 50% 35% at 15% 80%, rgba(180,109,53,0.10) 0%, transparent 50%),
-    radial-gradient(ellipse 40% 30% at 85% 20%, rgba(16,185,129,0.08) 0%, transparent 45%),
+    radial-gradient(ellipse 85% 65% at 50% -5%, rgba(14,87,42,0.28) 0%, transparent 58%),
+    radial-gradient(ellipse 40% 30% at 85% 20%, rgba(16,185,129,0.04) 0%, transparent 45%),
     var(--ink-950);
 }
 .hero__grid {
