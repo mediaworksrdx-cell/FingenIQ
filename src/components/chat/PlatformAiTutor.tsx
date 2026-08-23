@@ -10,37 +10,6 @@ interface Message {
   source?: string;
 }
 
-const FINANCIAL_STUDY_CATEGORIES = [
-  {
-    category: '📊 Valuation & DCF',
-    prompts: [
-      'Explain DCF Valuation step-by-step with WACC',
-      'What is the difference between P/E and EV/EBITDA multiples?',
-    ],
-  },
-  {
-    category: '📈 Portfolio & Returns',
-    prompts: [
-      'What is the difference between CAGR and XIRR?',
-      'How does Asset Allocation impact portfolio Sharpe Ratio?',
-    ],
-  },
-  {
-    category: '⚖️ Solvency & Credit',
-    prompts: [
-      'Explain Debt-to-Equity and interest coverage ratio',
-      'What is DuPont Analysis and how to calculate 3-step ROE?',
-    ],
-  },
-  {
-    category: '📜 SEBI & Credentials',
-    prompts: [
-      'What are the 3 FinGenIQ credential tiers and grading criteria?',
-      'Explain SEBI NISM research analyst certification alignment',
-    ],
-  },
-];
-
 export default function PlatformAiTutor({
   isOpen,
   onClose,
@@ -52,7 +21,7 @@ export default function PlatformAiTutor({
     {
       id: 'welcome',
       sender: 'assistant',
-      text: `### 🏛️ FinGenIQ Financial Intelligence & Research Assistant\n\nWelcome to your **Institutional Financial Assistance Terminal** powered by **Aarkaa AI**.\n\nThis terminal provides institutional-grade financial analysis, formula derivations, comparative matrices, and curriculum guidance across:\n\n• **Intrinsic & Relative Valuation**: DCF modeling, WACC, EV/EBITDA, Gordon Growth.\n• **Financial Statement Analysis**: Solvency ratios, DuPont breakdown, Working Capital.\n• **Portfolio & Investment Mathematics**: CAGR vs XIRR, Sharpe Ratio, Risk-adjusted returns.\n• **SEBI / NISM Alignment**: Regulatory standards and credential benchmarks.\n\n*Select a research topic above or enter your financial inquiry below to begin.*`,
+      text: "👋 Welcome to **FinGenIQ Financial Assistance** powered by **Aarkaa AI**.\n\nI provide real-time institutional financial analysis, mathematical derivations, valuation models, portfolio theory, and curriculum guidance.\n\nEnter any financial question or modeling problem to begin.",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -101,7 +70,7 @@ export default function PlatformAiTutor({
       if (data.success && data.response) {
         reply = data.response;
       } else {
-        reply = "🔒 **FinGenIQ Financial Intelligence**: Please enter a financial concept, formula, or curriculum topic to analyze.";
+        reply = "Please ask a question about finance, valuation, investment analysis, or your course lessons.";
       }
 
       const botMsg: Message = {
@@ -109,7 +78,7 @@ export default function PlatformAiTutor({
         sender: 'assistant',
         text: reply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        source: data.source || 'aarkaa-ai',
+        source: data.source,
       };
 
       setMessages(prev => [...prev, botMsg]);
@@ -117,7 +86,7 @@ export default function PlatformAiTutor({
       const fallbackMsg: Message = {
         id: `err-${Date.now()}`,
         sender: 'assistant',
-        text: "⚠️ **FinGenIQ Intelligence Terminal**: Financial knowledge engine is currently processing. Please resubmit your query.",
+        text: "The financial assistance engine is currently busy. Please try asking your question again.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages(prev => [...prev, fallbackMsg]);
@@ -141,7 +110,7 @@ export default function PlatformAiTutor({
     const flushTable = (keyIndex: number) => {
       if (tableRows.length >= 2) {
         const headers = tableRows[0];
-        const bodyRows = tableRows.slice(2); // skip separator
+        const bodyRows = tableRows.slice(2);
         elements.push(
           <div key={`table-${keyIndex}`} style={{ overflowX: 'auto', margin: '0.75rem 0' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(206,174,86,0.2)' }}>
@@ -176,7 +145,6 @@ export default function PlatformAiTutor({
     lines.forEach((line, idx) => {
       const trimmed = line.trim();
 
-      // Check table row
       if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
         inTable = true;
         const cols = trimmed.slice(1, -1).split('|');
@@ -191,10 +159,9 @@ export default function PlatformAiTutor({
         return;
       }
 
-      // Headings
       if (trimmed.startsWith('### ')) {
         elements.push(
-          <h3 key={idx} style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: '0.6rem 0 0.3rem', borderBottom: '1px solid rgba(206,174,86,0.2)', paddingBottom: '0.25rem' }}>
+          <h3 key={idx} style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: '0.75rem 0 0.35rem', borderBottom: '1px solid rgba(206,174,86,0.2)', paddingBottom: '0.25rem' }}>
             {trimmed.replace('### ', '')}
           </h3>
         );
@@ -202,25 +169,18 @@ export default function PlatformAiTutor({
       }
       if (trimmed.startsWith('#### ')) {
         elements.push(
-          <h4 key={idx} style={{ fontSize: '0.85rem', fontWeight: 600, color: '#CEAE56', margin: '0.5rem 0 0.2rem' }}>
+          <h4 key={idx} style={{ fontSize: '0.875rem', fontWeight: 600, color: '#CEAE56', margin: '0.6rem 0 0.25rem' }}>
             {trimmed.replace('#### ', '')}
           </h4>
         );
         return;
       }
 
-      // Formula block
-      if (trimmed.startsWith('$$') || trimmed.includes('\\frac') || trimmed.includes('\\sum') || trimmed.includes('\\text{')) {
-        const cleanFormula = trimmed.replace(/\$\$/g, '');
-        elements.push(
-          <div key={idx} style={{ background: '#050B16', border: '1px solid rgba(206,174,86,0.25)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', margin: '0.4rem 0', fontFamily: 'monospace', fontSize: '0.8rem', color: '#93C5FD' }}>
-            📐 {cleanFormula}
-          </div>
-        );
+      if (trimmed.startsWith('---')) {
+        elements.push(<hr key={idx} style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.08)', margin: '0.75rem 0' }} />);
         return;
       }
 
-      // Regular text with bold formatting
       let formatted: React.ReactNode = trimmed;
       if (trimmed.includes('**')) {
         const parts = trimmed.split('**');
@@ -235,10 +195,9 @@ export default function PlatformAiTutor({
         );
       }
 
-      // Bullet points
-      if (trimmed.startsWith('• ') || trimmed.startsWith('- ')) {
+      if (trimmed.startsWith('• ') || trimmed.startsWith('- ') || /^\d+\.\s/.test(trimmed)) {
         elements.push(
-          <div key={idx} style={{ display: 'flex', gap: '0.4rem', fontSize: '0.825rem', color: '#D1D5DB', lineHeight: 1.55, paddingLeft: '0.5rem' }}>
+          <div key={idx} style={{ display: 'flex', gap: '0.4rem', fontSize: '0.825rem', color: '#D1D5DB', lineHeight: 1.6, paddingLeft: '0.5rem' }}>
             <span style={{ color: '#CEAE56' }}>•</span>
             <div>{formatted}</div>
           </div>
@@ -247,7 +206,7 @@ export default function PlatformAiTutor({
       }
 
       elements.push(
-        <p key={idx} style={{ margin: 0, fontSize: '0.825rem', color: '#D1D5DB', lineHeight: 1.55 }}>
+        <p key={idx} style={{ margin: 0, fontSize: '0.825rem', color: '#D1D5DB', lineHeight: 1.6 }}>
           {formatted}
         </p>
       );
@@ -277,7 +236,7 @@ export default function PlatformAiTutor({
       <div
         style={{
           width: '100%',
-          maxWidth: 680,
+          maxWidth: 720,
           height: '100%',
           background: '#0B1528',
           borderLeft: '1px solid rgba(206,174,86,0.3)',
@@ -319,7 +278,7 @@ export default function PlatformAiTutor({
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', letterSpacing: '-0.01em' }}>
-                  FinGenIQ Financial Intelligence Terminal
+                  FinGenIQ Financial Assistance
                 </h3>
                 <span
                   style={{
@@ -336,7 +295,7 @@ export default function PlatformAiTutor({
                 </span>
               </div>
               <p style={{ margin: '2px 0 0', fontSize: '0.7rem', color: '#8898AA' }}>
-                Institutional Financial Education &amp; Valuation Intelligence
+                Live Institutional Financial &amp; Educational Intelligence
               </p>
             </div>
           </div>
@@ -348,12 +307,12 @@ export default function PlatformAiTutor({
                   {
                     id: 'cleared',
                     sender: 'assistant',
-                    text: 'Terminal reset. Select a financial research topic or ask a question.',
+                    text: 'Session reset. Enter any financial topic or question below.',
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                   },
                 ]);
               }}
-              title="Reset Terminal Session"
+              title="Reset Session"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(255,255,255,0.1)',
@@ -369,7 +328,7 @@ export default function PlatformAiTutor({
 
             <button
               onClick={onClose}
-              aria-label="Close Terminal"
+              aria-label="Close"
               style={{
                 background: 'rgba(255,255,255,0.06)',
                 border: 'none',
@@ -387,26 +346,6 @@ export default function PlatformAiTutor({
               ✕
             </button>
           </div>
-        </div>
-
-        {/* Financial Domain Notice */}
-        <div
-          style={{
-            padding: '0.4rem 1.25rem',
-            background: 'rgba(206,174,86,0.06)',
-            borderBottom: '1px solid rgba(206,174,86,0.15)',
-            fontSize: '0.7rem',
-            color: '#CEAE56',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🔒</span>
-            <span>Dedicated Financial Domain: Multi-section Valuation, Metrics &amp; Curriculum Analysis</span>
-          </div>
-          <span style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Institutional Standard</span>
         </div>
 
         {/* Message Container */}
@@ -450,7 +389,7 @@ export default function PlatformAiTutor({
                   {!isUser && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                       <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#CEAE56', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        FinGenIQ Institutional Analysis
+                        Financial Analysis Response
                       </span>
                       <button
                         onClick={() => copyToClipboard(m.text, m.id)}
@@ -481,7 +420,7 @@ export default function PlatformAiTutor({
                     padding: '0 4px',
                   }}
                 >
-                  {m.timestamp} {m.source ? `• ${m.source}` : ''}
+                  {m.timestamp}
                 </div>
               </div>
             );
@@ -490,65 +429,11 @@ export default function PlatformAiTutor({
           {isLoading && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#CEAE56', fontSize: '0.825rem', padding: '0.75rem', background: 'rgba(206,174,86,0.05)', borderRadius: '0.5rem', border: '1px solid rgba(206,174,86,0.2)' }}>
               <span>⚡</span>
-              <span>Aarkaa AI is running quantitative financial models &amp; formulas...</span>
+              <span>Aarkaa AI is generating financial analysis and calculations...</span>
             </div>
           )}
 
           <div ref={messagesEndRef} />
-        </div>
-
-        {/* Structured Topic Categories Bar */}
-        <div
-          style={{
-            padding: '0.75rem 1.25rem',
-            borderTop: '1px solid rgba(255,255,255,0.06)',
-            background: '#08101E',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-          }}
-        >
-          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700, letterSpacing: '0.05em' }}>
-            Quick Research Modules
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.4rem',
-              overflowX: 'auto',
-              whiteSpace: 'nowrap',
-              paddingBottom: '2px',
-            }}
-          >
-            {FINANCIAL_STUDY_CATEGORIES.flatMap(cat =>
-              cat.prompts.map((prompt, i) => (
-                <button
-                  key={`${cat.category}-${i}`}
-                  onClick={() => handleSend(prompt)}
-                  disabled={isLoading}
-                  style={{
-                    padding: '0.35rem 0.75rem',
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(206,174,86,0.25)',
-                    borderRadius: '0.375rem',
-                    color: '#E2E8F0',
-                    fontSize: '0.7rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    flexShrink: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.3rem',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(206,174,86,0.15)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
-                >
-                  <span>💡</span>
-                  <span>{prompt}</span>
-                </button>
-              ))
-            )}
-          </div>
         </div>
 
         {/* Input Bar */}
@@ -571,7 +456,7 @@ export default function PlatformAiTutor({
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="Inquire: DCF formula, WACC derivation, CAGR vs XIRR, SEBI tiers..."
+              placeholder="Ask any financial question, formula, model, or case study..."
               disabled={isLoading}
               style={{
                 flex: 1,
