@@ -501,7 +501,11 @@ export default function AdminCredentials() {
             🤖 Aarkaa AI 2.0 ↗
           </Link>
           <button
-            onClick={() => logoutAction()}
+            onClick={async () => {
+              try { await fetch('/api/auth/logout', { method: 'POST' }); } catch {}
+              try { await logoutAction(); } catch {}
+              window.location.href = '/login';
+            }}
             style={{
               fontSize: '0.75rem',
               color: '#F87171',

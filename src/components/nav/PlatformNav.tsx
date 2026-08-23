@@ -71,10 +71,12 @@ export default function PlatformNav() {
 
   const handleLogout = async () => {
     try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {}
+    try {
       await logoutAction();
     } catch {}
-    router.push('/login');
-    router.refresh();
+    window.location.href = '/login';
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
