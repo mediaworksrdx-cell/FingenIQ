@@ -85,14 +85,18 @@ def deploy_remote():
         f"rm -f {ARCHIVE_NAME} && "
         f"export NVM_DIR=\"$HOME/.nvm\" && "
         f"[ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\" && "
-        f"PORT=3001 pm2 restart fingeniq --update-env || PORT=3001 pm2 start server.js --name fingeniq --update-env && "
+        f"(pm2 delete fingeniq 2>/dev/null || true) && "
+        f"PORT=3001 pm2 start server.js --name fingeniq --update-env && "
         f"pm2 save && "
         f"sleep 2 && "
         f"pm2 list && "
         f"curl -s -o /dev/null -w 'FinGenIQ HTTP Code: %{{http_code}}\\n' http://127.0.0.1:3001/ || true"
     )
-    res = subprocess.run(["ssh"] + SSH_OPTS + [REMOTE_HOST, remote_cmd], capture_output=True, text=True)
-    print(res.stdout)
+    res = subprocess.run(["ssh"] + SSH_OPTS + [REMOTE_HOST, remote_cmd], capture_output=True, text=True, errors="replace")
+    if res.stdout:
+        print(res.stdout)
+    if res.stderr:
+        print(res.stderr)
     return True
 
 def main():
