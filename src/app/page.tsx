@@ -16,15 +16,12 @@ export default function Home() {
             <div className="hero__grid"></div>
             <div className="container relative">
               <div className="hero__content animate-fadeUp" style={{ maxWidth: '960px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', marginBottom: 'var(--sp-4)' }}>
-                  <div className="hero__eyebrow" style={{ marginBottom: 0 }}>🏛 Institution-Grade Financial Education</div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.65rem', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.14em', color: '#DCFCE7', textTransform: 'uppercase' }}>
-                    <span style={{ width: '24px', height: '2px', background: 'linear-gradient(90deg, transparent, #4ADE80)' }} />
-                    <span>Continuous Learning. Limitless Growth.</span>
-                    <span style={{ width: '24px', height: '2px', background: 'linear-gradient(90deg, #4ADE80, transparent)' }} />
-                  </div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.82rem', fontWeight: 800, letterSpacing: '0.14em', color: '#DCFCE7', textTransform: 'uppercase', marginBottom: 'var(--sp-4)' }}>
+                  <span style={{ width: '28px', height: '2px', background: 'linear-gradient(90deg, transparent, #4ADE80)' }} />
+                  <span>CONTINUOUS LEARNING. LIMITLESS GROWTH.</span>
+                  <span style={{ width: '28px', height: '2px', background: 'linear-gradient(90deg, #4ADE80, transparent)' }} />
                 </div>
-                <h1 className="hero__title"><span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-iq"> IQ</span> — <em style={{ whiteSpace: 'nowrap' }}>Continuous Learning. Limitless Growth.</em></h1>
+                <h1 className="hero__title"><span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-iq"> IQ</span> — <em style={{ whiteSpace: 'nowrap' }}>Learn. Grow. Prosper.</em></h1>
                 <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xl)', fontWeight: 600, color: 'var(--brass-400)', marginBottom: 'var(--sp-5)' }}>
                   Empowering Financial Intelligence for Financial Freedom and Wealth Management
                 </h2>
