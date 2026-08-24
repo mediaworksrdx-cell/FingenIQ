@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS users (
   id                        TEXT PRIMARY KEY,
   name                      TEXT NOT NULL,
   email                     TEXT UNIQUE NOT NULL,
-  role                      TEXT CHECK(role IN ('learner', 'employer', 'admin', 'employee', 'community_member')) NOT NULL,
+  role                      TEXT CHECK(role IN ('learner', 'employer', 'admin', 'employee', 'teacher', 'community_member')) NOT NULL,
   passwordHash              TEXT,
   mustResetPassword         INTEGER DEFAULT 1,
   createdByAdminId          TEXT,

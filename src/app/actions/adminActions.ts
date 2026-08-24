@@ -9,13 +9,13 @@ import { getAppBaseUrl } from '@/lib/config';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 
-// Verify current session matches admin role
+// Verify current session matches admin, employee, or teacher role
 async function checkAdminAuth(adminSessionToken: string | undefined): Promise<any> {
   if (!adminSessionToken) throw new Error('Unauthenticated admin request');
   const session = db.prepare('SELECT userId FROM sessions WHERE id = ?').get(adminSessionToken) as any;
   if (!session) throw new Error('Invalid session');
   const user = db.prepare('SELECT role FROM users WHERE id = ?').get(session.userId) as any;
-  if (!user || user.role !== 'admin') throw new Error('Unauthorized role');
+  if (!user || (user.role !== 'admin' && user.role !== 'employee' && user.role !== 'teacher')) throw new Error('Unauthorized role');
   return session.userId;
 }
 

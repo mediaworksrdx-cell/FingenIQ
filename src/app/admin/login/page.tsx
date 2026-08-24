@@ -5,9 +5,39 @@ import { loginAction } from '@/app/actions/authActions';
 import Link from 'next/link';
 import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 
+const ROLE_PRESETS = [
+  {
+    role: 'admin',
+    label: '🛡️ Admin',
+    email: 'admin@fingeniq.com',
+    password: 'Admin@123456',
+    desc: 'Full Super-Admin Control & Governance',
+    badgeColor: '#B45309',
+  },
+  {
+    role: 'employee',
+    label: '💼 Employee',
+    email: 'employee@fingeniq.com',
+    password: 'Employee@123456',
+    desc: 'Institutional Staff & Moderation',
+    badgeColor: '#2563EB',
+  },
+  {
+    role: 'teacher',
+    label: '🎓 Teacher',
+    email: 'teacher@fingeniq.com',
+    password: 'Teacher@123456',
+    desc: 'Academic Faculty & Curriculum',
+    badgeColor: '#7C3AED',
+  },
+];
+
 function AdminLoginContent() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [selectedRole, setSelectedRole] = useState<'admin' | 'employee' | 'teacher'>('admin');
+  const [emailInput, setEmailInput] = useState('admin@fingeniq.com');
+  const [passwordInput, setPasswordInput] = useState('Admin@123456');
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -20,6 +50,12 @@ function AdminLoginContent() {
       window.location.href = state.redirectUrl;
     }
   }
+
+  const handleSelectRole = (preset: typeof ROLE_PRESETS[0]) => {
+    setSelectedRole(preset.role as any);
+    setEmailInput(preset.email);
+    setPasswordInput(preset.password);
+  };
 
   return (
     <div style={{
@@ -35,23 +71,54 @@ function AdminLoginContent() {
       padding: '2rem 1rem',
       position: 'relative',
     }}>
-      <main style={{ width: '100%', maxWidth: 440 }} role="main" aria-labelledby="admin-login-title">
+      <main style={{ width: '100%', maxWidth: 480 }} role="main" aria-labelledby="admin-login-title">
         {/* Brand logo & Badge */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', marginBottom: '1.25rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+          <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', marginBottom: '1rem' }}>
             <FinGenIqLogo showText={true} size={46} />
           </Link>
           
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <h1 id="admin-login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#0F172A', margin: 0 }}>
-              Staff & Admin Portal
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+            <h1 id="admin-login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+              Staff &amp; Admin Portal
             </h1>
           </div>
           
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(180, 83, 9, 0.08)', border: '1px solid rgba(180, 83, 9, 0.25)', padding: '3px 12px', borderRadius: '9999px', fontSize: '0.7rem', color: '#B45309', fontWeight: 700 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A' }} />
-            RESTRICTED ACCESS · SYSTEM ADMINISTRATORS & ENTERPRISE STAFF
+            RESTRICTED ACCESS · ADMIN, EMPLOYEE &amp; TEACHER
           </div>
+        </div>
+
+        {/* Quick Role Selector */}
+        <div style={{ marginBottom: '1rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+          {ROLE_PRESETS.map(preset => {
+            const isSelected = selectedRole === preset.role;
+            return (
+              <button
+                key={preset.role}
+                type="button"
+                onClick={() => handleSelectRole(preset)}
+                style={{
+                  background: isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
+                  border: isSelected ? `2px solid ${preset.badgeColor}` : '1px solid rgba(0,0,0,0.1)',
+                  borderRadius: '0.65rem',
+                  padding: '0.6rem 0.5rem',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  boxShadow: isSelected ? '0 4px 12px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: isSelected ? preset.badgeColor : '#334155' }}>
+                  {preset.label}
+                </div>
+                <div style={{ fontSize: '0.65rem', color: '#64748B', marginTop: '2px' }}>
+                  {preset.role === 'admin' ? 'Super Admin' : preset.role === 'employee' ? 'Staff' : 'Faculty'}
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Card */}
@@ -59,7 +126,7 @@ function AdminLoginContent() {
           background: '#FFFFFF',
           border: '1px solid rgba(0, 0, 0, 0.08)',
           borderRadius: '1rem',
-          padding: '2rem',
+          padding: '1.75rem',
           boxShadow: '0 10px 40px rgba(0, 0, 0, 0.06)',
         }}>
           {state?.error && (
@@ -71,25 +138,24 @@ function AdminLoginContent() {
                 borderRadius: '0.5rem',
                 padding: '0.75rem 1rem',
                 color: '#BE123C',
-                fontSize: '0.875rem',
-                marginBottom: '1.5rem',
+                fontSize: '0.85rem',
+                marginBottom: '1.25rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>{state.error}</span>
+              <span>⚠️ {state.error}</span>
             </div>
           )}
 
-          <form action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <form action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
             <input type="hidden" name="loginCategory" value="b2c" />
             <input type="hidden" name="redirectTo" value="/admin/credentials" />
 
             <div>
-              <label htmlFor="admin-email" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#334155', marginBottom: '0.5rem' }}>
-                Administrator / Staff Email
+              <label htmlFor="admin-email" style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#334155', marginBottom: '0.4rem' }}>
+                {selectedRole.toUpperCase()} EMAIL ADDRESS
               </label>
               <input
                 id="admin-email"
@@ -97,8 +163,9 @@ function AdminLoginContent() {
                 type="email"
                 required
                 autoComplete="email"
-                defaultValue="admin@fingeniq.com"
-                placeholder="admin@fingeniq.com"
+                value={emailInput}
+                onChange={e => setEmailInput(e.target.value)}
+                placeholder="name@fingeniq.com"
                 style={{
                   width: '100%',
                   background: '#FFFFFF',
@@ -114,13 +181,13 @@ function AdminLoginContent() {
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <label htmlFor="admin-password" style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#334155' }}>
-                  Security Credential
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                <label htmlFor="admin-password" style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#334155' }}>
+                  PASSWORD / SECURITY KEY
                 </label>
                 <Link
                   href="/reset-password/request"
-                  style={{ fontSize: '0.75rem', color: '#B45309', textDecoration: 'none', fontWeight: 600 }}
+                  style={{ fontSize: '0.72rem', color: '#B45309', textDecoration: 'none', fontWeight: 600 }}
                 >
                   Forgot Key?
                 </Link>
@@ -131,6 +198,8 @@ function AdminLoginContent() {
                 type="password"
                 required
                 autoComplete="current-password"
+                value={passwordInput}
+                onChange={e => setPasswordInput(e.target.value)}
                 placeholder="••••••••••••"
                 style={{
                   width: '100%',
@@ -151,7 +220,11 @@ function AdminLoginContent() {
               disabled={isPending}
               style={{
                 width: '100%',
-                background: 'linear-gradient(135deg, #B45309 0%, #D97706 100%)',
+                background: selectedRole === 'teacher'
+                  ? 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)'
+                  : selectedRole === 'employee'
+                  ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
+                  : 'linear-gradient(135deg, #B45309 0%, #D97706 100%)',
                 color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '0.5rem',
@@ -159,31 +232,65 @@ function AdminLoginContent() {
                 fontSize: '0.9rem',
                 fontWeight: 700,
                 cursor: isPending ? 'not-allowed' : 'pointer',
-                opacity: isPending ? 0.7 : 1,
-                boxShadow: '0 4px 14px rgba(180, 83, 9, 0.3)',
-                marginTop: '0.5rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
+                transition: 'all 0.2s',
+                marginTop: '0.25rem',
+                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
               }}
             >
-              {isPending ? 'Authenticating...' : 'Authenticate & Enter Console →'}
+              {isPending ? 'Verifying Credentials...' : `Sign In as ${selectedRole.toUpperCase()} →`}
             </button>
-
-            <div style={{ textAlign: 'center', marginTop: '0.5rem', fontSize: '0.75rem', color: '#64748B' }}>
-              System Time: {currentTime ? currentTime.toLocaleString() : 'Syncing...'}
+            
+            <div style={{ textAlign: 'center', marginTop: '0.25rem', color: '#94A3B8', fontSize: '0.68rem', fontFamily: 'monospace' }}>
+              System Time: {currentTime ? currentTime.toLocaleString() : 'Loading...'}
             </div>
           </form>
         </div>
 
-        {/* Back to Student Login */}
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.8rem', color: '#64748B' }}>
-          Are you a student or learner?{' '}
-          <Link href="/login" style={{ color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
-            Go to Student Portal →
-          </Link>
+        {/* Available Roles & Credentials Reference Box */}
+        <div style={{
+          marginTop: '1.25rem',
+          background: '#FFFFFF',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
+          borderRadius: '0.75rem',
+          padding: '1rem',
+          fontSize: '0.75rem',
+          color: '#334155',
+        }}>
+          <div style={{ fontWeight: 700, marginBottom: '0.5rem', color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            🔑 All Default Login Credentials:
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', background: '#F8FAFC', padding: '4px 8px', borderRadius: '4px' }}>
+              <span>🛡️ <strong>Admin:</strong> <code>admin@fingeniq.com</code></span>
+              <span style={{ color: '#64748B' }}><code>Admin@123456</code></span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', background: '#F8FAFC', padding: '4px 8px', borderRadius: '4px' }}>
+              <span>💼 <strong>Employee:</strong> <code>employee@fingeniq.com</code></span>
+              <span style={{ color: '#64748B' }}><code>Employee@123456</code></span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', background: '#F8FAFC', padding: '4px 8px', borderRadius: '4px' }}>
+              <span>🎓 <strong>Teacher:</strong> <code>teacher@fingeniq.com</code></span>
+              <span style={{ color: '#64748B' }}><code>Teacher@123456</code></span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', background: '#F8FAFC', padding: '4px 8px', borderRadius: '4px' }}>
+              <span>📖 <strong>Learner:</strong> <code>learner@fingeniq.com</code></span>
+              <span style={{ color: '#64748B' }}><code>Learner@123456</code></span>
+            </div>
+          </div>
         </div>
+
+        {/* Footer */}
+        <footer style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.75rem', color: '#64748B' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+            <Link href="/login" style={{ color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
+              ← Learner Portal Login
+            </Link>
+            <span>•</span>
+            <Link href="/" style={{ color: '#64748B', textDecoration: 'none' }}>
+              Return to Homepage
+            </Link>
+          </div>
+        </footer>
       </main>
     </div>
   );
@@ -192,8 +299,8 @@ function AdminLoginContent() {
 export default function AdminLoginPage() {
   return (
     <Suspense fallback={
-      <div style={{ minHeight: '100vh', background: '#FAF8F5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A' }}>
-        Loading Admin Gateway...
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FAF8F5' }}>
+        Loading security portal...
       </div>
     }>
       <AdminLoginContent />

@@ -818,9 +818,10 @@ export default function AdminCredentials() {
                 >
                   <option value="all">All Roles</option>
                   <option value="learner">Student / Learner</option>
-                  <option value="employee">Enterprise Employee</option>
+                  <option value="teacher">Academic Teacher / Faculty</option>
+                  <option value="employee">Enterprise Employee / Staff</option>
                   <option value="employer">Employer / Recruiter</option>
-                  <option value="admin">Administrator</option>
+                  <option value="admin">System Administrator</option>
                 </select>
 
                 <select
@@ -861,9 +862,9 @@ export default function AdminCredentials() {
                 )}
                 <button
                   onClick={() => setShowBulkCsvModal(true)}
-                  style={{ background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.375rem', padding: '6px 14px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ background: 'rgba(206,174,86,0.12)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.375rem', padding: '6px 12px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
                 >
-                  📥 Bulk CSV Import
+                  📁 Bulk CSV Upload
                 </button>
                 <button
                   onClick={handleExportUsersCsv}
@@ -871,6 +872,44 @@ export default function AdminCredentials() {
                 >
                   📤 Export CSV
                 </button>
+              </div>
+            </div>
+
+            {/* Official System Default Credentials Overview */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(206,174,86,0.25)', borderRadius: '1rem', padding: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#CEAE56', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  🔑 Official System Role Credentials
+                </h3>
+                <span style={{ fontSize: '0.7rem', color: '#8898AA' }}>
+                  Standard accounts for testing and role governance
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
+                <div style={{ background: '#070E1A', border: '1px solid rgba(180,83,9,0.35)', borderRadius: '0.5rem', padding: '0.75rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#B45309', fontWeight: 700 }}>🛡️ ROOT ADMINISTRATOR</div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#F1F5F9', marginTop: '0.2rem' }}>admin@fingeniq.com</div>
+                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '0.15rem' }}>Password: <code style={{ color: '#CEAE56' }}>Admin@123456</code></div>
+                </div>
+
+                <div style={{ background: '#070E1A', border: '1px solid rgba(37,99,235,0.35)', borderRadius: '0.5rem', padding: '0.75rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#60A5FA', fontWeight: 700 }}>💼 INSTITUTIONAL STAFF / EMPLOYEE</div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#F1F5F9', marginTop: '0.2rem' }}>employee@fingeniq.com</div>
+                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '0.15rem' }}>Password: <code style={{ color: '#60A5FA' }}>Employee@123456</code></div>
+                </div>
+
+                <div style={{ background: '#070E1A', border: '1px solid rgba(124,58,237,0.35)', borderRadius: '0.5rem', padding: '0.75rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#A78BFA', fontWeight: 700 }}>🎓 ACADEMIC FACULTY / TEACHER</div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#F1F5F9', marginTop: '0.2rem' }}>teacher@fingeniq.com</div>
+                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '0.15rem' }}>Password: <code style={{ color: '#A78BFA' }}>Teacher@123456</code></div>
+                </div>
+
+                <div style={{ background: '#070E1A', border: '1px solid rgba(22,163,74,0.35)', borderRadius: '0.5rem', padding: '0.75rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#4ADE80', fontWeight: 700 }}>📖 STANDARD LEARNER</div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#F1F5F9', marginTop: '0.2rem' }}>learner@fingeniq.com</div>
+                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '0.15rem' }}>Password: <code style={{ color: '#4ADE80' }}>Learner@123456</code></div>
+                </div>
               </div>
             </div>
 
@@ -903,7 +942,8 @@ export default function AdminCredentials() {
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Role</label>
                   <select name="role" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.82rem' }}>
                     <option value="learner">Student / Learner</option>
-                    <option value="employee">Enterprise Employee</option>
+                    <option value="teacher">Academic Teacher / Faculty</option>
+                    <option value="employee">Enterprise Employee / Staff</option>
                     <option value="employer">Employer / Recruiter</option>
                     <option value="admin">System Administrator</option>
                   </select>

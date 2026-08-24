@@ -192,7 +192,7 @@ export interface FQData {
 
 // ── Community Types ──────────────────────────────────────────────────────────
 
-export type UserRole = 'learner' | 'employer' | 'admin' | 'employee' | 'community_member';
+export type UserRole = 'learner' | 'employer' | 'admin' | 'employee' | 'teacher' | 'community_member';
 
 export interface CommunityArticle {
   id: number;

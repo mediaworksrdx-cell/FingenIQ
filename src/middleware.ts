@@ -70,25 +70,25 @@ export async function middleware(request: NextRequest) {
     const { role, mustReset } = auth;
 
     // Role-Based Authorization Checks
-    // 1. /admin/* -> admin only
-    if (pathname.startsWith('/admin') && role !== 'admin') {
+    // 1. /admin/* -> admin, employee, or teacher
+    if (pathname.startsWith('/admin') && role !== 'admin' && role !== 'employee' && role !== 'teacher') {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
 
-    // 2. /marketplace/* -> employer or admin only
-    if (pathname.startsWith('/marketplace') && role !== 'employer' && role !== 'admin') {
+    // 2. /marketplace/* -> employer, admin, employee, or teacher
+    if (pathname.startsWith('/marketplace') && role !== 'employer' && role !== 'admin' && role !== 'employee' && role !== 'teacher') {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // 3. /community/new and /community/edit/* -> admin or employee only
+    // 3. /community/new and /community/edit/* -> admin, employee, or teacher
     if ((pathname === '/community/new' || pathname.startsWith('/community/edit/')) && 
-        role !== 'admin' && role !== 'employee') {
+        role !== 'admin' && role !== 'employee' && role !== 'teacher') {
       return NextResponse.redirect(new URL('/community', request.url));
     }
 
-    // 4. /dashboard, /lessons, /lesson-player, /assessments, /capstone, /certification -> learner or admin
+    // 4. /dashboard, /lessons, /lesson-player, /assessments, /capstone, /certification -> all authenticated roles
     const learnerRoutes = ['/dashboard', '/lessons', '/lesson-player', '/assessments', '/capstone', '/certification'];
-    if (learnerRoutes.some(route => pathname.startsWith(route)) && role !== 'learner' && role !== 'admin') {
+    if (learnerRoutes.some(route => pathname.startsWith(route)) && !['learner', 'admin', 'employee', 'teacher'].includes(role)) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 

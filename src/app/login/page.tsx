@@ -178,6 +178,7 @@ function LoginContent() {
                 name="email"
                 type="email"
                 required
+                defaultValue="learner@fingeniq.com"
                 style={{
                   background: '#FFFFFF',
                   border: '1px solid rgba(0, 0, 0, 0.15)',
@@ -188,7 +189,7 @@ function LoginContent() {
                   width: '100%',
                   outline: 'none',
                 }}
-                placeholder="e.g. name@institution.com"
+                placeholder="e.g. learner@fingeniq.com"
               />
             </div>
 
@@ -206,6 +207,7 @@ function LoginContent() {
                 name="password"
                 type="password"
                 required
+                defaultValue="Learner@123456"
                 style={{
                   background: '#FFFFFF',
                   border: '1px solid rgba(0, 0, 0, 0.15)',
@@ -246,14 +248,48 @@ function LoginContent() {
           </form>
         </div>
 
+        {/* Demo Credentials Box */}
+        <div style={{
+          marginTop: '1.25rem',
+          background: '#FFFFFF',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
+          borderRadius: '0.75rem',
+          padding: '1rem',
+          fontSize: '0.75rem',
+          color: '#334155',
+        }}>
+          <div style={{ fontWeight: 700, marginBottom: '0.5rem', color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            🔑 Available System Credentials:
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div style={{ background: '#F8FAFC', padding: '6px 8px', borderRadius: '4px', border: '1px solid #E2E8F0' }}>
+              <div style={{ fontWeight: 700, color: '#15803D' }}>📖 Learner</div>
+              <div style={{ fontSize: '0.7rem', color: '#475569' }}>learner@fingeniq.com</div>
+              <div style={{ fontSize: '0.68rem', color: '#94A3B8' }}>Learner@123456</div>
+            </div>
+            <div style={{ background: '#F8FAFC', padding: '6px 8px', borderRadius: '4px', border: '1px solid #E2E8F0' }}>
+              <div style={{ fontWeight: 700, color: '#7C3AED' }}>🎓 Teacher</div>
+              <div style={{ fontSize: '0.7rem', color: '#475569' }}>teacher@fingeniq.com</div>
+              <div style={{ fontSize: '0.68rem', color: '#94A3B8' }}>Teacher@123456</div>
+            </div>
+            <div style={{ background: '#F8FAFC', padding: '6px 8px', borderRadius: '4px', border: '1px solid #E2E8F0' }}>
+              <div style={{ fontWeight: 700, color: '#2563EB' }}>💼 Employee</div>
+              <div style={{ fontSize: '0.7rem', color: '#475569' }}>employee@fingeniq.com</div>
+              <div style={{ fontSize: '0.68rem', color: '#94A3B8' }}>Employee@123456</div>
+            </div>
+            <div style={{ background: '#F8FAFC', padding: '6px 8px', borderRadius: '4px', border: '1px solid #E2E8F0' }}>
+              <div style={{ fontWeight: 700, color: '#B45309' }}>🛡️ Admin</div>
+              <div style={{ fontSize: '0.7rem', color: '#475569' }}>admin@fingeniq.com</div>
+              <div style={{ fontSize: '0.68rem', color: '#94A3B8' }}>Admin@123456</div>
+            </div>
+          </div>
+        </div>
+
         {/* Footer info links */}
-        <footer role="contentinfo" style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem', color: '#475569', lineHeight: 1.6 }}>
-          <p style={{ color: '#475569' }}>
-            Don&apos;t have credentials? Contact your organization administrator to receive an activation link.
-          </p>
-          <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <footer role="contentinfo" style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.75rem', color: '#475569', lineHeight: 1.6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <Link href="/admin/login" style={{ color: '#B45309', textDecoration: 'none', fontWeight: 700 }}>
-              🛡️ Enterprise Administrator &amp; Staff Portal Sign In →
+              🛡️ Admin, Employee &amp; Teacher Portal Sign In →
             </Link>
             <Link href="/community/login" style={{ color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
               Looking for Community Discussion? Community Sign In / Register →

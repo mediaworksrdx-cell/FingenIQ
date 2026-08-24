@@ -20,9 +20,9 @@ export const db = new Database(dbPath);
 const schemaSql = fs.readFileSync(schemaPath, 'utf8');
 db.exec(schemaSql);
 
-// ── MIGRATION: Ensure users table supports community_member role and community loginCategory ──
+// ── MIGRATION: Ensure users table supports community_member and teacher roles ──
 const usersTableSql = (db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'").get() as { sql: string } | undefined)?.sql || '';
-if (usersTableSql && !usersTableSql.includes("'community_member'")) {
+if (usersTableSql && (!usersTableSql.includes("'teacher'") || !usersTableSql.includes("'community_member'"))) {
   db.exec(`
     PRAGMA foreign_keys=off;
     BEGIN TRANSACTION;
@@ -30,7 +30,7 @@ if (usersTableSql && !usersTableSql.includes("'community_member'")) {
       id                        TEXT PRIMARY KEY,
       name                      TEXT NOT NULL,
       email                     TEXT UNIQUE NOT NULL,
-      role                      TEXT CHECK(role IN ('learner', 'employer', 'admin', 'employee', 'community_member')) NOT NULL,
+      role                      TEXT CHECK(role IN ('learner', 'employer', 'admin', 'employee', 'teacher', 'community_member')) NOT NULL,
       passwordHash              TEXT,
       mustResetPassword         INTEGER DEFAULT 1,
       createdByAdminId          TEXT,
@@ -56,7 +56,7 @@ if (usersTableSql && !usersTableSql.includes("'community_member'")) {
     COMMIT;
     PRAGMA foreign_keys=on;
   `);
-  console.log('[Migration] Upgraded users table with community_member role and community category');
+  console.log('[Migration] Upgraded users table with teacher and community_member roles');
 }
 
 // ── CREATE LESSON OVERRIDES TABLE (Super-Admin Dynamic Editing) ───────────────
@@ -100,13 +100,13 @@ const insertPkg = db.prepare(`
   VALUES (?, ?, ?, ?, ?, ?, 1, ?)
 `);
 
-for (const pkg of seedPackages) {
-  insertPkg.run(pkg.id, pkg.name, pkg.desc, pkg.loginCategory, pkg.modules, pkg.days, now);
+for (const p of seedPackages) {
+  insertPkg.run(p.id, p.name, p.desc, p.loginCategory, p.modules, p.days, now);
 }
 
 // ── SEED DEFAULT BUSINESS ENTITIES ─────────────────────────────────────────
 const seedEntities = [
-  { id: 'ENT_DEMO_B2B',   name: 'Demo Corporation',       type: 'b2b',   email: 'hr@democorp.com',      maxUsers: 100 },
+  { id: 'ENT_DEMO_B2B',   name: 'Demo Investment Bank Corp', type: 'b2b',   email: 'admin@demobank.com',   maxUsers: 100 },
   { id: 'ENT_DEMO_B2B2C', name: 'Demo University Partner', type: 'b2b2c', email: 'admin@demouniv.edu',   maxUsers: 500 },
 ];
 
@@ -119,57 +119,55 @@ for (const ent of seedEntities) {
   insertEnt.run(ent.id, ent.name, ent.type, ent.email, ent.maxUsers, now);
 }
 
-// ── BOOTSTRAP ADMIN ────────────────────────────────────────────────────────
-const initialEmail = process.env.INITIAL_ADMIN_EMAIL || 'admin@fingeniq.com';
-const initialPassword = process.env.INITIAL_ADMIN_PASSWORD || 'Admin@123456';
-const hashAdmin = bcrypt.hashSync(initialPassword, 12);
+// ── BOOTSTRAP DEFAULT CREDENTIALS FOR 4 ROLES ──────────────────────────────
+const defaultAccounts = [
+  {
+    id: 'U_ADMIN_SEED',
+    name: 'Root Administrator',
+    email: process.env.INITIAL_ADMIN_EMAIL || 'admin@fingeniq.com',
+    password: process.env.INITIAL_ADMIN_PASSWORD || 'Admin@123456',
+    role: 'admin',
+  },
+  {
+    id: 'U_EMPLOYEE_SEED',
+    name: 'FinGenIQ Staff / Employee',
+    email: 'employee@fingeniq.com',
+    password: 'Employee@123456',
+    role: 'employee',
+  },
+  {
+    id: 'U_TEACHER_SEED',
+    name: 'Academic Faculty / Teacher',
+    email: 'teacher@fingeniq.com',
+    password: 'Teacher@123456',
+    role: 'teacher',
+  },
+  {
+    id: 'U_LEARNER_SEED',
+    name: 'Standard Learner',
+    email: process.env.INITIAL_LEARNER_EMAIL || 'learner@fingeniq.com',
+    password: process.env.INITIAL_LEARNER_PASSWORD || 'Learner@123456',
+    role: 'learner',
+  },
+];
 
-db.prepare(`
-  INSERT OR IGNORE INTO users (
+const upsertUserStmt = db.prepare(`
+  INSERT INTO users (
     id, name, email, role, passwordHash, mustResetPassword, 
     accountStatus, failedLoginAttempts, validityPeriod, credentialIssuedAt,
     loginCategory, packageId
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`).run(
-  'U_ADMIN_SEED',
-  'Root Administrator',
-  initialEmail,
-  'admin',
-  hashAdmin,
-  0,
-  'active',
-  0,
-  'annual',
-  new Date().toISOString(),
-  'b2c',
-  'PKG_B2C_PRO'
-);
+  ) VALUES (?, ?, ?, ?, ?, 0, 'active', 0, 'annual', ?, 'b2c', 'PKG_B2C_PRO')
+  ON CONFLICT(email) DO UPDATE SET
+    role = excluded.role,
+    passwordHash = excluded.passwordHash,
+    name = excluded.name,
+    accountStatus = 'active'
+`);
 
-// ── BOOTSTRAP LEARNER ──────────────────────────────────────────────────────
-const learnerEmail = process.env.INITIAL_LEARNER_EMAIL || 'learner@fingeniq.com';
-const learnerPassword = process.env.INITIAL_LEARNER_PASSWORD || 'Learner@123456';
-const hashLearner = bcrypt.hashSync(learnerPassword, 12);
-
-db.prepare(`
-  INSERT OR IGNORE INTO users (
-    id, name, email, role, passwordHash, mustResetPassword, 
-    accountStatus, failedLoginAttempts, validityPeriod, credentialIssuedAt,
-    loginCategory, packageId
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`).run(
-  'U_LEARNER_SEED',
-  'User',
-  learnerEmail,
-  'learner',
-  hashLearner,
-  0,
-  'active',
-  0,
-  'annual',
-  new Date().toISOString(),
-  'b2c',
-  'PKG_B2C_PRO'
-);
+for (const acc of defaultAccounts) {
+  const hash = bcrypt.hashSync(acc.password, 12);
+  upsertUserStmt.run(acc.id, acc.name, acc.email, acc.role, hash, now);
+}
 
 // ── COMMUNITY ARTICLE HELPERS ──────────────────────────────────────────────
 
