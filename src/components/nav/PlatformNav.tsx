@@ -120,9 +120,9 @@ export default function PlatformNav() {
       <nav className="nav" aria-label="Platform navigation">
         <div className="nav__inner">
           {/* Logo */}
-          <Link href="/" className="nav__logo" aria-label="FinGen IQ homepage">
+          <a href="/" className="nav__logo" aria-label="FinGen IQ homepage">
             <FinGenIqLogo showText={true} size={36} />
-          </Link>
+          </a>
 
           {/* Desktop Links */}
           <div className="nav__links" role="menubar" aria-label="Main navigation">
