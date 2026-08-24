@@ -7,6 +7,7 @@ import {
   createPackageAction, togglePackageStatusAction, saveLessonFullContentAction, 
   adminUpdateCommunityArticleAction, adminDeleteCommunityArticleAction, adminDeleteCommentAction,
   saveAiKnowledgeDocAction, toggleAiKnowledgeDocAction, deleteAiKnowledgeDocAction, updateAiSettingAction,
+  saveChatbotQAAction, deleteChatbotQAAction, bulkSaveChatbotQAsAction, resetChatbotQAsAction,
   adminResetUserProgressAction, BulkUserRow
 } from '@/app/actions/adminActions';
 import { logoutAction } from '@/app/actions/authActions';
@@ -29,9 +30,16 @@ export default function AdminCredentials() {
   const [lessonOverrides, setLessonOverrides] = useState<any[]>([]);
   const [aiKnowledgeDocs, setAiKnowledgeDocs] = useState<any[]>([]);
   const [aiSettings, setAiSettings] = useState<any[]>([]);
+  const [chatbotQAs, setChatbotQAs] = useState<any[]>([]);
+  const [qaSearchQuery, setQaSearchQuery] = useState('');
+  const [qaCategoryFilter, setQaCategoryFilter] = useState('all');
+  const [qaSaveStatus, setQaSaveStatus] = useState<string | null>(null);
+  const [newQAQuestion, setNewQAQuestion] = useState('');
+  const [newQAAnswer, setNewQAAnswer] = useState('');
+  const [newQACategory, setNewQACategory] = useState('General');
   
   // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'aarkaa' | 'community' | 'entities' | 'logs'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'chatbot_qa' | 'aarkaa' | 'community' | 'entities' | 'logs'>('analytics');
   const [selectedLoginCategory, setSelectedLoginCategory] = useState('b2c');
 
   // ─── USER ROSTER FILTERS & SEARCH ─────────────────────────────────────────
@@ -219,6 +227,7 @@ export default function AdminCredentials() {
           setLessonOverrides(data.lessonOverrides || []);
           setAiKnowledgeDocs(data.aiKnowledgeDocs || []);
           setAiSettings(data.aiSettings || []);
+          setChatbotQAs(data.chatbotQAs || []);
 
           const modeSetting = (data.aiSettings || []).find((s: any) => s.settingKey === 'system_prompt_mode');
           if (modeSetting) setSelectedPromptMode(modeSetting.settingValue);
@@ -569,14 +578,15 @@ export default function AdminCredentials() {
           ))}
         </div>
 
-        {/* ─── PRIMARY TAB NAVIGATION (7 DISTINCT MODULES) ────────────────────── */}
+        {/* ─── PRIMARY TAB NAVIGATION ────────────────────────────────────────── */}
         <div style={{ display: 'flex', gap: '0.4rem', borderBottom: '1px solid rgba(255,255,255,0.08)', marginTop: '1.75rem', paddingBottom: '0.5rem', overflowX: 'auto' }}>
           {[
             { id: 'analytics', label: '📊 Learner Analytics & Gradebook' },
             { id: 'users', label: '👥 User & Credential Management' },
             { id: 'lessons', label: '🎓 Curriculum & Simulator Studio' },
+            { id: 'chatbot_qa', label: `💬 Chatbot Q&A (${chatbotQAs.length || 30} Answers)` },
             { id: 'aarkaa', label: '🤖 Aarkaa AI Governance & RAG' },
-            { id: 'community', label: '💬 Community Moderation' },
+            { id: 'community', label: '🌐 Community Moderation' },
             { id: 'entities', label: '🏢 Enterprise & Packages' },
             { id: 'logs', label: '🔒 Security Audit Log' },
           ].map(tab => (
@@ -1724,6 +1734,332 @@ export default function AdminCredentials() {
 
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB: CHATBOT Q&A KNOWLEDGE BASE STUDIO (30 ANSWERS) ───────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'chatbot_qa' && (
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            
+            {/* Top Control Bar */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                      💬 Chatbot Q&A Knowledge Studio
+                    </h3>
+                    <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399', border: '1px solid rgba(52,211,153,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '0.75rem', fontWeight: 700 }}>
+                      {chatbotQAs.length} Live Questions
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.8rem', color: '#8898AA', margin: '0.35rem 0 0' }}>
+                    These 30 curated questions and answers power the live website assistant. Edit any question or answer below to update chatbot responses in real time.
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => {
+                      if (confirm('Reset all Q&As to the official 30 default answers? Custom edits will be overwritten.')) {
+                        startTransition(async () => {
+                          const res = await resetChatbotQAsAction(sessionToken);
+                          if (res.success) {
+                            setQaSaveStatus('✅ Reset to 30 default questions & answers successfully!');
+                            fetchDashboardData();
+                            setTimeout(() => setQaSaveStatus(null), 4000);
+                          } else {
+                            setQaSaveStatus(`❌ Error: ${res.error}`);
+                          }
+                        });
+                      }
+                    }}
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.12)',
+                      color: '#F87171',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      borderRadius: '0.5rem',
+                      padding: '0.6rem 1rem',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ✨ Reset to 30 Defaults
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      startTransition(async () => {
+                        const res = await bulkSaveChatbotQAsAction(sessionToken, chatbotQAs);
+                        if (res.success) {
+                          setQaSaveStatus('✅ All Q&A changes saved and published live to chatbot!');
+                          fetchDashboardData();
+                          setTimeout(() => setQaSaveStatus(null), 4000);
+                        } else {
+                          setQaSaveStatus(`❌ Error: ${res.error}`);
+                        }
+                      });
+                    }}
+                    style={{
+                      background: 'linear-gradient(135deg, #10B981, #059669)',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      padding: '0.6rem 1.25rem',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                    }}
+                  >
+                    💾 Save All Changes
+                  </button>
+                </div>
+              </div>
+
+              {qaSaveStatus && (
+                <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', borderRadius: '0.5rem', background: qaSaveStatus.startsWith('✅') ? 'rgba(52,211,153,0.15)' : 'rgba(239,68,68,0.15)', border: qaSaveStatus.startsWith('✅') ? '1px solid #34D399' : '1px solid #EF4444', color: qaSaveStatus.startsWith('✅') ? '#34D399' : '#EF4444', fontSize: '0.85rem', fontWeight: 600 }}>
+                  {qaSaveStatus}
+                </div>
+              )}
+            </div>
+
+            {/* Ingest New Q&A Box */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '1rem', padding: '1.25rem' }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#CEAE56', marginBottom: '0.75rem' }}>
+                ➕ Add New Chatbot Question & Answer Pair
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 600, display: 'block', marginBottom: '4px' }}>QUESTION</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., What is Discounted Cash Flow (DCF)?"
+                    value={newQAQuestion}
+                    onChange={e => setNewQAQuestion(e.target.value)}
+                    style={{ width: '100%', background: '#070E1A', border: '1px solid #334155', borderRadius: '0.375rem', padding: '0.6rem 0.75rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 600, display: 'block', marginBottom: '4px' }}>CATEGORY</label>
+                  <select
+                    value={newQACategory}
+                    onChange={e => setNewQACategory(e.target.value)}
+                    style={{ width: '100%', background: '#070E1A', border: '1px solid #334155', borderRadius: '0.375rem', padding: '0.6rem 0.75rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                  >
+                    <option value="FinGenIQ Platform">FinGenIQ Platform</option>
+                    <option value="Curriculum">Curriculum</option>
+                    <option value="Certifications">Certifications</option>
+                    <option value="Capstone">Capstone</option>
+                    <option value="Valuation & DCF">Valuation & DCF</option>
+                    <option value="Investing">Investing</option>
+                    <option value="Corporate Finance">Corporate Finance</option>
+                    <option value="Personal Finance">Personal Finance</option>
+                    <option value="Portfolio Strategy">Portfolio Strategy</option>
+                    <option value="Capital Markets">Capital Markets</option>
+                    <option value="Careers & Marketplace">Careers & Marketplace</option>
+                    <option value="Support & Contact">Support & Contact</option>
+                    <option value="General">General</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ marginBottom: '0.75rem' }}>
+                <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 600, display: 'block', marginBottom: '4px' }}>ANSWER (Markdown supported)</label>
+                <textarea
+                  rows={3}
+                  placeholder="Enter the detailed explanation or answer the chatbot should provide..."
+                  value={newQAAnswer}
+                  onChange={e => setNewQAAnswer(e.target.value)}
+                  style={{ width: '100%', background: '#070E1A', border: '1px solid #334155', borderRadius: '0.375rem', padding: '0.6rem 0.75rem', color: '#F1F5F9', fontSize: '0.82rem', fontFamily: 'inherit' }}
+                />
+              </div>
+              <button
+                onClick={() => {
+                  if (!newQAQuestion.trim() || !newQAAnswer.trim()) {
+                    alert('Please enter both Question and Answer.');
+                    return;
+                  }
+                  startTransition(async () => {
+                    const res = await saveChatbotQAAction(sessionToken, {
+                      question: newQAQuestion,
+                      answer: newQAAnswer,
+                      category: newQACategory,
+                    });
+                    if (res.success) {
+                      setNewQAQuestion('');
+                      setNewQAAnswer('');
+                      setQaSaveStatus('✅ New Q&A added to chatbot knowledge base!');
+                      fetchDashboardData();
+                      setTimeout(() => setQaSaveStatus(null), 3000);
+                    } else {
+                      alert(res.error);
+                    }
+                  });
+                }}
+                style={{
+                  background: 'rgba(206,174,86,0.15)',
+                  color: '#CEAE56',
+                  border: '1px solid rgba(206,174,86,0.4)',
+                  borderRadius: '0.375rem',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                ➕ Add to Knowledge Base
+              </button>
+            </div>
+
+            {/* Filter & Search Bar */}
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <input
+                type="text"
+                placeholder="🔍 Search questions or keywords..."
+                value={qaSearchQuery}
+                onChange={e => setQaSearchQuery(e.target.value)}
+                style={{ flex: 1, minWidth: 240, background: '#0B1528', border: '1px solid #334155', borderRadius: '0.5rem', padding: '0.6rem 1rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+              />
+              <select
+                value={qaCategoryFilter}
+                onChange={e => setQaCategoryFilter(e.target.value)}
+                style={{ background: '#0B1528', border: '1px solid #334155', borderRadius: '0.5rem', padding: '0.6rem 1rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+              >
+                <option value="all">All Categories</option>
+                {Array.from(new Set(chatbotQAs.map(q => q.category || 'General'))).map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* List of 30 Q&A Cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {chatbotQAs
+                .filter(qa => {
+                  const matchesSearch = !qaSearchQuery || 
+                    qa.question?.toLowerCase().includes(qaSearchQuery.toLowerCase()) || 
+                    qa.answer?.toLowerCase().includes(qaSearchQuery.toLowerCase()) ||
+                    qa.category?.toLowerCase().includes(qaSearchQuery.toLowerCase());
+                  const matchesCategory = qaCategoryFilter === 'all' || qa.category === qaCategoryFilter;
+                  return matchesSearch && matchesCategory;
+                })
+                .map((qa, index) => (
+                  <div
+                    key={qa.id || index}
+                    style={{
+                      background: '#0B1528',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: '0.75rem',
+                      padding: '1.25rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.75rem',
+                      transition: 'border-color 0.2s',
+                    }}
+                  >
+                    {/* Top Row: Q Number, Category, Actions */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(206,174,86,0.15)', color: '#CEAE56', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800 }}>
+                          {index + 1}
+                        </span>
+                        <span style={{ fontSize: '0.72rem', background: '#070E1A', border: '1px solid #334155', color: '#94A3B8', borderRadius: '4px', padding: '2px 8px', fontWeight: 600 }}>
+                          {qa.category || 'General'}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <button
+                          onClick={() => {
+                            startTransition(async () => {
+                              const res = await saveChatbotQAAction(sessionToken, qa);
+                              if (res.success) {
+                                setQaSaveStatus(`✅ Saved Question #${index + 1}!`);
+                                setTimeout(() => setQaSaveStatus(null), 2500);
+                              } else {
+                                alert(res.error);
+                              }
+                            });
+                          }}
+                          style={{
+                            background: 'rgba(52,211,153,0.12)',
+                            color: '#34D399',
+                            border: '1px solid rgba(52,211,153,0.3)',
+                            borderRadius: '0.375rem',
+                            padding: '4px 10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          💾 Save Item
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm(`Delete question: "${qa.question}"?`)) {
+                              startTransition(async () => {
+                                const res = await deleteChatbotQAAction(sessionToken, qa.id);
+                                if (res.success) {
+                                  fetchDashboardData();
+                                } else {
+                                  alert(res.error);
+                                }
+                              });
+                            }
+                          }}
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            color: '#F87171',
+                            border: '1px solid rgba(239, 68, 68, 0.25)',
+                            borderRadius: '0.375rem',
+                            padding: '4px 8px',
+                            fontSize: '0.75rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Question Input */}
+                    <div>
+                      <label style={{ fontSize: '0.68rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px', textTransform: 'uppercase' }}>
+                        Question
+                      </label>
+                      <input
+                        type="text"
+                        value={qa.question || ''}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setChatbotQAs(prev => prev.map((item, i) => item.id === qa.id ? { ...item, question: val } : item));
+                        }}
+                        style={{ width: '100%', background: '#070E1A', border: '1px solid #334155', borderRadius: '0.375rem', padding: '0.5rem 0.75rem', color: '#F1F5F9', fontSize: '0.85rem', fontWeight: 600 }}
+                      />
+                    </div>
+
+                    {/* Answer Textarea */}
+                    <div>
+                      <label style={{ fontSize: '0.68rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px', textTransform: 'uppercase' }}>
+                        Answer
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={qa.answer || ''}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setChatbotQAs(prev => prev.map((item, i) => item.id === qa.id ? { ...item, answer: val } : item));
+                        }}
+                        style={{ width: '100%', background: '#070E1A', border: '1px solid #334155', borderRadius: '0.375rem', padding: '0.5rem 0.75rem', color: '#CBD5E1', fontSize: '0.8rem', lineHeight: '1.5', fontFamily: 'inherit' }}
+                      />
+                    </div>
+                  </div>
+                ))}
+            </div>
+
           </div>
         )}
 

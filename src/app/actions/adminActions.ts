@@ -934,4 +934,122 @@ export async function adminResetUserProgressAction(
   }
 }
 
+// ── CHATBOT Q&A KNOWLEDGE MANAGEMENT ACTIONS ────────────────────────────────
+
+export async function saveChatbotQAAction(
+  adminToken: string | undefined,
+  data: {
+    id?: number;
+    question: string;
+    answer: string;
+    category?: string;
+    tags?: string;
+    displayOrder?: number;
+  }
+) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    const { id, question, answer, category = 'General', tags = '[]', displayOrder = 0 } = data;
+
+    if (!question || !answer) {
+      return { success: false, error: 'Question and answer are required.' };
+    }
+
+    const now = new Date().toISOString();
+
+    if (id) {
+      db.prepare(`
+        UPDATE chatbot_qa SET
+          question = ?, answer = ?, category = ?, tags = ?, displayOrder = ?, updatedAt = ?
+        WHERE id = ?
+      `).run(question.trim(), answer.trim(), category.trim(), tags, displayOrder, now, id);
+      logAudit('CHATBOT_QA_UPDATED', adminId, String(id), null, { question });
+      revalidatePath('/admin/credentials');
+      return { success: true, id };
+    } else {
+      const res = db.prepare(`
+        INSERT INTO chatbot_qa (question, answer, category, tags, displayOrder, updatedAt)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(question.trim(), answer.trim(), category.trim(), tags, displayOrder, now);
+      logAudit('CHATBOT_QA_CREATED', adminId, String(res.lastInsertRowid), null, { question });
+      revalidatePath('/admin/credentials');
+      return { success: true, id: Number(res.lastInsertRowid) };
+    }
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deleteChatbotQAAction(adminToken: string | undefined, id: number) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    db.prepare('DELETE FROM chatbot_qa WHERE id = ?').run(id);
+    logAudit('CHATBOT_QA_DELETED', adminId, String(id), null, null);
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function bulkSaveChatbotQAsAction(
+  adminToken: string | undefined,
+  qas: Array<{
+    id?: number;
+    question: string;
+    answer: string;
+    category?: string;
+    tags?: string;
+    displayOrder?: number;
+  }>
+) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    const now = new Date().toISOString();
+
+    const insertStmt = db.prepare(`
+      INSERT INTO chatbot_qa (question, answer, category, tags, displayOrder, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+
+    const updateStmt = db.prepare(`
+      UPDATE chatbot_qa SET
+        question = ?, answer = ?, category = ?, tags = ?, displayOrder = ?, updatedAt = ?
+      WHERE id = ?
+    `);
+
+    const runTx = db.transaction((items: typeof qas) => {
+      for (const item of items) {
+        if (!item.question || !item.answer) continue;
+        if (item.id) {
+          updateStmt.run(item.question.trim(), item.answer.trim(), item.category || 'General', item.tags || '[]', item.displayOrder || 0, now, item.id);
+        } else {
+          insertStmt.run(item.question.trim(), item.answer.trim(), item.category || 'General', item.tags || '[]', item.displayOrder || 0, now);
+        }
+      }
+    });
+
+    runTx(qas);
+
+    logAudit('CHATBOT_QA_BULK_UPDATED', adminId, null, null, { count: qas.length });
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function resetChatbotQAsAction(adminToken: string | undefined) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    const { resetChatbotQAsToDefaults } = await import('@/lib/db');
+    resetChatbotQAsToDefaults();
+    logAudit('CHATBOT_QA_RESET_DEFAULTS', adminId, null, null, { count: 30 });
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
 

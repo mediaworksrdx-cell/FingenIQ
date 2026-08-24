@@ -195,6 +195,14 @@ export async function GET(request: NextRequest) {
     const aiKnowledgeDocs = db.prepare('SELECT * FROM ai_knowledge_docs ORDER BY createdAt DESC').all();
     const aiSettings = db.prepare('SELECT * FROM ai_settings').all();
 
+    // 7. Fetch Chatbot 30 Q&As
+    let chatbotQAs = [];
+    try {
+      chatbotQAs = db.prepare('SELECT * FROM chatbot_qa ORDER BY displayOrder ASC, id ASC').all();
+    } catch {
+      chatbotQAs = [];
+    }
+
     return NextResponse.json({
       success: true,
       stats: {
@@ -222,6 +230,7 @@ export async function GET(request: NextRequest) {
       lessonOverrides,
       aiKnowledgeDocs,
       aiSettings,
+      chatbotQAs,
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
