@@ -131,7 +131,7 @@ export default function Contact() {
                       <span style={{ fontSize: '1.5rem' }}>🏢</span>
                       <div>
                         <div className="font-semi text-primary mb-1">Platform Headquarters</div>
-                        <div className="text-sm text-secondary">VIVIN Synergy</div>
+                        <div className="text-sm font-semibold text-primary">VIVIN Synergy</div>
                         <div className="text-xs text-muted mt-1">United Arab Emirates</div>
                       </div>
                     </div>
@@ -140,6 +140,7 @@ export default function Contact() {
                       <span style={{ fontSize: '1.5rem' }}>📍</span>
                       <div>
                         <div className="font-semi text-primary mb-1">Platform Indian Office</div>
+                        <div className="text-sm font-semibold text-primary">Syntjetix Analytics</div>
                         <div className="text-sm text-secondary">Chennai, Tamil Nadu</div>
                         <div className="text-xs text-muted mt-1">India</div>
                       </div>
