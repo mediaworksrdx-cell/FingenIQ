@@ -15,7 +15,7 @@ export default function Home() {
             <div className="hero__bg"></div>
             <div className="hero__grid"></div>
             <div className="container relative">
-              <div className="hero__content animate-fadeUp" style={{ maxWidth: '960px' }}>
+              <div className="hero__content animate-fadeUp aura-halo-emerald" style={{ maxWidth: '960px' }}>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.82rem', fontWeight: 800, letterSpacing: '0.14em', color: '#15803D', textTransform: 'uppercase', marginBottom: 'var(--sp-4)' }}>
                   <span style={{ width: '28px', height: '2px', background: 'linear-gradient(90deg, transparent, #16A34A)' }} />
                   <span>CONTINUOUS LEARNING. LIMITLESS GROWTH.</span>

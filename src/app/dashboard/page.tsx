@@ -79,9 +79,14 @@ export default function Dashboard() {
           <div className="container">
 
             {/* Welcome Banner */}
-            <div className="welcome-banner animate-fadeUp" role="banner">
+            <div className="welcome-banner animate-fadeUp aura-halo-emerald" role="banner">
               <div>
-                <div className="welcome-banner__greeting">{greeting}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem' }}>
+                  <div className="welcome-banner__greeting">{greeting}</div>
+                  <span className="badge--live-pulse" style={{ padding: '2px 8px', borderRadius: '9999px', fontSize: '0.65rem' }}>
+                    Active Learner Session
+                  </span>
+                </div>
                 <div className="welcome-banner__name">{name}</div>
                 <p className="welcome-banner__quote">{quote ? `“${quote}”` : ''}</p>
               </div>
