@@ -446,7 +446,7 @@ export default function AdminCredentials() {
         backdropFilter: 'blur(16px)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{
               width: 38,
               height: 38,
@@ -474,7 +474,7 @@ export default function AdminCredentials() {
                 Curriculum Studio · Learner Gradebook · Aarkaa AI RAG Governance · Multi-Tenant Control
               </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Global Superuser Navigation Shortcut Links */}
@@ -504,7 +504,7 @@ export default function AdminCredentials() {
             onClick={async () => {
               try { await fetch('/api/auth/logout', { method: 'POST' }); } catch {}
               try { await logoutAction(); } catch {}
-              window.location.href = '/login';
+              window.location.href = '/';
             }}
             style={{
               fontSize: '0.75rem',

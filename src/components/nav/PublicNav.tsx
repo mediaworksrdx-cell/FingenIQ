@@ -18,12 +18,26 @@ export default function PublicNav() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sessionUser, setSessionUser] = useState<{ name: string; role: string } | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    fetch('/api/auth/session')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.name) {
+          setSessionUser({ name: data.name, role: data.role });
+        } else {
+          setSessionUser(null);
+        }
+      })
+      .catch(() => setSessionUser(null));
+  }, [pathname]);
 
   // Close drawer on route change
   useEffect(() => {
@@ -39,6 +53,16 @@ export default function PublicNav() {
     }
     return () => { document.body.style.overflow = ''; };
   }, [drawerOpen]);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {}
+    setSessionUser(null);
+    window.location.href = '/';
+  };
+
+  const portalHref = sessionUser?.role === 'admin' ? '/admin/credentials' : '/dashboard';
 
   return (
     <>
@@ -78,16 +102,47 @@ export default function PublicNav() {
               <span style={{ transform: drawerOpen ? 'rotate(-45deg) translate(5px, -5px)' : '' }} />
             </button>
 
-            <Link
-              href="/login"
-              className="btn btn--brass"
-              style={{
-                animation: 'pulseGlow 3s ease-in-out infinite',
-                animationDelay: '1.5s',
-              }}
-            >
-              Enter FingenIQ →
-            </Link>
+            {sessionUser ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <Link
+                  href={portalHref}
+                  className="btn btn--brass"
+                  style={{
+                    animation: 'pulseGlow 3s ease-in-out infinite',
+                    animationDelay: '1.5s',
+                  }}
+                >
+                  Dashboard →
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(0,0,0,0.12)',
+                    borderRadius: '0.5rem',
+                    padding: '0.45rem 0.85rem',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    color: '#64748B',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="btn btn--brass"
+                style={{
+                  animation: 'pulseGlow 3s ease-in-out infinite',
+                  animationDelay: '1.5s',
+                }}
+              >
+                Enter FingenIQ →
+              </Link>
+            )}
           </div>
         </div>
       </nav>
@@ -120,15 +175,48 @@ export default function PublicNav() {
           </Link>
         ))}
 
-        <div style={{ marginTop: 'auto', paddingTop: 'var(--sp-6)', borderTop: 'var(--border-subtle)' }}>
-          <Link
-            href="/login"
-            className="btn btn--brass"
-            style={{ width: '100%', textAlign: 'center', display: 'block' }}
-            onClick={() => setDrawerOpen(false)}
-          >
-            Enter FingenIQ →
-          </Link>
+        <div style={{ marginTop: 'auto', paddingTop: 'var(--sp-6)', borderTop: 'var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {sessionUser ? (
+            <>
+              <Link
+                href={portalHref}
+                className="btn btn--brass"
+                style={{ width: '100%', textAlign: 'center', display: 'block' }}
+                onClick={() => setDrawerOpen(false)}
+              >
+                Dashboard →
+              </Link>
+              <button
+                onClick={() => {
+                  setDrawerOpen(false);
+                  handleLogout();
+                }}
+                style={{
+                  width: '100%',
+                  textAlign: 'center',
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  color: '#DC2626',
+                  border: '1px solid rgba(239, 68, 68, 0.2)',
+                  borderRadius: '0.5rem',
+                  padding: '0.65rem',
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="btn btn--brass"
+              style={{ width: '100%', textAlign: 'center', display: 'block' }}
+              onClick={() => setDrawerOpen(false)}
+            >
+              Enter FingenIQ →
+            </Link>
+          )}
         </div>
       </nav>
     </>

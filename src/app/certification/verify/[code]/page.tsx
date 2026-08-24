@@ -107,9 +107,9 @@ export default async function VerifyCredential({
 
       {/* Brand Header */}
       <header role="banner" style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+        <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
           <FinGenIqLogo showText={true} size={42} />
-        </div>
+        </Link>
         <p style={{ fontSize: '0.75rem', color: '#475569', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
           Credential Verification System
         </p>

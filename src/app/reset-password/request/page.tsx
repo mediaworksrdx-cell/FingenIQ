@@ -24,13 +24,14 @@ export default function RequestPasswordReset() {
       <main style={{ width: '100%', maxWidth: 420 }} role="main" aria-labelledby="reset-request-title">
         {/* Brand logo */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <div style={{
+          <Link href="/" style={{
+            textDecoration: 'none',
             display: 'inline-flex',
             alignItems: 'center',
             marginBottom: '0.75rem',
           }}>
             <FinGenIqLogo showText={true} size={42} />
-          </div>
+          </Link>
           <h1 id="reset-request-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', color: '#0F172A', fontWeight: 700 }}>
             Reset Password
           </h1>

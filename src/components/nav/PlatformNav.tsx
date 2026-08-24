@@ -77,7 +77,7 @@ export default function PlatformNav() {
     try {
       await logoutAction();
     } catch {}
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -120,7 +120,7 @@ export default function PlatformNav() {
       <nav className="nav" aria-label="Platform navigation">
         <div className="nav__inner">
           {/* Logo */}
-          <Link href={sessionUser?.role === 'admin' ? '/admin/credentials' : '/dashboard'} className="nav__logo" aria-label="FinGen IQ platform">
+          <Link href="/" className="nav__logo" aria-label="FinGen IQ homepage">
             <FinGenIqLogo showText={true} size={36} />
           </Link>
 

@@ -33,8 +33,8 @@ export async function GET(request: Request) {
       }
     }
     cookieStore.delete('session_token');
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   } catch (err) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
 }

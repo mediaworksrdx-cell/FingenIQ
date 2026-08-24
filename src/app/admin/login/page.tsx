@@ -38,9 +38,9 @@ function AdminLoginContent() {
       <main style={{ width: '100%', maxWidth: 440 }} role="main" aria-labelledby="admin-login-title">
         {/* Brand logo & Badge */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', marginBottom: '1.25rem' }}>
             <FinGenIqLogo showText={true} size={46} />
-          </div>
+          </Link>
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <h1 id="admin-login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#0F172A', margin: 0 }}>
