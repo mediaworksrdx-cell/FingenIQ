@@ -47,13 +47,8 @@ function CommunityAuthContent() {
         {/* Header Branding */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <Link href="/community" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <FinGenIqLogo size={38} />
-            <span className="nav__logo-text" style={{ fontSize: '1.55rem' }}>
-              <span className="logo-fin">Fin</span>
-              <span className="logo-gen">Gen</span>
-              <span className="logo-iq">IQ</span>
-              <span style={{ fontSize: '1.05rem', color: '#9AAABF', fontFamily: 'Inter, sans-serif', fontWeight: 300, marginLeft: '0.5rem' }}>Community</span>
-            </span>
+            <FinGenIqLogo showText={true} size={42} />
+            <span style={{ fontSize: '1.05rem', color: '#9AAABF', fontFamily: 'Inter, sans-serif', fontWeight: 300 }}>Community</span>
           </Link>
           <h1 id="community-auth-title" style={{ fontFamily: 'Georgia, serif', fontSize: '1.75rem', color: '#E8EEF8', fontWeight: 500, margin: '0.5rem 0 0.25rem' }}>
             {activeTab === 'signin' ? 'Sign In to Community' : 'Join the Community'}

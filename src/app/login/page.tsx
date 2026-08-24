@@ -71,16 +71,10 @@ function LoginContent() {
           <Link href="/" style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.75rem',
             marginBottom: '0.75rem',
             textDecoration: 'none',
           }}>
-            <FinGenIqLogo size={40} />
-            <span className="nav__logo-text" style={{ fontSize: '1.65rem' }}>
-              <span className="logo-fin">Fin</span>
-              <span className="logo-gen">Gen</span>
-              <span className="logo-iq">IQ</span>
-            </span>
+            <FinGenIqLogo showText={true} size={44} />
           </Link>
           <h1 id="login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', color: '#FFFFFF', fontWeight: 700, letterSpacing: '-0.02em', margin: '0.5rem 0 0' }}>
             Portal Sign In

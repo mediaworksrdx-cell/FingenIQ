@@ -15,11 +15,8 @@ export default function Footer() {
         <div className="footer__inner">
           {/* Brand Column */}
           <div>
-            <Link href="/" className="nav__logo" style={{ marginBottom: 'var(--sp-5)', display: 'inline-flex', alignItems: 'center', gap: '0.65rem' }}>
-              <FinGenIqLogo size={34} />
-              <span className="nav__logo-text">
-                <span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-space">&nbsp;</span><span className="logo-iq">IQ</span>
-              </span>
+            <Link href="/" className="nav__logo" style={{ marginBottom: 'var(--sp-5)', display: 'inline-flex' }}>
+              <FinGenIqLogo showText={true} size={36} />
             </Link>
             <p className="footer__brand-desc">
               Continuous Learning. Limitless Growth. An institution-grade financial education platform empowering wealth creation, institutional mastery, and financial freedom.

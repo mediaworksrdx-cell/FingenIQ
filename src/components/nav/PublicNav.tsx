@@ -48,10 +48,7 @@ export default function PublicNav() {
       >
         <div className="nav__inner">
           <Link href="/" className="nav__logo" aria-label="FinGen IQ home">
-            <FinGenIqLogo size={32} />
-            <span className="nav__logo-text">
-              <span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-space">&nbsp;</span><span className="logo-iq">IQ</span>
-            </span>
+            <FinGenIqLogo showText={true} size={36} />
           </Link>
 
           {/* Desktop Links */}

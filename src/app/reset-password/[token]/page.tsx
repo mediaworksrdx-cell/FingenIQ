@@ -37,15 +37,9 @@ export default function ResetPassword({
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.75rem',
             marginBottom: '0.75rem',
           }}>
-            <FinGenIqLogo size={36} />
-            <span className="nav__logo-text" style={{ fontSize: '1.5rem' }}>
-              <span className="logo-fin">Fin</span>
-              <span className="logo-gen">Gen</span>
-              <span className="logo-iq">IQ</span>
-            </span>
+            <FinGenIqLogo showText={true} size={42} />
           </div>
           <h1 id="reset-title" style={{ fontFamily: 'Georgia, serif', fontSize: '1.75rem', color: '#E8EEF8', fontWeight: 'normal' }}>
             Choose a New Password
