@@ -35,25 +35,25 @@ const LEARNER_DB: Record<string, {
 
 const TIER_META: Record<string, { color: string; glow: string; border: string; emoji: string; bg: string }> = {
   Distinction: {
-    color: '#CEAE56',
-    glow: 'rgba(184,150,46,0.30)',
-    border: 'rgba(184,150,46,0.45)',
+    color: '#B45309',
+    glow: 'rgba(180, 83, 9, 0.15)',
+    border: 'rgba(180, 83, 9, 0.35)',
     emoji: '🏆',
-    bg: 'rgba(184,150,46,0.05)',
+    bg: '#FFFFFF',
   },
   Proficiency: {
-    color: '#C0C8D8',
-    glow: 'rgba(192,200,216,0.20)',
-    border: 'rgba(192,200,216,0.35)',
+    color: '#15803D',
+    glow: 'rgba(21, 128, 61, 0.15)',
+    border: 'rgba(21, 128, 61, 0.35)',
     emoji: '🎓',
-    bg: 'rgba(192,200,216,0.04)',
+    bg: '#FFFFFF',
   },
   Completion: {
-    color: '#C89460',
-    glow: 'rgba(173,124,72,0.20)',
-    border: 'rgba(173,124,72,0.35)',
+    color: '#334155',
+    glow: 'rgba(51, 65, 85, 0.15)',
+    border: 'rgba(51, 65, 85, 0.35)',
     emoji: '📜',
-    bg: 'rgba(173,124,72,0.04)',
+    bg: '#FFFFFF',
   },
 };
 
@@ -88,14 +88,15 @@ export default async function VerifyCredential({
     learner = LEARNER_DB[code];
   }
 
-  const verificationUrl = `https://fingeniQ.in/certification/verify/${code}`;
+  const verificationUrl = `https://fingeniq.com/certification/verify/${code}`;
   const tm = learner ? TIER_META[learner.tier] : null;
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#060A16',
-      color: '#E6EDF6',
+      background: '#FAF8F5',
+      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.06) 0%, transparent 60%), #FAF8F5',
+      color: '#0F172A',
       fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -109,7 +110,7 @@ export default async function VerifyCredential({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
           <FinGenIqLogo showText={true} size={42} />
         </div>
-        <p style={{ fontSize: '0.75rem', color: '#566078', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+        <p style={{ fontSize: '0.75rem', color: '#475569', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
           Credential Verification System
         </p>
       </header>
@@ -125,7 +126,7 @@ export default async function VerifyCredential({
             border: `2px solid ${tm.border}`,
             borderRadius: '1.5rem',
             padding: '3rem 3.5rem',
-            boxShadow: `0 0 60px ${tm.glow}, 0 0 120px rgba(0,0,0,0.6)`,
+            boxShadow: `0 10px 40px rgba(0, 0, 0, 0.08), 0 0 30px ${tm.glow}`,
             position: 'relative',
             overflow: 'hidden',
           }}
@@ -144,14 +145,14 @@ export default async function VerifyCredential({
             gap: '0.5rem',
             marginBottom: '2rem',
             padding: '0.5rem 1.25rem',
-            background: 'rgba(16,185,129,0.12)',
-            border: '1px solid rgba(16,185,129,0.30)',
+            background: 'rgba(22, 163, 74, 0.1)',
+            border: '1px solid rgba(22, 163, 74, 0.3)',
             borderRadius: '9999px',
             width: 'fit-content',
             margin: '0 auto 2rem',
           }} role="status" aria-label="Credential verified">
-            <span style={{ color: '#34D399', fontSize: '0.9rem' }} aria-hidden="true">✓</span>
-            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#34D399', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <span style={{ color: '#15803D', fontSize: '0.9rem', fontWeight: 700 }} aria-hidden="true">✓</span>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#15803D', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               Verified Authentic Credential
             </span>
           </div>
@@ -159,7 +160,7 @@ export default async function VerifyCredential({
           {/* Tier Seal */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <div
-              style={{ fontSize: '3.5rem', marginBottom: '0.75rem', filter: `drop-shadow(0 0 12px ${tm.glow})` }}
+              style={{ fontSize: '3.5rem', marginBottom: '0.75rem' }}
               role="img"
               aria-label={`${learner.tier} tier award`}
             >
@@ -168,17 +169,18 @@ export default async function VerifyCredential({
             <h1
               id="cert-title"
               style={{
-                fontFamily: 'Georgia, serif',
+                fontFamily: 'var(--font-serif)',
                 fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
                 color: tm.color,
                 letterSpacing: '-0.02em',
                 lineHeight: 1.2,
                 marginBottom: '0.5rem',
+                fontWeight: 700,
               }}
             >
               {learner.tier} Certificate
             </h1>
-            <p style={{ fontSize: '0.75rem', color: '#566078', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <p style={{ fontSize: '0.75rem', color: '#475569', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>
               FingenIQ Financial Education Program
             </p>
           </div>
@@ -188,35 +190,35 @@ export default async function VerifyCredential({
 
           {/* Learner Details */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#566078', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748B', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
               Awarded to
             </div>
-            <div style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(1.5rem, 5vw, 2rem)', color: '#E8EEF8', letterSpacing: '-0.01em', marginBottom: '0.25rem' }}>
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.5rem, 5vw, 2rem)', color: '#0F172A', letterSpacing: '-0.01em', marginBottom: '0.25rem', fontWeight: 700 }}>
               {learner.name}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#566078' }}>
+            <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
               Issued <time dateTime={learner.issueDate}>{learner.issueDate}</time>
             </div>
           </div>
 
           {/* Score and Tracks */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-            <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '0.75rem', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#566078', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+            <div style={{ padding: '1.25rem', background: '#FAF8F5', border: '1px solid rgba(0, 0, 0, 0.08)', borderRadius: '0.75rem', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
                 Weighted Score
               </div>
-              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '1.75rem', fontWeight: 700, color: tm.color, fontVariantNumeric: 'tabular-nums' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.75rem', fontWeight: 700, color: tm.color, fontVariantNumeric: 'tabular-nums' }}>
                 {learner.score.toFixed(1)}%
               </div>
             </div>
-            <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '0.75rem' }}>
-              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#566078', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+            <div style={{ padding: '1.25rem', background: '#FAF8F5', border: '1px solid rgba(0, 0, 0, 0.08)', borderRadius: '0.75rem' }}>
+              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
                 Professional Tracks
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                 {learner.tracks.map(t => (
-                  <div key={t} style={{ fontSize: '0.7rem', color: '#A6B3C6', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <span style={{ color: '#34D399' }} aria-hidden="true">✓</span>
+                  <div key={t} style={{ fontSize: '0.75rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
+                    <span style={{ color: '#15803D', fontWeight: 700 }} aria-hidden="true">✓</span>
                     {t}
                   </div>
                 ))}
@@ -225,11 +227,11 @@ export default async function VerifyCredential({
           </div>
 
           {/* Capstone */}
-          <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '0.75rem', marginBottom: '2rem' }}>
-            <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#566078', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+          <div style={{ padding: '1.25rem', background: '#FAF8F5', border: '1px solid rgba(0, 0, 0, 0.08)', borderRadius: '0.75rem', marginBottom: '2rem' }}>
+            <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
               Capstone Project
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#C4D0E0', lineHeight: 1.5 }}>
+            <div style={{ fontSize: '0.85rem', color: '#0F172A', lineHeight: 1.5, fontWeight: 500 }}>
               {learner.capstoneTitle}
             </div>
           </div>
@@ -240,25 +242,25 @@ export default async function VerifyCredential({
           {/* Verification Code and QR placeholder */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '1.5rem', alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#566078', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
                 Verification Code
               </div>
-              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.875rem', fontWeight: 600, color: tm.color, letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.875rem', fontWeight: 700, color: tm.color, letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
                 {code}
               </div>
-              <div style={{ fontSize: '0.65rem', color: '#3A4760', wordBreak: 'break-all' }}>
+              <div style={{ fontSize: '0.7rem', color: '#64748B', wordBreak: 'break-all' }}>
                 {verificationUrl}
               </div>
             </div>
             {/* QR Code placeholder */}
             <div
-              style={{ width: 80, height: 80, background: '#0C1628', border: `1px solid ${tm.border}`, borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+              style={{ width: 80, height: 80, background: '#FAF8F5', border: `1px solid ${tm.border}`, borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
               role="img"
               aria-label="QR code linking to this verification page"
             >
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 3, padding: 8 }}>
                 {Array(9).fill(0).map((_, i) => (
-                  <div key={i} style={{ width: 14, height: 14, background: [0,2,6,8].includes(i) ? tm.color : i === 4 ? 'transparent' : '#1A2840', borderRadius: 2 }} />
+                  <div key={i} style={{ width: 14, height: 14, background: [0,2,6,8].includes(i) ? tm.color : i === 4 ? 'transparent' : '#CBD5E1', borderRadius: 2 }} />
                 ))}
               </div>
             </div>
@@ -272,32 +274,33 @@ export default async function VerifyCredential({
           style={{
             width: '100%',
             maxWidth: 480,
-            background: 'rgba(244,63,94,0.05)',
-            border: '1px solid rgba(244,63,94,0.25)',
+            background: '#FFFFFF',
+            border: '1px solid rgba(244, 63, 94, 0.25)',
             borderRadius: '1.5rem',
             padding: '3rem',
             textAlign: 'center',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.06)',
           }}
         >
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }} aria-hidden="true">⚠️</div>
-          <h1 id="invalid-title" style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', color: '#E6EDF6', marginBottom: '0.75rem' }}>
+          <h1 id="invalid-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', color: '#0F172A', marginBottom: '0.75rem', fontWeight: 700 }}>
             Credential Not Found
           </h1>
-          <p style={{ fontSize: '0.875rem', color: '#566078', lineHeight: 1.65, marginBottom: '1.5rem' }}>
-            The verification code <code style={{ background: 'rgba(255,255,255,0.07)', padding: '2px 8px', borderRadius: 4, color: '#9AAABF', fontSize: '0.8rem' }}>{code}</code> does not match any issued FingenIQ credential.
+          <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+            The verification code <code style={{ background: '#FAF8F5', border: '1px solid rgba(0,0,0,0.1)', padding: '2px 8px', borderRadius: 4, color: '#0F172A', fontSize: '0.8rem' }}>{code}</code> does not match any issued FingenIQ credential.
           </p>
-          <p style={{ fontSize: '0.75rem', color: '#3A4760', lineHeight: 1.65 }}>
-            If you believe this is an error, please contact the credential holder directly or reach us at credentials@fingeniQ.in
+          <p style={{ fontSize: '0.75rem', color: '#64748B', lineHeight: 1.65 }}>
+            If you believe this is an error, please contact the credential holder directly or reach us at info@fingeniq.com
           </p>
         </main>
       )}
 
       {/* Footer Disclaimer */}
       <footer role="contentinfo" style={{ marginTop: '2.5rem', textAlign: 'center', maxWidth: 600 }}>
-        <p style={{ fontSize: '0.65rem', color: '#2A3449', lineHeight: 1.65 }}>
+        <p style={{ fontSize: '0.65rem', color: '#64748B', lineHeight: 1.65 }}>
           This credential is issued by FingenIQ, an educational platform. It does not constitute a regulated qualification, SEBI registration, or IRDA, AMFI, or any other regulatory licence. This is for educational achievement recognition only.
         </p>
-        <Link href="/" style={{ display: 'inline-block', marginTop: '1rem', fontSize: '0.7rem', color: '#3A4760', textDecoration: 'none' }}>
+        <Link href="/" style={{ display: 'inline-block', marginTop: '1rem', fontSize: '0.75rem', color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
           ← Return to FingenIQ
         </Link>
       </footer>

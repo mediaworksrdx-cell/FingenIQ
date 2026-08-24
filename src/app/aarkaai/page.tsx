@@ -171,8 +171,8 @@ export default function AarkaaAIPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#1F1E1B',
-      color: '#EFEFE9',
+      background: '#FAF8F5',
+      color: '#0F172A',
       fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -186,37 +186,38 @@ export default function AarkaaAIPage() {
         <aside style={{
           width: sidebarOpen ? 280 : 0,
           minWidth: sidebarOpen ? 280 : 0,
-          background: '#181715',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          background: '#F4F1EA',
+          borderRight: '1px solid rgba(0, 0, 0, 0.08)',
           display: 'flex',
           flexDirection: 'column',
           transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           overflow: 'hidden',
           zIndex: 20,
         }}>
-          <div style={{ padding: '1.25rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ padding: '1.25rem 1rem', borderBottom: '1px solid rgba(0, 0, 0, 0.06)' }}>
             <button
               onClick={handleNewChat}
               style={{
                 width: '100%',
                 padding: '0.75rem 1rem',
                 borderRadius: '0.625rem',
-                background: '#2B2A27',
-                border: '1px solid rgba(255,255,255,0.08)',
-                color: '#EFEFE9',
+                background: '#FFFFFF',
+                border: '1px solid rgba(0, 0, 0, 0.08)',
+                color: '#0F172A',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 fontSize: '0.875rem',
-                fontWeight: 500,
+                fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'background 0.2s',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
               }}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ color: '#CC785C', fontSize: '1.1rem' }}>+</span> New chat
+                <span style={{ color: '#15803D', fontSize: '1.1rem', fontWeight: 700 }}>+</span> New chat
               </span>
-              <span style={{ fontSize: '0.75rem', color: '#87867F', background: 'rgba(255,255,255,0.04)', padding: '2px 6px', borderRadius: '4px' }}>
+              <span style={{ fontSize: '0.75rem', color: '#64748B', background: '#F4F1EA', padding: '2px 6px', borderRadius: '4px' }}>
                 ⌘K
               </span>
             </button>
@@ -224,7 +225,7 @@ export default function AarkaaAIPage() {
 
           {/* Chat Sessions List */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '0.75rem' }}>
-            <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#87867F', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0.5rem 0.5rem 0.25rem' }}>
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0.5rem 0.5rem 0.25rem' }}>
               Conversations
             </div>
             {sessions.map(s => (
@@ -236,10 +237,11 @@ export default function AarkaaAIPage() {
                   textAlign: 'left',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.5rem',
-                  background: s.id === activeSessionId ? '#2B2A27' : 'transparent',
-                  border: s.id === activeSessionId ? '1px solid rgba(204,120,92,0.3)' : '1px solid transparent',
-                  color: s.id === activeSessionId ? '#EFEFE9' : '#B4B3AB',
+                  background: s.id === activeSessionId ? '#FFFFFF' : 'transparent',
+                  border: s.id === activeSessionId ? '1px solid rgba(21, 128, 61, 0.3)' : '1px solid transparent',
+                  color: s.id === activeSessionId ? '#0F172A' : '#475569',
                   fontSize: '0.825rem',
+                  fontWeight: s.id === activeSessionId ? 600 : 400,
                   cursor: 'pointer',
                   marginBottom: '2px',
                   display: 'flex',
@@ -248,9 +250,10 @@ export default function AarkaaAIPage() {
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
+                  boxShadow: s.id === activeSessionId ? '0 2px 6px rgba(0, 0, 0, 0.04)' : 'none',
                 }}
               >
-                <span style={{ color: s.id === activeSessionId ? '#CC785C' : '#87867F', fontSize: '0.9rem' }}>💬</span>
+                <span style={{ color: s.id === activeSessionId ? '#15803D' : '#94A3B8', fontSize: '0.9rem' }}>💬</span>
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                   {s.title}
                 </span>
@@ -259,13 +262,13 @@ export default function AarkaaAIPage() {
           </div>
 
           {/* User & Model Footer */}
-          <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: '#141311' }}>
+          <div style={{ padding: '1rem', borderTop: '1px solid rgba(0, 0, 0, 0.06)', background: '#EAE6DC' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{
                 width: 32,
                 height: 32,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #CC785C, #9B4F35)',
+                background: 'linear-gradient(135deg, #15803D, #16A34A)',
                 color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
@@ -276,8 +279,8 @@ export default function AarkaaAIPage() {
                 A
               </div>
               <div style={{ flex: 1, overflow: 'hidden' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#EFEFE9' }}>Aarkaa AI 2.0</div>
-                <div style={{ fontSize: '0.7rem', color: '#87867F' }}>Claude Architecture</div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0F172A' }}>Aarkaa AI 2.0</div>
+                <div style={{ fontSize: '0.7rem', color: '#64748B' }}>Claude Architecture</div>
               </div>
             </div>
           </div>
@@ -289,12 +292,11 @@ export default function AarkaaAIPage() {
           {/* Top Bar with Model Picker & Toggle */}
           <div style={{
             padding: '0.75rem 1.5rem',
-            borderBottom: '1px solid rgba(255,255,255,0.05)',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'rgba(31,30,27,0.85)',
-            backdropFilter: 'blur(10px)',
+            background: '#FFFFFF',
             flexShrink: 0,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -303,7 +305,7 @@ export default function AarkaaAIPage() {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#87867F',
+                  color: '#475569',
                   cursor: 'pointer',
                   fontSize: '1.2rem',
                   display: 'flex',
@@ -315,10 +317,10 @@ export default function AarkaaAIPage() {
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontFamily: 'Georgia, serif', fontSize: '1.05rem', fontWeight: 600, color: '#EFEFE9' }}>
+                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: 700, color: '#0F172A' }}>
                   Aarkaa AI
                 </span>
-                <span style={{ fontSize: '0.65rem', background: 'rgba(204,120,92,0.15)', color: '#CC785C', border: '1px solid rgba(204,120,92,0.3)', padding: '2px 8px', borderRadius: '9999px', fontWeight: 600 }}>
+                <span style={{ fontSize: '0.65rem', background: 'rgba(22, 163, 74, 0.1)', color: '#15803D', border: '1px solid rgba(22, 163, 74, 0.3)', padding: '2px 8px', borderRadius: '9999px', fontWeight: 700 }}>
                   2.0 Pro
                 </span>
               </div>
@@ -329,12 +331,13 @@ export default function AarkaaAIPage() {
                 value={selectedModel}
                 onChange={e => setSelectedModel(e.target.value)}
                 style={{
-                  background: '#2B2A27',
-                  color: '#EFEFE9',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: '#FAF8F5',
+                  color: '#0F172A',
+                  border: '1px solid rgba(0, 0, 0, 0.12)',
                   borderRadius: '0.5rem',
                   padding: '4px 10px',
                   fontSize: '0.75rem',
+                  fontWeight: 600,
                   outline: 'none',
                   cursor: 'pointer',
                 }}
@@ -346,7 +349,7 @@ export default function AarkaaAIPage() {
 
               <Link
                 href="/community"
-                style={{ fontSize: '0.75rem', color: '#87867F', textDecoration: 'none', padding: '4px 10px', borderRadius: '0.5rem', background: 'rgba(255,255,255,0.03)' }}
+                style={{ fontSize: '0.75rem', color: '#15803D', textDecoration: 'none', padding: '4px 10px', borderRadius: '0.5rem', background: '#F4F1EA', fontWeight: 600 }}
               >
                 Research Feed ↗
               </Link>
@@ -368,9 +371,9 @@ export default function AarkaaAIPage() {
                   }}
                 >
                   {msg.sender === 'assistant' && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#87867F', marginBottom: '0.1rem' }}>
-                      <span style={{ width: 16, height: 16, borderRadius: '50%', background: '#CC785C', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '0.55rem', fontWeight: 800 }}>A</span>
-                      <span>Aarkaa AI 2.0</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#64748B', marginBottom: '0.1rem' }}>
+                      <span style={{ width: 16, height: 16, borderRadius: '50%', background: '#15803D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '0.55rem', fontWeight: 800 }}>A</span>
+                      <span style={{ fontWeight: 600, color: '#334155' }}>Aarkaa AI 2.0</span>
                     </div>
                   )}
 
@@ -378,10 +381,10 @@ export default function AarkaaAIPage() {
                     maxWidth: msg.sender === 'user' ? '82%' : '100%',
                     padding: msg.sender === 'user' ? '0.85rem 1.15rem' : '1.25rem 1.5rem',
                     borderRadius: msg.sender === 'user' ? '1.25rem 1.25rem 0.25rem 1.25rem' : '1rem',
-                    background: msg.sender === 'user' ? '#CC785C' : '#2B2A27',
-                    color: msg.sender === 'user' ? '#FFFFFF' : '#EFEFE9',
-                    border: msg.sender === 'user' ? 'none' : '1px solid rgba(255,255,255,0.06)',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                    background: msg.sender === 'user' ? 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)' : '#FFFFFF',
+                    color: msg.sender === 'user' ? '#FFFFFF' : '#0F172A',
+                    border: msg.sender === 'user' ? 'none' : '1px solid rgba(0, 0, 0, 0.08)',
+                    boxShadow: msg.sender === 'user' ? '0 4px 14px rgba(22, 163, 74, 0.3)' : '0 4px 20px rgba(0, 0, 0, 0.04)',
                     fontSize: '0.925rem',
                     lineHeight: 1.65,
                     whiteSpace: 'pre-wrap',
@@ -390,18 +393,18 @@ export default function AarkaaAIPage() {
                     {msg.text}
                   </div>
 
-                  <span style={{ fontSize: '0.65rem', color: '#6A6963', padding: '0 4px' }}>
+                  <span style={{ fontSize: '0.65rem', color: '#94A3B8', padding: '0 4px' }}>
                     {msg.timestamp}
                   </span>
                 </div>
               ))}
 
               {isTyping && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', background: '#2B2A27', borderRadius: '1rem', width: 'fit-content', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#CC785C', animation: 'pulse 1s infinite' }} />
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#CC785C', animation: 'pulse 1s infinite 0.2s' }} />
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#CC785C', animation: 'pulse 1s infinite 0.4s' }} />
-                  <span style={{ fontSize: '0.75rem', color: '#87867F', marginLeft: '0.25rem' }}>Aarkaa is thinking...</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', background: '#FFFFFF', borderRadius: '1rem', width: 'fit-content', border: '1px solid rgba(0, 0, 0, 0.08)' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#15803D', animation: 'pulse 1s infinite' }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#15803D', animation: 'pulse 1s infinite 0.2s' }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#15803D', animation: 'pulse 1s infinite 0.4s' }} />
+                  <span style={{ fontSize: '0.75rem', color: '#64748B', marginLeft: '0.25rem' }}>Aarkaa is thinking...</span>
                 </div>
               )}
 
@@ -422,16 +425,18 @@ export default function AarkaaAIPage() {
                   key={prompt}
                   onClick={() => handleSend(prompt)}
                   style={{
-                    background: '#2B2A27',
-                    color: '#B4B3AB',
-                    border: '1px solid rgba(255,255,255,0.06)',
+                    background: '#FFFFFF',
+                    color: '#334155',
+                    border: '1px solid rgba(0, 0, 0, 0.08)',
                     padding: '6px 14px',
                     borderRadius: '9999px',
                     fontSize: '0.75rem',
+                    fontWeight: 600,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
                     transition: 'all 0.2s',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)',
                   }}
                 >
                   {prompt}
@@ -443,10 +448,10 @@ export default function AarkaaAIPage() {
           {/* ─── CLAUDE THEMED PROMPT INPUT DOCK ─────────────────────────────── */}
           <div style={{ width: '100%', maxWidth: 780, margin: '0 auto', padding: '0.5rem 1rem 1.25rem' }}>
             <div style={{
-              background: '#2B2A27',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: '#FFFFFF',
+              border: '1px solid rgba(0, 0, 0, 0.12)',
               borderRadius: '1.25rem',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
               padding: '0.75rem 1rem',
               display: 'flex',
               flexDirection: 'column',
@@ -469,7 +474,7 @@ export default function AarkaaAIPage() {
                   background: 'transparent',
                   border: 'none',
                   outline: 'none',
-                  color: '#EFEFE9',
+                  color: '#0F172A',
                   fontSize: '0.9rem',
                   resize: 'none',
                   fontFamily: 'inherit',
@@ -482,11 +487,11 @@ export default function AarkaaAIPage() {
                   <button
                     type="button"
                     title="Attach financial data"
-                    style={{ background: 'transparent', border: 'none', color: '#87867F', cursor: 'pointer', fontSize: '1rem', padding: '4px 6px' }}
+                    style={{ background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', fontSize: '1rem', padding: '4px 6px' }}
                   >
                     📎
                   </button>
-                  <span style={{ fontSize: '0.7rem', color: '#6A6963' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>
                     Connected to Aarkaa 2.0 Engine (:5000)
                   </span>
                 </div>
@@ -498,8 +503,8 @@ export default function AarkaaAIPage() {
                     width: 36,
                     height: 36,
                     borderRadius: '50%',
-                    background: inputText.trim() && !isTyping ? '#CC785C' : '#3A3935',
-                    color: inputText.trim() && !isTyping ? '#FFFFFF' : '#6A6963',
+                    background: inputText.trim() && !isTyping ? '#15803D' : '#E2E8F0',
+                    color: inputText.trim() && !isTyping ? '#FFFFFF' : '#94A3B8',
                     border: 'none',
                     display: 'flex',
                     alignItems: 'center',
@@ -514,7 +519,7 @@ export default function AarkaaAIPage() {
               </div>
             </div>
 
-            <div style={{ textAlign: 'center', fontSize: '0.65rem', color: '#6A6963', marginTop: '0.5rem' }}>
+            <div style={{ textAlign: 'center', fontSize: '0.65rem', color: '#94A3B8', marginTop: '0.5rem' }}>
               Aarkaa AI 2.0 can produce inaccurate information about financial assets. Verify critical outputs.
             </div>
           </div>

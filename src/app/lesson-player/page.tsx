@@ -24,8 +24,8 @@ export default function LessonPlayerRedirect() {
   }, [router]);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050810', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E8EEF8' }}>
-      <div style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-400)' }}>Loading active curriculum page...</div>
+    <div style={{ minHeight: '100vh', background: '#FAF8F5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A' }}>
+      <div style={{ fontSize: 'var(--text-sm)', color: '#475569' }}>Loading active curriculum page...</div>
     </div>
   );
 }

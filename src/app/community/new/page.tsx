@@ -69,10 +69,10 @@ export default function NewArticlePage() {
   const inputStyle = {
     width: '100%',
     padding: '0.75rem 1rem',
-    background: '#0C1628',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: '#FFFFFF',
+    border: '1px solid rgba(0, 0, 0, 0.15)',
     borderRadius: '0.5rem',
-    color: '#E6EDF6',
+    color: '#0F172A',
     fontSize: '0.875rem',
     fontFamily: 'var(--font-sans)',
   } as const;
@@ -80,7 +80,7 @@ export default function NewArticlePage() {
   const labelStyle = {
     fontSize: '0.65rem',
     fontWeight: 700,
-    color: '#9AAABF',
+    color: '#334155',
     letterSpacing: '0.08em',
     textTransform: 'uppercase' as const,
     marginBottom: '0.5rem',

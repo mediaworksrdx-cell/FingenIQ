@@ -24,8 +24,9 @@ function AdminLoginContent() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(180deg, #070D1D 0%, #03060C 100%)',
-      color: '#E6EDF6',
+      background: '#FAF8F5',
+      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(180, 83, 9, 0.06) 0%, transparent 60%), #FAF8F5',
+      color: '#0F172A',
       fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -42,34 +43,34 @@ function AdminLoginContent() {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <h1 id="admin-login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#F1F5F9', margin: 0 }}>
+            <h1 id="admin-login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#0F172A', margin: 0 }}>
               Staff & Admin Portal
             </h1>
           </div>
           
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(206,174,86,0.1)', border: '1px solid rgba(206,174,86,0.3)', padding: '2px 10px', borderRadius: '9999px', fontSize: '0.7rem', color: '#CEAE56', fontWeight: 600 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(180, 83, 9, 0.08)', border: '1px solid rgba(180, 83, 9, 0.25)', padding: '3px 12px', borderRadius: '9999px', fontSize: '0.7rem', color: '#B45309', fontWeight: 700 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A' }} />
             RESTRICTED ACCESS · SYSTEM ADMINISTRATORS & ENTERPRISE STAFF
           </div>
         </div>
 
         {/* Card */}
         <div style={{
-          background: '#0B1528',
-          border: '1px solid rgba(206,174,86,0.25)',
+          background: '#FFFFFF',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
           borderRadius: '1rem',
           padding: '2rem',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.06)',
         }}>
           {state?.error && (
             <div
               role="alert"
               style={{
-                background: 'rgba(239,68,68,0.12)',
-                border: '1px solid rgba(239,68,68,0.3)',
+                background: 'rgba(239,68,68,0.08)',
+                border: '1px solid rgba(239,68,68,0.25)',
                 borderRadius: '0.5rem',
                 padding: '0.75rem 1rem',
-                color: '#FCA5A5',
+                color: '#BE123C',
                 fontSize: '0.875rem',
                 marginBottom: '1.5rem',
                 display: 'flex',
@@ -87,7 +88,7 @@ function AdminLoginContent() {
             <input type="hidden" name="redirectTo" value="/admin/credentials" />
 
             <div>
-              <label htmlFor="admin-email" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#94A3B8', marginBottom: '0.5rem' }}>
+              <label htmlFor="admin-email" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#334155', marginBottom: '0.5rem' }}>
                 Administrator / Staff Email
               </label>
               <input
@@ -100,11 +101,11 @@ function AdminLoginContent() {
                 placeholder="admin@fingeniq.com"
                 style={{
                   width: '100%',
-                  background: '#070F1E',
-                  border: '1px solid #1E293B',
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.15)',
                   borderRadius: '0.5rem',
                   padding: '0.75rem 1rem',
-                  color: '#F8FAFC',
+                  color: '#0F172A',
                   fontSize: '0.875rem',
                   outline: 'none',
                   boxSizing: 'border-box',
@@ -114,12 +115,12 @@ function AdminLoginContent() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <label htmlFor="admin-password" style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#94A3B8' }}>
+                <label htmlFor="admin-password" style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#334155' }}>
                   Security Credential
                 </label>
                 <Link
                   href="/reset-password/request"
-                  style={{ fontSize: '0.75rem', color: '#CEAE56', textDecoration: 'none' }}
+                  style={{ fontSize: '0.75rem', color: '#B45309', textDecoration: 'none', fontWeight: 600 }}
                 >
                   Forgot Key?
                 </Link>
@@ -133,11 +134,11 @@ function AdminLoginContent() {
                 placeholder="••••••••••••"
                 style={{
                   width: '100%',
-                  background: '#070F1E',
-                  border: '1px solid #1E293B',
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.15)',
                   borderRadius: '0.5rem',
                   padding: '0.75rem 1rem',
-                  color: '#F8FAFC',
+                  color: '#0F172A',
                   fontSize: '0.875rem',
                   outline: 'none',
                   boxSizing: 'border-box',
@@ -150,16 +151,16 @@ function AdminLoginContent() {
               disabled={isPending}
               style={{
                 width: '100%',
-                background: 'linear-gradient(135deg, #CEAE56 0%, #B8962E 100%)',
-                color: '#060A16',
+                background: 'linear-gradient(135deg, #B45309 0%, #D97706 100%)',
+                color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '0.5rem',
                 padding: '0.875rem',
                 fontSize: '0.9rem',
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: isPending ? 'not-allowed' : 'pointer',
                 opacity: isPending ? 0.7 : 1,
-                boxShadow: '0 4px 15px rgba(206,174,86,0.3)',
+                boxShadow: '0 4px 14px rgba(180, 83, 9, 0.3)',
                 marginTop: '0.5rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -179,7 +180,7 @@ function AdminLoginContent() {
         {/* Back to Student Login */}
         <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.8rem', color: '#64748B' }}>
           Are you a student or learner?{' '}
-          <Link href="/login" style={{ color: '#CEAE56', textDecoration: 'none', fontWeight: 500 }}>
+          <Link href="/login" style={{ color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
             Go to Student Portal →
           </Link>
         </div>
@@ -191,7 +192,7 @@ function AdminLoginContent() {
 export default function AdminLoginPage() {
   return (
     <Suspense fallback={
-      <div style={{ minHeight: '100vh', background: '#070D1D', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#CEAE56' }}>
+      <div style={{ minHeight: '100vh', background: '#FAF8F5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A' }}>
         Loading Admin Gateway...
       </div>
     }>

@@ -54,10 +54,9 @@ function LoginContent() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#042010',
-      backgroundImage: 'radial-gradient(ellipse 95% 75% at 20% -10%, rgba(74, 222, 128, 0.38) 0%, transparent 60%), radial-gradient(ellipse 85% 65% at 85% 105%, rgba(163, 230, 53, 0.28) 0%, transparent 55%), linear-gradient(180deg, #052312 0%, #08341A 50%, #041F0E 100%)',
-      backgroundAttachment: 'fixed',
-      color: '#F0FDF4',
+      background: '#FAF8F5',
+      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.06) 0%, transparent 60%), #FAF8F5',
+      color: '#0F172A',
       fontFamily: 'var(--font-sans)',
       display: 'flex',
       flexDirection: 'column',
@@ -76,10 +75,10 @@ function LoginContent() {
           }}>
             <FinGenIqLogo showText={true} size={44} />
           </Link>
-          <h1 id="login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', color: '#FFFFFF', fontWeight: 700, letterSpacing: '-0.02em', margin: '0.5rem 0 0' }}>
+          <h1 id="login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', color: '#0F172A', fontWeight: 700, letterSpacing: '-0.02em', margin: '0.5rem 0 0' }}>
             Portal Sign In
           </h1>
-          <p style={{ fontSize: '0.825rem', color: '#86EFAC', marginTop: '0.35rem' }}>
+          <p style={{ fontSize: '0.825rem', color: '#475569', marginTop: '0.35rem' }}>
             Authorized access only. Verified credentials required.
           </p>
         </div>
@@ -88,14 +87,14 @@ function LoginContent() {
         {state?.error && (
           <div role="alert" style={{
             padding: '0.875rem 1rem',
-            background: 'rgba(244,63,94,0.12)',
-            border: '1px solid rgba(244,63,94,0.35)',
+            background: 'rgba(244,63,94,0.08)',
+            border: '1px solid rgba(244,63,94,0.25)',
             borderRadius: '0.75rem',
             fontSize: '0.85rem',
-            color: '#FDA4AF',
+            color: '#E11D48',
             marginBottom: '1.5rem',
             lineHeight: 1.5,
-            boxShadow: '0 4px 15px rgba(244,63,94,0.2)',
+            boxShadow: '0 4px 15px rgba(244,63,94,0.1)',
           }}>
             ⚠️ {state.error}
           </div>
@@ -103,16 +102,14 @@ function LoginContent() {
 
         {/* Form container */}
         <div style={{
-          background: 'rgba(8, 38, 18, 0.55)',
-          backdropFilter: 'blur(28px) saturate(190%)',
-          WebkitBackdropFilter: 'blur(28px) saturate(190%)',
-          border: '1px solid rgba(74, 222, 128, 0.25)',
+          background: '#FFFFFF',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
           borderRadius: '1.25rem',
           padding: '2.25rem',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.45), inset 0 1px 1px rgba(255,255,255,0.15)',
+          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.06)',
         }}>
           {/* Tabs */}
-          <div style={{ display: 'flex', marginBottom: '1.5rem', background: 'rgba(4, 20, 10, 0.65)', border: '1px solid rgba(74, 222, 128, 0.15)', borderRadius: '0.65rem', padding: '0.25rem' }}>
+          <div style={{ display: 'flex', marginBottom: '1.5rem', background: '#F4F1EA', border: '1px solid rgba(0, 0, 0, 0.06)', borderRadius: '0.65rem', padding: '0.25rem' }}>
             {(['b2c', 'b2b', 'b2b2c'] as const).map(tab => (
               <button
                 key={tab}
@@ -121,9 +118,9 @@ function LoginContent() {
                 style={{
                   flex: 1,
                   padding: '0.55rem',
-                  background: activeTab === tab ? 'linear-gradient(135deg, rgba(22, 101, 52, 0.85), rgba(16, 80, 40, 0.95))' : 'transparent',
-                  color: activeTab === tab ? '#FFFFFF' : '#86EFAC',
-                  border: activeTab === tab ? '1px solid rgba(74, 222, 128, 0.4)' : '1px solid transparent',
+                  background: activeTab === tab ? '#15803D' : 'transparent',
+                  color: activeTab === tab ? '#FFFFFF' : '#475569',
+                  border: 'none',
                   borderRadius: '0.5rem',
                   fontSize: '0.75rem',
                   fontWeight: 700,
@@ -131,7 +128,7 @@ function LoginContent() {
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   transition: 'all 0.2s',
-                  boxShadow: activeTab === tab ? '0 2px 10px rgba(0,0,0,0.3)' : 'none',
+                  boxShadow: activeTab === tab ? '0 2px 8px rgba(21, 128, 61, 0.3)' : 'none',
                 }}
               >
                 {tab === 'b2c' ? 'Learner' : tab === 'b2b' ? 'Enterprise' : 'Partner'}
@@ -145,7 +142,7 @@ function LoginContent() {
             
             {activeTab !== 'b2c' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label htmlFor="businessEntityId" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#86EFAC', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                <label htmlFor="businessEntityId" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                   {activeTab === 'b2b' ? 'Business Entity' : 'Partner Entity'}
                 </label>
                 <select
@@ -153,11 +150,11 @@ function LoginContent() {
                   name="businessEntityId"
                   required
                   style={{
-                    background: 'rgba(4, 24, 12, 0.8)',
-                    border: '1px solid rgba(74, 222, 128, 0.25)',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.15)',
                     borderRadius: '0.65rem',
                     padding: '0.8rem 1rem',
-                    color: '#FFFFFF',
+                    color: '#0F172A',
                     fontSize: '0.875rem',
                     width: '100%',
                     appearance: 'none',
@@ -173,7 +170,7 @@ function LoginContent() {
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <label htmlFor="email" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#86EFAC', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              <label htmlFor="email" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                 Email Address
               </label>
               <input
@@ -182,11 +179,11 @@ function LoginContent() {
                 type="email"
                 required
                 style={{
-                  background: 'rgba(4, 24, 12, 0.8)',
-                  border: '1px solid rgba(74, 222, 128, 0.25)',
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.15)',
                   borderRadius: '0.65rem',
                   padding: '0.8rem 1rem',
-                  color: '#FFFFFF',
+                  color: '#0F172A',
                   fontSize: '0.875rem',
                   width: '100%',
                   outline: 'none',
@@ -197,10 +194,10 @@ function LoginContent() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <label htmlFor="password" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#86EFAC', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                <label htmlFor="password" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                   Password
                 </label>
-                <Link href="/reset-password/request" style={{ fontSize: '0.7rem', color: '#4ADE80', textDecoration: 'none', fontWeight: 600 }}>
+                <Link href="/reset-password/request" style={{ fontSize: '0.7rem', color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
                   Forgot Password?
                 </Link>
               </div>
@@ -210,11 +207,11 @@ function LoginContent() {
                 type="password"
                 required
                 style={{
-                  background: 'rgba(4, 24, 12, 0.8)',
-                  border: '1px solid rgba(74, 222, 128, 0.25)',
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.15)',
                   borderRadius: '0.65rem',
                   padding: '0.8rem 1rem',
-                  color: '#FFFFFF',
+                  color: '#0F172A',
                   fontSize: '0.875rem',
                   width: '100%',
                   outline: 'none',
@@ -227,9 +224,9 @@ function LoginContent() {
               type="submit"
               disabled={isPending}
               style={{
-                background: 'linear-gradient(135deg, #16A34A 0%, #22C55E 50%, #4ADE80 100%)',
-                color: '#022C13',
-                border: '1px solid #86EFAC',
+                background: 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)',
+                color: '#FFFFFF',
+                border: 'none',
                 borderRadius: '0.65rem',
                 padding: '0.875rem',
                 fontSize: '0.9rem',
@@ -237,33 +234,33 @@ function LoginContent() {
                 cursor: isPending ? 'not-allowed' : 'pointer',
                 transition: 'all 0.2s',
                 marginTop: '0.5rem',
-                boxShadow: '0 4px 20px rgba(34, 197, 94, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.5)',
+                boxShadow: '0 4px 16px rgba(22, 163, 74, 0.35)',
               }}
             >
               {isPending ? 'Validating credentials...' : 'Sign In →'}
             </button>
             
-            <div style={{ textAlign: 'center', marginTop: '0.5rem', color: '#86EFAC', fontSize: '0.7rem', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ textAlign: 'center', marginTop: '0.5rem', color: '#64748B', fontSize: '0.7rem', fontFamily: 'var(--font-mono)' }}>
               System Time: {currentTime ? currentTime.toLocaleString() : 'Loading...'}
             </div>
           </form>
         </div>
 
         {/* Footer info links */}
-        <footer role="contentinfo" style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem', color: '#86EFAC', lineHeight: 1.6 }}>
-          <p style={{ color: '#DCFCE7' }}>
+        <footer role="contentinfo" style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem', color: '#475569', lineHeight: 1.6 }}>
+          <p style={{ color: '#475569' }}>
             Don&apos;t have credentials? Contact your organization administrator to receive an activation link.
           </p>
           <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <Link href="/admin/login" style={{ color: '#FACC15', textDecoration: 'none', fontWeight: 700 }}>
+            <Link href="/admin/login" style={{ color: '#B45309', textDecoration: 'none', fontWeight: 700 }}>
               🛡️ Enterprise Administrator &amp; Staff Portal Sign In →
             </Link>
-            <Link href="/community/login" style={{ color: '#86EFAC', textDecoration: 'none', fontWeight: 600 }}>
+            <Link href="/community/login" style={{ color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
               Looking for Community Discussion? Community Sign In / Register →
             </Link>
           </div>
           <div style={{ marginTop: '0.75rem' }}>
-            <Link href="/" style={{ color: '#4ADE80', textDecoration: 'underline', fontWeight: 600 }}>
+            <Link href="/" style={{ color: '#15803D', textDecoration: 'underline', fontWeight: 600 }}>
               Return to Homepage
             </Link>
           </div>
@@ -278,8 +275,8 @@ export default function Login() {
     <Suspense fallback={
       <div style={{
         minHeight: '100vh',
-        background: '#042010',
-        color: '#FFFFFF',
+        background: '#FAF8F5',
+        color: '#0F172A',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

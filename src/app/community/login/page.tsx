@@ -33,8 +33,9 @@ function CommunityAuthContent() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'radial-gradient(ellipse at top, #0A1428 0%, #060A16 70%)',
-      color: '#E6EDF6',
+      background: '#FAF8F5',
+      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.06) 0%, transparent 60%), #FAF8F5',
+      color: '#0F172A',
       fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -48,12 +49,12 @@ function CommunityAuthContent() {
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <Link href="/community" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
             <FinGenIqLogo showText={true} size={42} />
-            <span style={{ fontSize: '1.05rem', color: '#9AAABF', fontFamily: 'Inter, sans-serif', fontWeight: 300 }}>Community</span>
+            <span style={{ fontSize: '1.05rem', color: '#15803D', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>Community</span>
           </Link>
-          <h1 id="community-auth-title" style={{ fontFamily: 'Georgia, serif', fontSize: '1.75rem', color: '#E8EEF8', fontWeight: 500, margin: '0.5rem 0 0.25rem' }}>
+          <h1 id="community-auth-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', color: '#0F172A', fontWeight: 700, margin: '0.5rem 0 0.25rem' }}>
             {activeTab === 'signin' ? 'Sign In to Community' : 'Join the Community'}
           </h1>
-          <p style={{ fontSize: '0.8rem', color: '#8898AA', maxWidth: 360, margin: '0 auto', lineHeight: 1.5 }}>
+          <p style={{ fontSize: '0.8rem', color: '#475569', maxWidth: 360, margin: '0 auto', lineHeight: 1.5 }}>
             {activeTab === 'signin'
               ? 'Access research discussions, post comments, and engage with peers.'
               : 'Create your free community account to comment and participate in financial research.'}
@@ -65,10 +66,10 @@ function CommunityAuthContent() {
           <div role="alert" style={{
             padding: '0.875rem 1rem',
             background: 'rgba(244,63,94,0.08)',
-            border: '1px solid rgba(244,63,94,0.3)',
+            border: '1px solid rgba(244,63,94,0.25)',
             borderRadius: '0.75rem',
             fontSize: '0.8rem',
-            color: '#FB7185',
+            color: '#BE123C',
             marginBottom: '1.25rem',
             lineHeight: 1.5,
           }}>
@@ -78,26 +79,26 @@ function CommunityAuthContent() {
 
         {/* Auth Card */}
         <div style={{
-          background: '#08101E',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: '#FFFFFF',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
           borderRadius: '1.25rem',
           padding: '2rem',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.06)',
         }}>
           {/* Dual Tabs */}
-          <div style={{ display: 'flex', marginBottom: '1.5rem', background: '#0C1628', borderRadius: '0.5rem', padding: '0.25rem' }}>
+          <div style={{ display: 'flex', marginBottom: '1.5rem', background: '#F4F1EA', borderRadius: '0.5rem', padding: '0.25rem' }}>
             <button
               onClick={() => setActiveTab('signin')}
               type="button"
               style={{
                 flex: 1,
                 padding: '0.6rem 0.5rem',
-                background: activeTab === 'signin' ? '#183070' : 'transparent',
-                color: activeTab === 'signin' ? '#E6EDF6' : '#566078',
+                background: activeTab === 'signin' ? '#15803D' : 'transparent',
+                color: activeTab === 'signin' ? '#FFFFFF' : '#475569',
                 border: 'none',
                 borderRadius: '0.375rem',
                 fontSize: '0.8rem',
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: 'pointer',
                 transition: 'all 0.2s',
               }}
@@ -110,12 +111,12 @@ function CommunityAuthContent() {
               style={{
                 flex: 1,
                 padding: '0.6rem 0.5rem',
-                background: activeTab === 'register' ? '#183070' : 'transparent',
-                color: activeTab === 'register' ? '#E6EDF6' : '#566078',
+                background: activeTab === 'register' ? '#15803D' : 'transparent',
+                color: activeTab === 'register' ? '#FFFFFF' : '#475569',
                 border: 'none',
                 borderRadius: '0.375rem',
                 fontSize: '0.8rem',
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: 'pointer',
                 transition: 'all 0.2s',
               }}
@@ -130,7 +131,7 @@ function CommunityAuthContent() {
               <input type="hidden" name="redirectTo" value={redirectTo} />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label htmlFor="login-email" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9AAABF', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                <label htmlFor="login-email" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Email Address
                 </label>
                 <input
@@ -140,11 +141,11 @@ function CommunityAuthContent() {
                   required
                   placeholder="name@example.com"
                   style={{
-                    background: '#0C1628',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.15)',
                     borderRadius: '0.5rem',
                     padding: '0.75rem 1rem',
-                    color: '#E6EDF6',
+                    color: '#0F172A',
                     fontSize: '0.875rem',
                     outline: 'none',
                   }}
@@ -152,7 +153,7 @@ function CommunityAuthContent() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label htmlFor="login-password" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9AAABF', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                <label htmlFor="login-password" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Password
                 </label>
                 <input
@@ -162,11 +163,11 @@ function CommunityAuthContent() {
                   required
                   placeholder="••••••••••••"
                   style={{
-                    background: '#0C1628',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.15)',
                     borderRadius: '0.5rem',
                     padding: '0.75rem 1rem',
-                    color: '#E6EDF6',
+                    color: '#0F172A',
                     fontSize: '0.875rem',
                     outline: 'none',
                   }}
@@ -177,9 +178,9 @@ function CommunityAuthContent() {
                 type="submit"
                 disabled={isPending}
                 style={{
-                  background: 'linear-gradient(135deg, #8F6E1C 0%, #B8962E 100%)',
-                  color: '#060A16',
-                  border: '1px solid #CEAE56',
+                  background: 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
                   borderRadius: '0.5rem',
                   padding: '0.875rem',
                   fontSize: '0.875rem',
@@ -187,6 +188,7 @@ function CommunityAuthContent() {
                   cursor: isPending ? 'default' : 'pointer',
                   opacity: isPending ? 0.7 : 1,
                   marginTop: '0.5rem',
+                  boxShadow: '0 4px 14px rgba(22, 163, 74, 0.3)',
                   transition: 'all 0.2s',
                 }}
               >
@@ -201,7 +203,7 @@ function CommunityAuthContent() {
               <input type="hidden" name="redirectTo" value={redirectTo} />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label htmlFor="reg-name" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9AAABF', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                <label htmlFor="reg-name" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Full Name
                 </label>
                 <input
@@ -211,11 +213,11 @@ function CommunityAuthContent() {
                   required
                   placeholder="e.g. Anand Sharma"
                   style={{
-                    background: '#0C1628',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.15)',
                     borderRadius: '0.5rem',
                     padding: '0.75rem 1rem',
-                    color: '#E6EDF6',
+                    color: '#0F172A',
                     fontSize: '0.875rem',
                     outline: 'none',
                   }}
@@ -223,7 +225,7 @@ function CommunityAuthContent() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label htmlFor="reg-email" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9AAABF', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                <label htmlFor="reg-email" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Email Address
                 </label>
                 <input
@@ -233,11 +235,11 @@ function CommunityAuthContent() {
                   required
                   placeholder="name@example.com"
                   style={{
-                    background: '#0C1628',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.15)',
                     borderRadius: '0.5rem',
                     padding: '0.75rem 1rem',
-                    color: '#E6EDF6',
+                    color: '#0F172A',
                     fontSize: '0.875rem',
                     outline: 'none',
                   }}
@@ -245,7 +247,7 @@ function CommunityAuthContent() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label htmlFor="reg-password" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9AAABF', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                <label htmlFor="reg-password" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Password (min. 8 characters)
                 </label>
                 <input
@@ -256,11 +258,11 @@ function CommunityAuthContent() {
                   minLength={8}
                   placeholder="••••••••••••"
                   style={{
-                    background: '#0C1628',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.15)',
                     borderRadius: '0.5rem',
                     padding: '0.75rem 1rem',
-                    color: '#E6EDF6',
+                    color: '#0F172A',
                     fontSize: '0.875rem',
                     outline: 'none',
                   }}
@@ -268,7 +270,7 @@ function CommunityAuthContent() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label htmlFor="reg-confirm" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9AAABF', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                <label htmlFor="reg-confirm" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Confirm Password
                 </label>
                 <input
@@ -278,11 +280,11 @@ function CommunityAuthContent() {
                   required
                   placeholder="••••••••••••"
                   style={{
-                    background: '#0C1628',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.15)',
                     borderRadius: '0.5rem',
                     padding: '0.75rem 1rem',
-                    color: '#E6EDF6',
+                    color: '#0F172A',
                     fontSize: '0.875rem',
                     outline: 'none',
                   }}
@@ -293,9 +295,9 @@ function CommunityAuthContent() {
                 type="submit"
                 disabled={isPending}
                 style={{
-                  background: 'linear-gradient(135deg, #8F6E1C 0%, #B8962E 100%)',
-                  color: '#060A16',
-                  border: '1px solid #CEAE56',
+                  background: 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
                   borderRadius: '0.5rem',
                   padding: '0.875rem',
                   fontSize: '0.875rem',
@@ -303,6 +305,7 @@ function CommunityAuthContent() {
                   cursor: isPending ? 'default' : 'pointer',
                   opacity: isPending ? 0.7 : 1,
                   marginTop: '0.5rem',
+                  boxShadow: '0 4px 14px rgba(22, 163, 74, 0.3)',
                   transition: 'all 0.2s',
                 }}
               >
@@ -313,17 +316,17 @@ function CommunityAuthContent() {
         </div>
 
         {/* Footer & Institutional Platform Link */}
-        <footer style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem', color: '#6A7B95', lineHeight: 1.6 }}>
+        <footer style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem', color: '#475569', lineHeight: 1.6 }}>
           <p>
             Enrolled in curriculum tracks or institutional training?
           </p>
           <div style={{ marginTop: '0.4rem' }}>
-            <Link href="/login" style={{ color: '#B8962E', textDecoration: 'none', fontWeight: 600 }}>
+            <Link href="/login" style={{ color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
               Institutional LMS Portal Sign In →
             </Link>
           </div>
           <div style={{ marginTop: '1.25rem' }}>
-            <Link href="/community" style={{ color: '#8898AA', textDecoration: 'none' }}>
+            <Link href="/community" style={{ color: '#64748B', textDecoration: 'none' }}>
               ← Return to Community Articles
             </Link>
           </div>
@@ -338,8 +341,8 @@ export default function CommunityAuthPage() {
     <Suspense fallback={
       <div style={{
         minHeight: '100vh',
-        background: '#060A16',
-        color: '#E6EDF6',
+        background: '#FAF8F5',
+        color: '#0F172A',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

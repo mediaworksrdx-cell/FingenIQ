@@ -11,8 +11,9 @@ export default function RequestPasswordReset() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#060A16',
-      color: '#E6EDF6',
+      background: '#FAF8F5',
+      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.06) 0%, transparent 60%), #FAF8F5',
+      color: '#0F172A',
       fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -30,10 +31,10 @@ export default function RequestPasswordReset() {
           }}>
             <FinGenIqLogo showText={true} size={42} />
           </div>
-          <h1 id="reset-request-title" style={{ fontFamily: 'Georgia, serif', fontSize: '1.75rem', color: '#E8EEF8', fontWeight: 'normal' }}>
+          <h1 id="reset-request-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', color: '#0F172A', fontWeight: 700 }}>
             Reset Password
           </h1>
-          <p style={{ fontSize: '0.75rem', color: '#566078', marginTop: '0.25rem' }}>
+          <p style={{ fontSize: '0.75rem', color: '#475569', marginTop: '0.25rem' }}>
             Request a secure password recovery token link.
           </p>
         </div>
@@ -42,11 +43,11 @@ export default function RequestPasswordReset() {
         {state?.error && (
           <div role="alert" style={{
             padding: '0.875rem 1rem',
-            background: 'rgba(244,63,94,0.06)',
+            background: 'rgba(244,63,94,0.08)',
             border: '1px solid rgba(244,63,94,0.25)',
             borderRadius: '0.75rem',
             fontSize: '0.8rem',
-            color: '#FB7185',
+            color: '#BE123C',
             marginBottom: '1.5rem',
             lineHeight: 1.5,
           }}>
@@ -57,11 +58,11 @@ export default function RequestPasswordReset() {
         {state?.success && state.message && (
           <div role="status" style={{
             padding: '0.875rem 1rem',
-            background: 'rgba(16,185,129,0.06)',
-            border: '1px solid rgba(16,185,129,0.25)',
+            background: 'rgba(22,163,74,0.08)',
+            border: '1px solid rgba(22,163,74,0.25)',
             borderRadius: '0.75rem',
             fontSize: '0.8rem',
-            color: '#34D399',
+            color: '#15803D',
             marginBottom: '1.5rem',
             lineHeight: 1.5,
           }}>
@@ -70,15 +71,15 @@ export default function RequestPasswordReset() {
         )}
 
         <div style={{
-          background: '#08101E',
-          border: '1px solid rgba(255,255,255,0.06)',
+          background: '#FFFFFF',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
           borderRadius: '1.25rem',
           padding: '2.25rem',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.06)',
         }}>
           <form action={formAction} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <label htmlFor="email" style={{ fontSize: '0.65rem', fontWeight: 700, color: '#9AAABF', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              <label htmlFor="email" style={{ fontSize: '0.65rem', fontWeight: 700, color: '#334155', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                 Account Email
               </label>
               <input
@@ -87,11 +88,11 @@ export default function RequestPasswordReset() {
                 type="email"
                 required
                 style={{
-                  background: '#0C1628',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.15)',
                   borderRadius: '0.5rem',
                   padding: '0.75rem 1rem',
-                  color: '#E6EDF6',
+                  color: '#0F172A',
                   fontSize: '0.875rem',
                   width: '100%',
                 }}
@@ -103,9 +104,9 @@ export default function RequestPasswordReset() {
               type="submit"
               disabled={isPending}
               style={{
-                background: 'linear-gradient(135deg, #8F6E1C 0%, #B8962E 100%)',
-                color: '#060A16',
-                border: '1px solid #CEAE56',
+                background: 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)',
+                color: '#FFFFFF',
+                border: 'none',
                 borderRadius: '0.5rem',
                 padding: '0.875rem',
                 fontSize: '0.875rem',
@@ -113,6 +114,7 @@ export default function RequestPasswordReset() {
                 cursor: 'pointer',
                 transition: 'opacity 0.2s',
                 marginTop: '0.5rem',
+                boxShadow: '0 4px 14px rgba(22, 163, 74, 0.3)',
               }}
             >
               {isPending ? 'Processing reset...' : 'Generate Reset Token →'}
@@ -120,9 +122,9 @@ export default function RequestPasswordReset() {
           </form>
         </div>
 
-        <footer role="contentinfo" style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.7rem' }}>
-          <Link href="/login" style={{ color: '#5E6F85', textDecoration: 'underline' }}>
-            Return to Log In
+        <footer role="contentinfo" style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem' }}>
+          <Link href="/login" style={{ color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
+            ← Return to Log In
           </Link>
         </footer>
       </main>

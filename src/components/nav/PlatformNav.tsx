@@ -213,22 +213,22 @@ export default function PlatformNav() {
                   top: 'calc(100% + 12px)',
                   right: 0,
                   width: 250,
-                  background: '#0B1528',
-                  border: '1px solid rgba(206,174,86,0.25)',
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
                   borderRadius: '0.75rem',
                   padding: '0.75rem',
-                  boxShadow: '0 15px 35px rgba(0,0,0,0.6)',
+                  boxShadow: '0 10px 35px rgba(0, 0, 0, 0.08)',
                   zIndex: 1000,
                   animation: 'fadeUp 0.2s ease-out',
                 }}
               >
                 {/* User Header */}
-                <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: '0.5rem' }}>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#F1F5F9' }}>{displayName}</div>
-                  <div style={{ fontSize: '0.7rem', color: '#B8962E', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+                <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid rgba(0, 0, 0, 0.06)', marginBottom: '0.5rem' }}>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0F172A' }}>{displayName}</div>
+                  <div style={{ fontSize: '0.7rem', color: '#B45309', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px', fontWeight: 700 }}>
                     {displayRole} {certification.tier ? `• ${certification.tier}` : ''}
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: '#8898AA', marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '2px' }}>
                     {PROGRESS_PCT}% curriculum complete
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export default function PlatformNav() {
                       background: 'transparent',
                       border: 'none',
                       borderRadius: '0.375rem',
-                      color: '#E6EDF6',
+                      color: '#334155',
                       fontSize: '0.8rem',
                       display: 'flex',
                       alignItems: 'center',
@@ -255,7 +255,7 @@ export default function PlatformNav() {
                       textAlign: 'left',
                       transition: 'background 0.2s',
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                    onMouseEnter={e => e.currentTarget.style.background = '#FAF8F5'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     <span>⚙️</span>
@@ -270,7 +270,7 @@ export default function PlatformNav() {
                       padding: '0.5rem 0.75rem',
                       background: 'transparent',
                       borderRadius: '0.375rem',
-                      color: '#E6EDF6',
+                      color: '#334155',
                       fontSize: '0.8rem',
                       display: 'flex',
                       alignItems: 'center',
@@ -278,14 +278,14 @@ export default function PlatformNav() {
                       textDecoration: 'none',
                       transition: 'background 0.2s',
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                    onMouseEnter={e => e.currentTarget.style.background = '#FAF8F5'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     <span>📊</span>
                     <span>Learning Dashboard</span>
                   </Link>
 
-                  <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '0.35rem 0' }} />
+                  <div style={{ height: 1, background: 'rgba(0, 0, 0, 0.06)', margin: '0.35rem 0' }} />
 
                   <button
                     onClick={handleLogout}
@@ -295,7 +295,7 @@ export default function PlatformNav() {
                       background: 'transparent',
                       border: 'none',
                       borderRadius: '0.375rem',
-                      color: '#FB7185',
+                      color: '#BE123C',
                       fontSize: '0.8rem',
                       fontWeight: 600,
                       display: 'flex',
@@ -305,7 +305,7 @@ export default function PlatformNav() {
                       textAlign: 'left',
                       transition: 'background 0.2s',
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(244,63,94,0.1)'}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(244,63,94,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     <span>🚪</span>
@@ -443,7 +443,7 @@ export default function PlatformNav() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(3, 6, 15, 0.8)',
+            background: 'rgba(15, 23, 42, 0.45)',
             backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
@@ -456,13 +456,13 @@ export default function PlatformNav() {
         >
           <div
             style={{
-              background: '#0B1528',
-              border: '1px solid rgba(206,174,86,0.3)',
+              background: '#FFFFFF',
+              border: '1px solid rgba(0, 0, 0, 0.08)',
               borderRadius: '1rem',
               padding: '2rem',
               maxWidth: 480,
               width: '100%',
-              boxShadow: '0 25px 60px rgba(0,0,0,0.7)',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.12)',
               position: 'relative',
             }}
             onClick={e => e.stopPropagation()}
@@ -474,9 +474,9 @@ export default function PlatformNav() {
                 position: 'absolute',
                 top: '1.25rem',
                 right: '1.25rem',
-                background: 'rgba(255,255,255,0.06)',
+                background: '#F4F1EA',
                 border: 'none',
-                color: '#94A3B8',
+                color: '#64748B',
                 width: 32,
                 height: 32,
                 borderRadius: '50%',
@@ -496,26 +496,25 @@ export default function PlatformNav() {
                 width: 44,
                 height: 44,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #183070, #050F24)',
-                border: '1px solid rgba(184,150,46,0.4)',
+                background: 'linear-gradient(135deg, #15803D, #16A34A)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '1.2rem',
-                color: '#CEAE56',
+                color: '#FFFFFF',
               }}>
                 ⚙️
               </div>
               <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>Account Settings</h3>
-                <p style={{ fontSize: '0.75rem', color: '#8898AA', margin: '2px 0 0' }}>Manage your profile &amp; security credentials</p>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>Account Settings</h3>
+                <p style={{ fontSize: '0.75rem', color: '#64748B', margin: '2px 0 0' }}>Manage your profile &amp; security credentials</p>
               </div>
             </div>
 
             {/* Profile Info Summary */}
             <div style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: '#FAF8F5',
+              border: '1px solid rgba(0, 0, 0, 0.06)',
               borderRadius: '0.75rem',
               padding: '1rem',
               marginBottom: '1.5rem',
@@ -525,24 +524,24 @@ export default function PlatformNav() {
             }}>
               <div>
                 <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700, letterSpacing: '0.05em' }}>Learner Name</div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#E2E8F0', marginTop: '2px' }}>{displayName}</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0F172A', marginTop: '2px' }}>{displayName}</div>
               </div>
               <div>
                 <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700, letterSpacing: '0.05em' }}>Portal Role</div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#CEAE56', marginTop: '2px' }}>{displayRole}</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#B45309', marginTop: '2px' }}>{displayRole}</div>
               </div>
               <div>
                 <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700, letterSpacing: '0.05em' }}>Progress</div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#10B981', marginTop: '2px' }}>{PROGRESS_PCT}% Complete</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#15803D', marginTop: '2px' }}>{PROGRESS_PCT}% Complete</div>
               </div>
               <div>
                 <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700, letterSpacing: '0.05em' }}>Credential Tier</div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#E2E8F0', marginTop: '2px' }}>{certification.tier || 'In Progress'}</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0F172A', marginTop: '2px' }}>{certification.tier || 'In Progress'}</div>
               </div>
             </div>
 
             {/* Change Password Section */}
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F1F5F9', marginBottom: '0.75rem' }}>Security: Change Password</h4>
+            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.75rem' }}>Security: Change Password</h4>
             
             {passwordMsg && (
               <div style={{
@@ -550,9 +549,9 @@ export default function PlatformNav() {
                 borderRadius: '0.5rem',
                 fontSize: '0.75rem',
                 marginBottom: '1rem',
-                background: passwordMsg.type === 'success' ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)',
-                border: passwordMsg.type === 'success' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(244,63,94,0.3)',
-                color: passwordMsg.type === 'success' ? '#34D399' : '#FB7185',
+                background: passwordMsg.type === 'success' ? 'rgba(22,163,74,0.08)' : 'rgba(244,63,94,0.08)',
+                border: passwordMsg.type === 'success' ? '1px solid rgba(22,163,74,0.25)' : '1px solid rgba(244,63,94,0.25)',
+                color: passwordMsg.type === 'success' ? '#15803D' : '#BE123C',
               }}>
                 {passwordMsg.text}
               </div>
@@ -560,7 +559,7 @@ export default function PlatformNav() {
 
             <form onSubmit={handlePasswordChange} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
                   Current Password
                 </label>
                 <input
@@ -572,10 +571,10 @@ export default function PlatformNav() {
                   style={{
                     width: '100%',
                     padding: '0.65rem 0.85rem',
-                    background: '#060A16',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.15)',
                     borderRadius: '0.5rem',
-                    color: '#E6EDF6',
+                    color: '#0F172A',
                     fontSize: '0.8rem',
                   }}
                 />
@@ -583,7 +582,7 @@ export default function PlatformNav() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
                     New Password
                   </label>
                   <input
@@ -595,16 +594,16 @@ export default function PlatformNav() {
                     style={{
                       width: '100%',
                       padding: '0.65rem 0.85rem',
-                      background: '#060A16',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      background: '#FFFFFF',
+                      border: '1px solid rgba(0, 0, 0, 0.15)',
                       borderRadius: '0.5rem',
-                      color: '#E6EDF6',
+                      color: '#0F172A',
                       fontSize: '0.8rem',
                     }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
                     Confirm New
                   </label>
                   <input
@@ -616,10 +615,10 @@ export default function PlatformNav() {
                     style={{
                       width: '100%',
                       padding: '0.65rem 0.85rem',
-                      background: '#060A16',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      background: '#FFFFFF',
+                      border: '1px solid rgba(0, 0, 0, 0.15)',
                       borderRadius: '0.5rem',
-                      color: '#E6EDF6',
+                      color: '#0F172A',
                       fontSize: '0.8rem',
                     }}
                   />
@@ -633,13 +632,14 @@ export default function PlatformNav() {
                   style={{
                     flex: 1,
                     padding: '0.75rem',
-                    background: 'linear-gradient(135deg, #8F6E1C 0%, #B8962E 100%)',
-                    color: '#060A16',
-                    border: '1px solid #CEAE56',
+                    background: 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)',
+                    color: '#FFFFFF',
+                    border: 'none',
                     borderRadius: '0.5rem',
                     fontSize: '0.8rem',
                     fontWeight: 700,
                     cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(22, 163, 74, 0.3)',
                   }}
                 >
                   {isChangingPassword ? 'Updating...' : 'Update Password'}
@@ -653,7 +653,7 @@ export default function PlatformNav() {
                     background: 'rgba(244,63,94,0.08)',
                     border: '1px solid rgba(244,63,94,0.25)',
                     borderRadius: '0.5rem',
-                    color: '#FB7185',
+                    color: '#BE123C',
                     fontSize: '0.8rem',
                     fontWeight: 600,
                     cursor: 'pointer',

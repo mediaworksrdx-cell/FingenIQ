@@ -34,8 +34,9 @@ export default function Error({
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#060A16',
-      color: '#E6EDF6',
+      background: '#FAF8F5',
+      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.06) 0%, transparent 60%), #FAF8F5',
+      color: '#0F172A',
       fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -46,18 +47,18 @@ export default function Error({
     }}>
       <div style={{
         maxWidth: 440,
-        background: '#0B1528',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: '#FFFFFF',
+        border: '1px solid rgba(0, 0, 0, 0.08)',
         borderRadius: '1rem',
         padding: '2.5rem',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.06)'
       }}>
         <div style={{
           width: 52,
           height: 52,
           borderRadius: '50%',
-          background: 'rgba(206,174,86,0.15)',
-          color: '#CEAE56',
+          background: 'rgba(22, 163, 74, 0.1)',
+          color: '#15803D',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -66,10 +67,10 @@ export default function Error({
         }}>
           {isChunkError ? '⚡' : '⚠️'}
         </div>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#F1F5F9', margin: '0 0 0.5rem' }}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A', margin: '0 0 0.5rem' }}>
           {isChunkError ? 'Platform Updated' : 'Something went wrong'}
         </h2>
-        <p style={{ fontSize: '0.85rem', color: '#8898AA', margin: '0 0 1.75rem', lineHeight: 1.5 }}>
+        <p style={{ fontSize: '0.85rem', color: '#475569', margin: '0 0 1.75rem', lineHeight: 1.5 }}>
           {isChunkError
             ? 'A newer deployment is available. Click below to refresh your session.'
             : 'An unexpected error occurred. Please try again or return to the homepage.'}
@@ -85,15 +86,16 @@ export default function Error({
               }
             }}
             style={{
-              background: 'linear-gradient(135deg, #CEAE56 0%, #B8962E 100%)',
-              color: '#060A16',
+              background: 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)',
+              color: '#FFFFFF',
               border: 'none',
               borderRadius: '0.5rem',
               padding: '0.75rem 1.5rem',
               fontSize: '0.875rem',
               fontWeight: 700,
               cursor: 'pointer',
-              width: '100%'
+              width: '100%',
+              boxShadow: '0 4px 14px rgba(22, 163, 74, 0.3)',
             }}
           >
             {isChunkError ? 'Refresh & Reload Platform →' : 'Try Again ↺'}
@@ -101,13 +103,14 @@ export default function Error({
           <a
             href="/"
             style={{
-              color: '#8898AA',
+              color: '#15803D',
               fontSize: '0.8rem',
-              textDecoration: 'underline',
+              textDecoration: 'none',
+              fontWeight: 600,
               cursor: 'pointer'
             }}
           >
-            Return to Homepage
+            ← Return to Homepage
           </a>
         </div>
       </div>
