@@ -4,6 +4,50 @@ import { useState } from 'react';
 import PublicNav from '@/components/nav/PublicNav';
 import Footer from '@/components/layout/Footer';
 
+interface MentorProfile {
+  name: string;
+  designation: string;
+  qualification: string;
+  experience: string;
+  focusAreas: string[];
+  bio: string;
+  initials: string;
+  avatarGradient: string;
+}
+
+const FEATURED_MENTORS: MentorProfile[] = [
+  {
+    name: 'Vikramaditya Sengupta, CFA',
+    designation: 'Managing Director & Senior Portfolio Strategist',
+    qualification: 'CFA Charterholder · MBA in Finance (IIM Ahmedabad)',
+    experience: '18+ Years in Quantitative Asset Management & Fixed Income',
+    focusAreas: ['Portfolio Construction', 'Macro Economics', 'Risk Arbitrage', 'Asset Allocation'],
+    bio: 'Former Head of Fixed Income Strategy at top global investment banks, advising institutional pension funds and sovereign wealth allocations across global markets.',
+    initials: 'VS',
+    avatarGradient: 'linear-gradient(135deg, #15803D 0%, #166534 100%)',
+  },
+  {
+    name: 'Dr. Ananya Roy, Ph.D.',
+    designation: 'Chief Valuation Officer & Financial Economist',
+    qualification: 'Ph.D. in Financial Economics (London School of Economics) · MS Computational Finance',
+    experience: '14+ Years in Equity Research, M&A Deal Structuring & Corporate Valuation',
+    focusAreas: ['DCF Valuation', 'LBO Architecture', 'Corporate Restructuring', 'Private Equity'],
+    bio: 'Author of institutional valuation frameworks, specialized in high-growth tech capital restructuring, private equity deal due diligence, and cross-border M&A modeling.',
+    initials: 'AR',
+    avatarGradient: 'linear-gradient(135deg, #B45309 0%, #78350F 100%)',
+  },
+  {
+    name: 'Rajesh K. Nambiar, CA',
+    designation: 'SEBI Registered Research Analyst & Treasury Advisor',
+    qualification: 'Chartered Accountant (ICAI) · SEBI RA & NISM Series VIII Derivatives Certified',
+    experience: '16+ Years in Derivatives Trading, Currency Hedging & Treasury Management',
+    focusAreas: ['Options Volatility Modeling', 'Algorithmic Hedging', 'FX Risk', 'Corporate Treasury'],
+    bio: 'Advises Fortune 500 treasuries on cross-border currency exposure, interest rate swaps, and institutional derivative risk mitigation strategies.',
+    initials: 'RN',
+    avatarGradient: 'linear-gradient(135deg, #1D4ED8 0%, #1E3A8A 100%)',
+  },
+];
+
 export default function MentorPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -58,58 +102,192 @@ export default function MentorPage() {
         <PublicNav />
         <main className="page-main">
           {/* Hero Section */}
-          <section className="relative py-20 flex flex-col justify-center" style={{ minHeight: '50vh' }}>
+          <section className="relative py-20 flex flex-col justify-center" style={{ minHeight: '40vh', borderBottom: '1px solid rgba(0, 0, 0, 0.08)' }}>
             <div className="container">
               <div className="max-w-3xl animate-fadeUp">
-                <div className="section-label mb-6">🤝 Mentor & Partner Program</div>
-                <h1 className="section-title mb-6">
-                  Become a <em className="text-[var(--brass-500)] not-italic">Mentor</em>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', fontWeight: 800, color: '#15803D', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 'var(--sp-4)' }}>
+                  <span>🤝 Faculty &amp; Mentor Network</span>
+                </div>
+                <h1 className="section-title mb-4" style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.25rem, 5vw, 3.25rem)', color: '#0F172A', fontWeight: 700 }}>
+                  Learn from <em style={{ color: '#15803D', fontStyle: 'italic' }}>Institutional Mentors</em>
                 </h1>
-                <p className="section-subtitle">
-                  Join FingenIQ as a mentor or business partner. Share your expertise, guide learners, and help shape the future of financial education.
+                <p className="section-subtitle" style={{ fontSize: '1.1rem', color: '#475569', lineHeight: 1.6, maxWidth: 640 }}>
+                  Our curriculum and case study evaluations are led by veteran market practitioners, portfolio managers, chartered analysts, and economic researchers.
                 </p>
               </div>
             </div>
           </section>
 
-          {/* Form Section */}
-          <section className="py-20 relative z-10">
+          {/* 3 Featured Mentors Showcase */}
+          <section className="py-20" style={{ background: '#FAF8F5' }}>
             <div className="container">
+              <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto var(--sp-12)' }}>
+                <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 700, color: '#15803D', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginBottom: 'var(--sp-2)' }}>
+                  Institutional Faculty
+                </div>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.25rem', color: '#0F172A', fontWeight: 700 }}>
+                  Featured Mentors &amp; Advisors
+                </h2>
+                <p style={{ fontSize: '0.95rem', color: '#64748B', marginTop: '0.5rem' }}>
+                  Industry leaders providing direct case reviews, financial model feedback, and career mentorship.
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+                {FEATURED_MENTORS.map((m, idx) => (
+                  <div
+                    key={idx}
+                    className="card card--interactive animate-fadeUp"
+                    style={{
+                      animationDelay: `${idx * 150}ms`,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      background: '#FFFFFF',
+                      border: '1px solid rgba(0, 0, 0, 0.08)',
+                      borderRadius: '1.25rem',
+                      padding: '2rem',
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+                    }}
+                  >
+                    {/* Top Avatar & Name */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
+                      <div
+                        style={{
+                          width: 56,
+                          height: 56,
+                          borderRadius: '50%',
+                          background: m.avatarGradient,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#FFFFFF',
+                          fontSize: '1.2rem',
+                          fontWeight: 700,
+                          flexShrink: 0,
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        }}
+                      >
+                        {m.initials}
+                      </div>
+                      <div>
+                        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.3 }}>
+                          {m.name}
+                        </h3>
+                        <p style={{ fontSize: '0.8rem', color: '#15803D', fontWeight: 600, margin: '2px 0 0' }}>
+                          {m.designation}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Academic & Professional Qualification Box */}
+                    <div
+                      style={{
+                        background: '#FAF8F5',
+                        border: '1px solid rgba(0, 0, 0, 0.06)',
+                        borderLeft: '3px solid #15803D',
+                        borderRadius: '0.5rem',
+                        padding: '0.75rem 1rem',
+                        marginBottom: '1rem',
+                      }}
+                    >
+                      <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
+                        🎓 Qualification &amp; Accreditations
+                      </div>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0F172A', lineHeight: 1.4 }}>
+                        {m.qualification}
+                      </div>
+                    </div>
+
+                    {/* Experience Banner */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', fontSize: '0.8rem', color: '#475569' }}>
+                      <span style={{ fontSize: '0.9rem' }}>⏱️</span>
+                      <strong style={{ color: '#0F172A' }}>{m.experience}</strong>
+                    </div>
+
+                    {/* Bio */}
+                    <p style={{ fontSize: '0.85rem', color: '#475569', lineHeight: 1.6, marginBottom: '1.25rem', flex: 1 }}>
+                      {m.bio}
+                    </p>
+
+                    {/* Domain Focus Tags */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '1rem' }}>
+                      {m.focusAreas.map((area, i) => (
+                        <span
+                          key={i}
+                          style={{
+                            fontSize: '0.7rem',
+                            fontWeight: 600,
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
+                            background: 'rgba(22, 163, 74, 0.08)',
+                            color: '#15803D',
+                            border: '1px solid rgba(22, 163, 74, 0.2)',
+                          }}
+                        >
+                          {area}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Form Section */}
+          <section className="py-20 relative z-10" style={{ borderTop: '1px solid rgba(0, 0, 0, 0.08)' }}>
+            <div className="container">
+              <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto var(--sp-12)' }}>
+                <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 700, color: '#15803D', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginBottom: 'var(--sp-2)' }}>
+                  Join the Faculty
+                </div>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.25rem', color: '#0F172A', fontWeight: 700 }}>
+                  Apply as a Mentor or Partner
+                </h2>
+                <p style={{ fontSize: '0.95rem', color: '#64748B', marginTop: '0.5rem' }}>
+                  Share your market knowledge, review student valuation models, or explore institutional business partnerships.
+                </p>
+              </div>
+
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                 <div className="lg:col-span-5 animate-fadeUp" style={{ animationDelay: '100ms' }}>
                   <div className="sticky top-24 space-y-6">
-                    <div className="card p-8 bg-900 border-muted">
-                      <h3 className="text-xl font-medium text-[var(--ink-50)] mb-4">Mentoring Benefits</h3>
-                      <ul className="space-y-3 text-[var(--ink-300)]">
+                    <div className="card p-8 bg-900 border-muted" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)' }}>
+                      <h3 className="text-xl font-medium text-[#0F172A] mb-4" style={{ fontFamily: 'var(--font-serif)', fontWeight: 700 }}>
+                        Mentoring Benefits
+                      </h3>
+                      <ul className="space-y-3 text-[#475569]">
                         <li className="flex gap-3">
-                          <span className="text-[var(--brass-500)]">✦</span>
-                          <span>Shape the next generation of financial professionals</span>
+                          <span className="text-[#15803D] font-bold">✦</span>
+                          <span>Shape the next generation of financial intelligence leaders</span>
                         </li>
                         <li className="flex gap-3">
-                          <span className="text-[var(--brass-500)]">✦</span>
-                          <span>Flexible scheduling to fit your lifestyle</span>
+                          <span className="text-[#15803D] font-bold">✦</span>
+                          <span>Flexible asynchronous model reviews and live masterclasses</span>
                         </li>
                         <li className="flex gap-3">
-                          <span className="text-[var(--brass-500)]">✦</span>
-                          <span>Networking opportunities within our community</span>
+                          <span className="text-[#15803D] font-bold">✦</span>
+                          <span>Exclusive peer networking with senior finance faculty</span>
                         </li>
                       </ul>
                     </div>
                     
-                    <div className="card p-8 bg-900 border-muted">
-                      <h3 className="text-xl font-medium text-[var(--ink-50)] mb-4">Partnership Benefits</h3>
-                      <ul className="space-y-3 text-[var(--ink-300)]">
+                    <div className="card p-8 bg-900 border-muted" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)' }}>
+                      <h3 className="text-xl font-medium text-[#0F172A] mb-4" style={{ fontFamily: 'var(--font-serif)', fontWeight: 700 }}>
+                        Partnership Benefits
+                      </h3>
+                      <ul className="space-y-3 text-[#475569]">
                         <li className="flex gap-3">
-                          <span className="text-[var(--brass-500)]">✦</span>
-                          <span>Collaborate on innovative educational programs</span>
+                          <span className="text-[#15803D] font-bold">✦</span>
+                          <span>Collaborate on bespoke financial curriculum and simulations</span>
                         </li>
                         <li className="flex gap-3">
-                          <span className="text-[var(--brass-500)]">✦</span>
-                          <span>Access to top-tier financial talent</span>
+                          <span className="text-[#15803D] font-bold">✦</span>
+                          <span>Direct hiring pipeline to distinction-tier certified talent</span>
                         </li>
                         <li className="flex gap-3">
-                          <span className="text-[var(--brass-500)]">✦</span>
-                          <span>Co-branding and marketing opportunities</span>
+                          <span className="text-[#15803D] font-bold">✦</span>
+                          <span>Co-branding in community research publications and case studies</span>
                         </li>
                       </ul>
                     </div>
@@ -117,17 +295,18 @@ export default function MentorPage() {
                 </div>
 
                 <div className="lg:col-span-7 animate-fadeUp" style={{ animationDelay: '200ms' }}>
-                  <div className="card p-8 bg-900 border-muted">
+                  <div className="card p-8 bg-900 border-muted" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '1.25rem', boxShadow: '0 10px 40px rgba(0,0,0,0.05)' }}>
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="form-group">
-                        <label className="form-label" htmlFor="name">
-                          Name <span style={{ color: 'var(--brass-500)' }}>*</span>
+                        <label className="form-label" htmlFor="name" style={{ color: '#0F172A', fontWeight: 600 }}>
+                          Full Name <span style={{ color: '#15803D' }}>*</span>
                         </label>
                         <input
                           type="text"
                           id="name"
                           name="name"
                           required
+                          placeholder="e.g. Anand Mahindra, CFA"
                           className="form-input"
                           value={formData.name}
                           onChange={handleChange}
@@ -135,14 +314,15 @@ export default function MentorPage() {
                       </div>
 
                       <div className="form-group">
-                        <label className="form-label" htmlFor="qualification">
-                          Qualification <span style={{ color: 'var(--brass-500)' }}>*</span>
+                        <label className="form-label" htmlFor="qualification" style={{ color: '#0F172A', fontWeight: 600 }}>
+                          Highest Qualification &amp; Certifications <span style={{ color: '#15803D' }}>*</span>
                         </label>
                         <input
                           type="text"
                           id="qualification"
                           name="qualification"
                           required
+                          placeholder="e.g. CFA / CA / Ph.D. Finance / MBA (IIM)"
                           className="form-input"
                           value={formData.qualification}
                           onChange={handleChange}
@@ -150,13 +330,14 @@ export default function MentorPage() {
                       </div>
 
                       <div className="form-group">
-                        <label className="form-label" htmlFor="experience">
-                          Experience Details <span style={{ color: 'var(--brass-500)' }}>*</span>
+                        <label className="form-label" htmlFor="experience" style={{ color: '#0F172A', fontWeight: 600 }}>
+                          Experience &amp; Current Role Details <span style={{ color: '#15803D' }}>*</span>
                         </label>
                         <textarea
                           id="experience"
                           name="experience"
                           required
+                          placeholder="Briefly describe your years of experience, current organisation, and core market domain..."
                           className="form-input"
                           style={{ minHeight: '100px' }}
                           value={formData.experience}
@@ -165,8 +346,8 @@ export default function MentorPage() {
                       </div>
 
                       <div className="form-group">
-                        <label className="form-label" htmlFor="interestToWork">
-                          Interest to Work <span style={{ color: 'var(--brass-500)' }}>*</span>
+                        <label className="form-label" htmlFor="interestToWork" style={{ color: '#0F172A', fontWeight: 600 }}>
+                          Availability / Engagement Model <span style={{ color: '#15803D' }}>*</span>
                         </label>
                         <select
                           id="interestToWork"
@@ -176,37 +357,41 @@ export default function MentorPage() {
                           value={formData.interestToWork}
                           onChange={handleChange}
                         >
-                          <option value="">Select option...</option>
-                          <option value="Full Time">Full Time</option>
-                          <option value="Part Time">Part Time</option>
-                          <option value="On Call">On Call</option>
+                          <option value="">Select engagement preference...</option>
+                          <option value="Guest Lecturer / Masterclass">Guest Lecturer / Masterclass</option>
+                          <option value="Case Study & Model Reviewer">Case Study &amp; Model Reviewer</option>
+                          <option value="Part Time Mentor">Part Time Mentor</option>
+                          <option value="Full Time Faculty">Full Time Faculty</option>
+                          <option value="Advisory Board">Advisory Board</option>
                         </select>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="form-group">
-                          <label className="form-label" htmlFor="phone">
-                            Phone <span style={{ color: 'var(--brass-500)' }}>*</span>
+                          <label className="form-label" htmlFor="phone" style={{ color: '#0F172A', fontWeight: 600 }}>
+                            Phone Number <span style={{ color: '#15803D' }}>*</span>
                           </label>
                           <input
                             type="tel"
                             id="phone"
                             name="phone"
                             required
+                            placeholder="+91 98765 43210"
                             className="form-input"
                             value={formData.phone}
                             onChange={handleChange}
                           />
                         </div>
                         <div className="form-group">
-                          <label className="form-label" htmlFor="email">
-                            Email <span style={{ color: 'var(--brass-500)' }}>*</span>
+                          <label className="form-label" htmlFor="email" style={{ color: '#0F172A', fontWeight: 600 }}>
+                            Work / Official Email <span style={{ color: '#15803D' }}>*</span>
                           </label>
                           <input
                             type="email"
                             id="email"
                             name="email"
                             required
+                            placeholder="name@firm.com"
                             className="form-input"
                             value={formData.email}
                             onChange={handleChange}
@@ -216,27 +401,28 @@ export default function MentorPage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="form-group">
-                          <label className="form-label" htmlFor="whatsapp">
-                            WhatsApp
+                          <label className="form-label" htmlFor="whatsapp" style={{ color: '#0F172A', fontWeight: 600 }}>
+                            WhatsApp Contact
                           </label>
                           <input
                             type="tel"
                             id="whatsapp"
                             name="whatsapp"
+                            placeholder="+91 98765 43210"
                             className="form-input"
                             value={formData.whatsapp}
                             onChange={handleChange}
                           />
                         </div>
                         <div className="form-group">
-                          <label className="form-label" htmlFor="linkedin">
-                            LinkedIn Profile
+                          <label className="form-label" htmlFor="linkedin" style={{ color: '#0F172A', fontWeight: 600 }}>
+                            LinkedIn Profile URL
                           </label>
                           <input
                             type="url"
                             id="linkedin"
                             name="linkedin"
-                            placeholder="https://linkedin.com/in/..."
+                            placeholder="https://linkedin.com/in/username"
                             className="form-input"
                             value={formData.linkedin}
                             onChange={handleChange}
@@ -244,9 +430,9 @@ export default function MentorPage() {
                         </div>
                       </div>
 
-                      <div className="form-group border-t border-[var(--ink-800)] pt-6 mt-6">
-                        <label className="form-label" htmlFor="interestedIn">
-                          Interested In <span style={{ color: 'var(--brass-500)' }}>*</span>
+                      <div className="form-group border-t border-[rgba(0,0,0,0.08)] pt-6 mt-6">
+                        <label className="form-label" htmlFor="interestedIn" style={{ color: '#0F172A', fontWeight: 600 }}>
+                          Primary Area of Interest <span style={{ color: '#15803D' }}>*</span>
                         </label>
                         <select
                           id="interestedIn"
@@ -256,17 +442,18 @@ export default function MentorPage() {
                           value={formData.interestedIn}
                           onChange={handleChange}
                         >
-                          <option value="">Select option...</option>
-                          <option value="Mentoring">Mentoring</option>
-                          <option value="Business Partnership">Business Partnership</option>
+                          <option value="">Select area...</option>
+                          <option value="Mentoring">Individual &amp; Batch Mentoring</option>
+                          <option value="Business Partnership">Institutional Business Partnership</option>
+                          <option value="Content & Case Co-Creation">Content &amp; Case Study Co-Creation</option>
                         </select>
                       </div>
 
                       {formData.interestedIn === 'Business Partnership' && (
                         <div className="space-y-6 animate-fadeUp">
                           <div className="form-group">
-                            <label className="form-label" htmlFor="companyName">
-                              Company Name <span style={{ color: 'var(--brass-500)' }}>*</span>
+                            <label className="form-label" htmlFor="companyName" style={{ color: '#0F172A', fontWeight: 600 }}>
+                              Company / Institution Name <span style={{ color: '#15803D' }}>*</span>
                             </label>
                             <input
                               type="text"
@@ -280,8 +467,8 @@ export default function MentorPage() {
                           </div>
 
                           <div className="form-group">
-                            <label className="form-label" htmlFor="address">
-                              Address <span style={{ color: 'var(--brass-500)' }}>*</span>
+                            <label className="form-label" htmlFor="address" style={{ color: '#0F172A', fontWeight: 600 }}>
+                              Corporate Address <span style={{ color: '#15803D' }}>*</span>
                             </label>
                             <textarea
                               id="address"
@@ -296,8 +483,8 @@ export default function MentorPage() {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="form-group">
-                              <label className="form-label" htmlFor="areaOfBusiness">
-                                Area of Business <span style={{ color: 'var(--brass-500)' }}>*</span>
+                              <label className="form-label" htmlFor="areaOfBusiness" style={{ color: '#0F172A', fontWeight: 600 }}>
+                                Sector / Area of Business <span style={{ color: '#15803D' }}>*</span>
                               </label>
                               <input
                                 type="text"
@@ -310,14 +497,14 @@ export default function MentorPage() {
                               />
                             </div>
                             <div className="form-group">
-                              <label className="form-label" htmlFor="website">
-                                Website
+                              <label className="form-label" htmlFor="website" style={{ color: '#0F172A', fontWeight: 600 }}>
+                                Organization Website
                               </label>
                               <input
                                 type="url"
                                 id="website"
                                 name="website"
-                                placeholder="https://..."
+                                placeholder="https://company.com"
                                 className="form-input"
                                 value={formData.website}
                                 onChange={handleChange}
@@ -328,13 +515,13 @@ export default function MentorPage() {
                       )}
 
                       <div className="pt-4">
-                        <button type="submit" className="btn btn--brass w-full justify-center">
-                          Submit Application →
+                        <button type="submit" className="btn btn--brass w-full justify-center" style={{ padding: '0.85rem 1.5rem', fontSize: '0.95rem' }}>
+                          Submit Faculty &amp; Mentor Application →
                         </button>
                       </div>
 
-                      <p className="text-sm text-[var(--ink-400)] text-center mt-4">
-                        By submitting this form, you agree to our privacy policy and terms of service.
+                      <p className="text-sm text-[#64748B] text-center mt-4">
+                        By submitting this application, you agree to our privacy policy and faculty terms of service.
                       </p>
                     </form>
                   </div>
@@ -348,14 +535,14 @@ export default function MentorPage() {
 
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 animate-fadeUp">
-          <div className="bg-[var(--ink-800)] border border-[var(--brass-500)]/30 rounded-lg shadow-2xl p-4 max-w-sm flex items-start gap-3">
+          <div className="card p-4 max-w-sm flex items-start gap-3" style={{ background: '#FFFFFF', border: '1px solid rgba(22, 163, 74, 0.4)', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
             <div className="flex-1">
-              <h4 className="text-[var(--ink-50)] font-medium mb-1">{toast.title}</h4>
-              <p className="text-sm text-[var(--ink-300)]">{toast.desc}</p>
+              <h4 className="font-bold text-[#0F172A] mb-1">{toast.title}</h4>
+              <p className="text-sm text-[#475569]">{toast.desc}</p>
             </div>
             <button
               onClick={() => setToast(null)}
-              className="text-[var(--ink-400)] hover:text-[var(--ink-50)] transition-colors"
+              className="text-[#64748B] hover:text-[#0F172A] transition-colors"
             >
               ✕
             </button>
