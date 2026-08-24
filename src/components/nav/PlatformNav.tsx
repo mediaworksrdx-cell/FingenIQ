@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { USER_STATE } from '@/lib/data';
 import { logoutAction, changePasswordAction } from '@/app/actions/authActions';
 import PlatformAiTutor from '@/components/chat/PlatformAiTutor';
+import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 
 const NAV_LINKS = [
   { href: '/dashboard',          label: 'Dashboard',    icon: '◈' },
@@ -120,9 +121,7 @@ export default function PlatformNav() {
         <div className="nav__inner">
           {/* Logo */}
           <Link href={sessionUser?.role === 'admin' ? '/admin/credentials' : '/dashboard'} className="nav__logo" aria-label="FingenIQ platform">
-            <div className="nav__logo-mark">
-              <span className="nav__logo-glyph">F</span>
-            </div>
+            <FinGenIqLogo size={28} />
             <span className="nav__logo-text">Fingen<span>IQ</span></span>
           </Link>
 

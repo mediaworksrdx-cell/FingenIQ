@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 
 export default function Footer() {
   return (
@@ -15,7 +16,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div>
             <Link href="/" className="nav__logo" style={{ marginBottom: 'var(--sp-5)', display: 'inline-flex' }}>
-              <div className="nav__logo-mark"><span className="nav__logo-glyph">F</span></div>
+              <FinGenIqLogo size={28} />
               <span className="nav__logo-text">Fingen<span>IQ</span></span>
             </Link>
             <p className="footer__brand-desc">

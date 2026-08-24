@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 
 const PUBLIC_LINKS = [
   { href: '/', label: 'Home' },
@@ -47,9 +48,7 @@ export default function PublicNav() {
       >
         <div className="nav__inner">
           <Link href="/" className="nav__logo" aria-label="FingenIQ home">
-            <div className="nav__logo-mark">
-              <span className="nav__logo-glyph">F</span>
-            </div>
+            <FinGenIqLogo size={28} />
             <span className="nav__logo-text">Fingen<span>IQ</span></span>
           </Link>
 
