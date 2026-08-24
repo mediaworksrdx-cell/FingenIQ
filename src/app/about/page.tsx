@@ -110,7 +110,7 @@ export default function About() {
                 <div className="values-card animate-fadeUp" style={{ animationDelay: '450ms' }}>
                   <div className="values-card__icon-box">🌐</div>
                   <h3 className="values-card__title">Global Market Standards</h3>
-                  <p className="values-card__desc">Curriculum harmonized across global benchmark standards including CFA Institute guidelines, CA/ICWA principles, SEBI RA frameworks, and international wealth management bodies.</p>
+                  <p className="values-card__desc">Curriculum harmonized across global benchmark standards including CFA Institute guidelines, CA/ICWA principles, and international wealth management bodies.</p>
                 </div>
               </div>
             </div>
@@ -158,8 +158,8 @@ export default function About() {
                     <div className="card p-4" style={{ display: 'flex', gap: 'var(--sp-3)', alignItems: 'start' }}>
                       <span className="text-brass font-bold">04</span>
                       <div>
-                        <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-1)' }}>SEBI-Equivalence Roadmap</div>
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>FingenIQ is actively building a roadmap towards SEBI regulatory recognition. Our curriculum is benchmarked against CA/ICWA, CFA Level I, and BPF professional standards.</p>
+                        <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-1)' }}>Global Curriculum Benchmarking</div>
+                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>FingenIQ is built with global benchmark standards in mind. Our curriculum is mapped against CA/ICWA, CFA Level I, and BPF professional competencies.</p>
                       </div>
                     </div>
                     <div className="card p-4" style={{ display: 'flex', gap: 'var(--sp-3)', alignItems: 'start' }}>

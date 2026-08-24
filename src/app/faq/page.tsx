@@ -14,7 +14,7 @@ const FAQS = [
   },
   {
     question: 'Is FingenIQ certification recognised by employers?',
-    answer: 'FingenIQ credentials are verifiable via a tamper-proof code system. Employers can validate credentials through our marketplace portal. Our SEBI-equivalence roadmap is aspirational and under active development.',
+    answer: 'FingenIQ credentials are verifiable via a tamper-proof code system. Employers and recruiters can validate credential authenticity directly through our marketplace portal with immutable audit records.',
   },
   {
     question: 'Do you offer bulk pricing for organisations?',
@@ -29,8 +29,8 @@ const FAQS = [
     answer: 'FingenIQ offers three credential tiers: Completion (basic), Proficiency (intermediate), and Distinction (advanced). Each tier requires progressively higher weighted scores across knowledge checks, quizzes, assignments, module assessments, and the capstone project.',
   },
   {
-    question: 'Is FingenIQ registered with SEBI?',
-    answer: 'FingenIQ is an educational platform and is not registered with SEBI, RBI, IRDAI, or any other regulatory authority as a financial advisor. The SEBI Equivalence Roadmap is a transparency document and does not constitute regulatory recognition.',
+    question: 'What regulatory status does FingenIQ have?',
+    answer: 'FingenIQ is an independent educational technology platform. All programs, simulations, and credentials are provided for professional educational advancement and do not constitute statutory investment advice or portfolio management licensing.',
   },
   {
     question: 'How does the AI Tutor work?',

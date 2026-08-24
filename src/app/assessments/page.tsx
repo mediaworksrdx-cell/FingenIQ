@@ -41,7 +41,7 @@ export default function AssessmentPlayer() {
     },
     {
       id: 3,
-      question: 'Under SEBI PIT Regulations, what does UPSI stand for and when must it be handled under strict confidentiality protocols?',
+      question: 'Under Insider Trading & Corporate Governance Regulations, what does UPSI stand for and when must it be handled under strict confidentiality protocols?',
       options: [
         'Unpublished Price Sensitive Information; whenever a transaction or decision is likely to materially impact asset price.',
         'Unified Price Security Index; during secondary market order matching runs.',
@@ -49,7 +49,7 @@ export default function AssessmentPlayer() {
         'None of the above.',
       ],
       correctIndex: 0,
-      explanation: 'UPSI stands for Unpublished Price Sensitive Information. Any employee or insider privy to UPSI must adhere to SEBI\'s trading window closure mandates to prevent insider trading violations.',
+      explanation: 'UPSI stands for Unpublished Price Sensitive Information. Any employee or insider privy to UPSI must adhere to trading window closure mandates to prevent insider trading violations.',
     },
   ];
 
@@ -150,7 +150,7 @@ export default function AssessmentPlayer() {
                   <div className="card p-6">
                     <h3 className="section-title mb-3" style={{ fontSize: 'var(--text-lg)' }}>Pre-Exam Integrity Checklist</h3>
                     <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-400)', marginBottom: '16px', lineHeight: 'var(--leading-relaxed)' }}>
-                      In alignment with the SEBI-Equivalence compliance roadmap, all formal assessments enforce identity authentication checks and proctored environment parameters.
+                      In alignment with institutional certification standards, all formal assessments enforce identity authentication checks and proctored environment parameters.
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>

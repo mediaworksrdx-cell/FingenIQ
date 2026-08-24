@@ -4,7 +4,7 @@
 // ============================================================
 import type {
   Module, Lesson, LessonStep, UserState, CertificationConfig,
-  ProfessionalTrack, Seeker, JobPosting, SebiMilestone, EquivalenceEntry
+  ProfessionalTrack, Seeker, JobPosting, StandardsMilestone, EquivalenceEntry
 } from './types';
 
 // Dynamically imported lessons from separate files
@@ -242,14 +242,15 @@ export const JOB_POSTINGS: JobPosting[] = [
   { id:'J005', title:'Portfolio Analyst — Mutual Fund Research', company:'Mirae Asset Investment Managers', location:'Mumbai · Hybrid', type:'Full-time', requiredTier:'Proficiency', requiredTrack:null,                                          salary:'₹8–12 LPA',  posted:'1 day ago',   description:'Quantitative and qualitative analysis of mutual fund performance.', skills:['Portfolio Analysis','Mutual Funds','Alpha/Beta','Sharpe Ratio'] },
 ];
 
-// ── SEBI MILESTONES ───────────────────────────────────────────
-export const SEBI_MILESTONES: SebiMilestone[] = [
-  { id:'MS1', status:'achieved', icon:'✅', title:'Proctored Assessment Infrastructure',    description:'Deployment of webcam-based proctoring with tab-switch detection and timer enforcement for all Module Assessments.',             targetDate:'Q2 2025', achievedDate:'Q1 2025', owner:'FingenIQ Technology Team',          notes:'Completed ahead of schedule. 3 proctoring providers evaluated; SIFY iGuru selected.' },
-  { id:'MS2', status:'achieved', icon:'✅', title:'External Question Bank Audit',           description:'Independent audit of all 880+ assessment questions by a registered CA firm and SEBI-registered investment adviser.',            targetDate:'Q4 2025', achievedDate:'Q3 2025', owner:'Deloitte India / External Audit Partner', notes:'Audit completed. 47 questions revised; 12 retired and replaced.' },
-  { id:'MS3', status:'active',   icon:'🔄', title:'Industry Advisory Board Formation',     description:'Constituting a 7-member Industry Advisory Board comprising SEBI-registered research analysts, CFA charterholders, and practitioners.',  targetDate:'Q1 2026',                        owner:'FingenIQ Governance Committee',     notes:'Board constitution 60% complete. 4 of 7 members confirmed.' },
-  { id:'MS4', status:'planned',  icon:'📋', title:'SEBI Regulatory Submission',            description:'Submission of formal curriculum documentation, proctoring audit reports, and industry advisory sign-off to SEBI.',               targetDate:'Q3 2026',                        owner:'FingenIQ Legal & Regulatory Team',  notes:'This is an aspiration, not a committed regulatory timeline.' },
-  { id:'MS5', status:'planned',  icon:'🎯', title:'Regulatory Determination',             description:'Awaiting SEBI\'s regulatory review outcome. FingenIQ acknowledges that outcome is entirely at SEBI\'s discretion.',             targetDate:'TBD',                            owner:'Securities and Exchange Board of India', notes:'No regulatory equivalence is claimed at this time.' },
+// ── INSTITUTIONAL STANDARDS MILESTONES ─────────────────────────────
+export const STANDARDS_MILESTONES: StandardsMilestone[] = [
+  { id:'MS1', status:'achieved', icon:'✅', title:'Proctored Assessment Infrastructure',    description:'Deployment of webcam-based proctoring with tab-switch detection and timer enforcement for all Module Assessments.',             targetDate:'Q2 2025', achievedDate:'Q1 2025', owner:'FingenIQ Technology Team',          notes:'Completed ahead of schedule. Enterprise proctoring engine operational.' },
+  { id:'MS2', status:'achieved', icon:'✅', title:'External Question Bank Audit',           description:'Independent audit of all 880+ assessment questions across curriculum by chartered accountants and CFA charterholders.',            targetDate:'Q4 2025', achievedDate:'Q3 2025', owner:'External Financial Audit Partner', notes:'Audit completed. 47 questions revised; 12 retired and replaced.' },
+  { id:'MS3', status:'active',   icon:'🔄', title:'Industry Advisory Board Formation',     description:'Constituting an Industry Advisory Board comprising seasoned portfolio managers, CFA charterholders, and market practitioners.',  targetDate:'Q1 2026',                        owner:'FingenIQ Governance Committee',     notes:'Board constitution in progress. Senior financial faculty confirmed.' },
+  { id:'MS4', status:'planned',  icon:'📋', title:'Global Curriculum Benchmarking',        description:'Benchmarking curriculum against international standards including CFA Institute guidelines and corporate finance certifications.', targetDate:'Q3 2026',                        owner:'FingenIQ Academic & Curriculum Team', notes:'Active alignment across equity, derivatives, and wealth management.' },
+  { id:'MS5', status:'planned',  icon:'🎯', title:'Industry Employer Integration',          description:'Expanding verified credential recognition across top asset managers, investment banks, and corporate treasuries.',             targetDate:'Q4 2026',                        owner:'FingenIQ Institutional Partnerships', notes:'Continuous corporate partner onboarding for certified talent.' },
 ];
+export const SEBI_MILESTONES = STANDARDS_MILESTONES;
 
 export const EQUIVALENCE_MAP: EquivalenceEntry[] = [
   { fingeniQ:'Module 1: Foundations of Money & Financial Systems', ca_icwa:'CA Foundation: Business Economics (partial)', cfa:'CFA L1: Financial Economics (partial)', bpf:'BPF Year 1: Money & Financial History', note:'Gap map only — not a claim of equivalence' },

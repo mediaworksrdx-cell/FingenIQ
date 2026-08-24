@@ -54,12 +54,12 @@ const KNOWLEDGE_BASE: KBEntry[] = [
     answer: `The **Capstone Project** is the rigorous culmination of the 8 modules:\n\n• **Track A (Equity Valuation)**: Comprehensive Discounted Cash Flow (DCF), 3-statement financial modeling, WACC calculation, and sensitivity analysis of a publicly listed Indian firm.\n• **Track B (Wealth & Portfolio Strategy)**: Multi-asset strategic allocation, tax harvesting, and risk hedging framework.\n\nSubmitted models undergo peer review in the Research Community.`
   },
 
-  // 6. SEBI & Compliance
+  // 6. Educational Disclaimer & Compliance
   {
-    title: 'Regulatory Disclaimer & Compliance',
-    tags: ['sebi', 'rbi', 'irdai', 'compliance', 'registered', 'advisor', 'disclaimer', 'legal'],
-    patterns: ['sebi', 'registered', 'financial advisor', 'is this sebi registered', 'legal advice', 'investment advice'],
-    answer: `⚠️ **Regulatory Disclaimer**:\n\nFinGenIQ is strictly an **educational technology platform**. We are **NOT** registered with SEBI, RBI, or IRDAI as financial advisors or portfolio managers.\n\nNone of our content constitutes investment advice, stock recommendations, or solicitations. Always consult a SEBI-registered Investment Advisor for personal financial decisions.`
+    title: 'Educational Disclaimer & Governance',
+    tags: ['compliance', 'registered', 'advisor', 'disclaimer', 'legal', 'licensing'],
+    patterns: ['financial advisor', 'is this registered', 'legal advice', 'investment advice'],
+    answer: `⚠️ **Educational Disclaimer**:\n\nFinGenIQ is strictly an **educational technology platform**. We are an independent learning ecosystem and do **NOT** provide individualized financial advisory or portfolio management services.\n\nNone of our content constitutes personalized investment advice or solicitations. Always consult certified financial professionals for personal financial decisions.`
   },
 
   // 7. Core Financial Concepts: DCF & Valuation

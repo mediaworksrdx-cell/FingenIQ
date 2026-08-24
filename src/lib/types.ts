@@ -154,7 +154,7 @@ export interface JobPosting {
   skills: string[];
 }
 
-export interface SebiMilestone {
+export interface StandardsMilestone {
   id: string;
   status: MilestoneStatus;
   icon: string;
@@ -165,6 +165,7 @@ export interface SebiMilestone {
   owner: string;
   notes: string;
 }
+export type SebiMilestone = StandardsMilestone;
 
 export interface EquivalenceEntry {
   fingeniQ: string;
@@ -183,7 +184,8 @@ export interface FQData {
   PROFESSIONAL_TRACKS: ProfessionalTrack[];
   SEEKERS: Seeker[];
   JOB_POSTINGS: JobPosting[];
-  SEBI_MILESTONES: SebiMilestone[];
+  STANDARDS_MILESTONES: StandardsMilestone[];
+  SEBI_MILESTONES: StandardsMilestone[];
   EQUIVALENCE_MAP: EquivalenceEntry[];
 }
 

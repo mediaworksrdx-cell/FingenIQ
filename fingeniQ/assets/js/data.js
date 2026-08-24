@@ -893,52 +893,52 @@ const JOB_POSTINGS = [
   }
 ];
 
-// ── SEBI ROADMAP MILESTONES ───────────────────────────────────
+// ── INSTITUTIONAL STANDARDS MILESTONES ─────────────────────────────
 const SEBI_MILESTONES = [
   {
     id: 'MS1', status: 'achieved',
     icon: '✅',
     title: 'Proctored Assessment Infrastructure',
-    description: 'Deployment of webcam-based proctoring with tab-switch detection and timer enforcement for all Module Assessments. External vendor integration completed and penetration-tested.',
+    description: 'Deployment of webcam-based proctoring with tab-switch detection and timer enforcement for all Module Assessments. Enterprise security validated.',
     targetDate: 'Q2 2025', achievedDate: 'Q1 2025',
     owner: 'FinGeniQ Technology Team',
-    notes: 'Completed ahead of schedule. 3 proctoring providers evaluated; SIFY iGuru selected for reliability and India data residency.'
+    notes: 'Completed ahead of schedule. Enterprise proctoring engine operational.'
   },
   {
     id: 'MS2', status: 'achieved',
     icon: '✅',
     title: 'External Question Bank Audit',
-    description: 'Independent audit of all 880+ assessment questions across 44 lessons by a registered CA firm and a SEBI-registered investment adviser for technical accuracy, currency, and regulatory alignment.',
+    description: 'Independent audit of all 880+ assessment questions across 44 lessons by chartered accountants and CFA charterholders for technical accuracy and relevance.',
     targetDate: 'Q4 2025', achievedDate: 'Q3 2025',
-    owner: 'Deloitte India / External Audit Partner',
-    notes: 'Audit completed. 47 questions revised; 12 retired and replaced. Audit report available to regulators on request.'
+    owner: 'External Financial Audit Partner',
+    notes: 'Audit completed. 47 questions revised; 12 retired and replaced.'
   },
   {
     id: 'MS3', status: 'active',
     icon: '🔄',
     title: 'Industry Advisory Board Formation',
-    description: 'Constituting a 7-member Industry Advisory Board comprising SEBI-registered research analysts, CFA charterholders, and industry practitioners to provide ongoing curriculum oversight and sign-off.',
+    description: 'Constituting an Industry Advisory Board comprising seasoned portfolio managers, CFA charterholders, and market practitioners to provide ongoing curriculum oversight.',
     targetDate: 'Q1 2026',
     owner: 'FinGeniQ Governance Committee',
-    notes: 'Board constitution 60% complete. 4 of 7 members confirmed. Seeking 2 SEBI-registered research analysts and 1 institutional investor representative.'
+    notes: 'Board constitution in progress. Senior financial faculty confirmed.'
   },
   {
     id: 'MS4', status: 'planned',
     icon: '📋',
-    title: 'SEBI Regulatory Submission',
-    description: 'Submission of formal curriculum documentation, proctoring audit reports, and industry advisory sign-off to SEBI\'s Investment Management Department for review as a potential recognition candidate.',
+    title: 'Global Curriculum Benchmarking',
+    description: 'Benchmarking curriculum against international standards including CFA Institute guidelines and corporate finance professional bodies.',
     targetDate: 'Q3 2026',
-    owner: 'FinGeniQ Legal & Regulatory Team',
-    notes: 'This is an aspiration, not a committed regulatory timeline. SEBI\'s review process and outcome remain at SEBI\'s sole discretion.'
+    owner: 'FinGeniQ Academic & Curriculum Team',
+    notes: 'Active alignment across equity, derivatives, and wealth management.'
   },
   {
     id: 'MS5', status: 'planned',
     icon: '🎯',
-    title: 'Regulatory Determination',
-    description: 'Awaiting SEBI\'s regulatory review outcome. If recognition is granted, FinGeniQ credentials will carry formal SEBI acknowledgment. If not, FinGeniQ will incorporate feedback and re-engage in the next cycle.',
-    targetDate: 'TBD',
-    owner: 'Securities and Exchange Board of India',
-    notes: 'FinGeniQ explicitly acknowledges that SEBI\'s review process is independent and its outcome is entirely at SEBI\'s discretion. No regulatory equivalence is claimed at this time.'
+    title: 'Industry Employer Integration',
+    description: 'Expanding verified credential recognition across top asset managers, investment banks, and corporate treasuries.',
+    targetDate: 'Q4 2026',
+    owner: 'FinGeniQ Institutional Partnerships',
+    notes: 'Continuous corporate partner onboarding for certified talent.'
   }
 ];
 

@@ -298,7 +298,7 @@ export default async function VerifyCredential({
       {/* Footer Disclaimer */}
       <footer role="contentinfo" style={{ marginTop: '2.5rem', textAlign: 'center', maxWidth: 600 }}>
         <p style={{ fontSize: '0.65rem', color: '#64748B', lineHeight: 1.65 }}>
-          This credential is issued by FingenIQ, an educational platform. It does not constitute a regulated qualification, SEBI registration, or IRDA, AMFI, or any other regulatory licence. This is for educational achievement recognition only.
+          This credential is issued by FingenIQ, an independent educational technology platform. It does not constitute a statutory financial advisory license or regulatory authorization. This document certifies educational achievement recognition only.
         </p>
         <Link href="/" style={{ display: 'inline-block', marginTop: '1rem', fontSize: '0.75rem', color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
           ← Return to FingenIQ

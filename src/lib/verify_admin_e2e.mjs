@@ -275,7 +275,7 @@ async function runVerification() {
     assert(targetSafe.resetToken === undefined, 'resetToken stripped from client payload');
     assert(targetSafe.name !== undefined && targetSafe.email !== undefined, 'Public non-sensitive fields preserved');
 
-    // ── 10. AUDIT LOG INTEGRITY & SEBI COMPLIANCE ───────────────────────────
+    // ── 10. AUDIT LOG INTEGRITY & REGULATORY COMPLIANCE ───────────────────────────
     console.log('\n▶ TEST SUITE 10: Audit Log Chain Integrity');
     const logsForTarget = db.prepare('SELECT * FROM audit_logs WHERE targetUserId = ? ORDER BY timestamp ASC').all(testLearnerId);
     assert(logsForTarget.length >= 5, `Complete audit sequence recorded (${logsForTarget.length} events logged for user lifecycle)`);

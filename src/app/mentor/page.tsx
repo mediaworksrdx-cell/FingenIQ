@@ -38,8 +38,8 @@ const FEATURED_MENTORS: MentorProfile[] = [
   },
   {
     name: 'Rajesh K. Nambiar, CA',
-    designation: 'SEBI Registered Research Analyst & Treasury Advisor',
-    qualification: 'Chartered Accountant (ICAI) · SEBI RA & NISM Series VIII Derivatives Certified',
+    designation: 'Chartered Accountant & Senior Treasury Advisor',
+    qualification: 'Chartered Accountant (ICAI) · NISM Series VIII Derivatives Specialist',
     experience: '16+ Years in Derivatives Trading, Currency Hedging & Treasury Management',
     focusAreas: ['Options Volatility Modeling', 'Algorithmic Hedging', 'FX Risk', 'Corporate Treasury'],
     bio: 'Advises Fortune 500 treasuries on cross-border currency exposure, interest rate swaps, and institutional derivative risk mitigation strategies.',

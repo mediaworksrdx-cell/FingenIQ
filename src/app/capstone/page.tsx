@@ -75,7 +75,7 @@ export default function CapstoneWorkspace() {
                         label: 'Track B — Investment Thesis Analysis',
                         icon: '📊',
                         desc: 'Select a listed Indian company and produce a formal investment research report including DCF valuation, financial statement analysis, industry positioning, risk factors, and a buy/hold/sell recommendation.',
-                        tags: ['Corporate Finance', 'Equity Research', 'DCF', 'SEBI'],
+                        tags: ['Corporate Finance', 'Equity Research', 'DCF', 'Governance'],
                       },
                     ]).map(t => (
                       <button

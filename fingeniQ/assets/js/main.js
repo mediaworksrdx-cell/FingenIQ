@@ -33,8 +33,8 @@ const PLATFORM_NAV_ITEMS = [
   { label: 'Lessons',       href: 'lessons.html',               icon: '📚' },
   { label: 'Assessments',   href: 'assessments.html',           icon: '📝' },
   { label: 'Certification', href: 'certification.html',         icon: '🏅', credential: true },
-  { label: 'Marketplace',   href: 'marketplace.html',           icon: '🔗' },
-  { label: 'SEBI Roadmap',  href: 'certification-roadmap.html', icon: '🗺' }
+  { label: 'Marketplace',        href: 'marketplace.html',           icon: '🔗' },
+  { label: 'Standards Roadmap',  href: 'certification-roadmap.html', icon: '🗺' }
 ];
 
 // ── NAV INJECTION ─────────────────────────────────────────────

@@ -8,8 +8,8 @@ export default function Footer() {
 
         {/* Regulatory Disclaimer */}
         <div className="footer__disclaimer">
-          <strong style={{ color: 'var(--ink-400)' }}>Regulatory Disclaimer:</strong>{' '}
-          FingenIQ is an educational platform. All content is provided for educational purposes only and does not constitute financial advice, investment recommendations, or a solicitation to buy or sell any financial instrument. FingenIQ is not registered with SEBI, RBI, IRDAI, or any other regulatory authority as a financial advisor or investment advisor. Learners should consult a SEBI-registered investment advisor before making financial decisions. The SEBI Equivalence Roadmap is a transparency document only and does not constitute regulatory recognition by SEBI.
+          <strong style={{ color: 'var(--ink-400)' }}>Educational Disclaimer:</strong>{' '}
+          FingenIQ is an educational platform. All content is provided for educational purposes only and does not constitute financial advice, investment recommendations, or a solicitation to buy or sell any financial instrument. FingenIQ is an independent educational technology platform and does not offer regulated financial advisory or investment management services. Learners should consult certified financial professionals before making financial decisions. The Standards Roadmap outlines our internal curriculum quality, benchmarking, and proctoring objectives.
         </div>
 
         <div className="footer__inner">
@@ -38,7 +38,7 @@ export default function Footer() {
             </p>
             <div className="footer__accreditation" style={{ marginTop: 'var(--sp-6)' }}>
               <span className="footer__accreditation-badge">Educational Use Only</span>
-              <span className="footer__accreditation-badge">SEBI Disclaimer Compliant</span>
+              <span className="footer__accreditation-badge">Institutional Standards</span>
             </div>
           </div>
 
@@ -64,7 +64,7 @@ export default function Footer() {
               <Link href="/mentor" className="footer__link">Mentor Program</Link>
               <Link href="/faq" className="footer__link">FAQ</Link>
               <Link href="/contact" className="footer__link">Contact Us</Link>
-              <Link href="/certification-roadmap" className="footer__link">SEBI Roadmap</Link>
+              <Link href="/certification-roadmap" className="footer__link">Standards Roadmap</Link>
             </div>
           </div>
 

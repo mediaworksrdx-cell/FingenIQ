@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { href: '/assessments',        label: 'Assessments',  icon: '✎', dot: true },
   { href: '/capstone',           label: 'Capstone',     icon: '◐' },
   { href: '/certification',      label: 'Certification',icon: '⬡' },
-  { href: '/certification-roadmap', label: 'SEBI',      icon: '⬡' },
+  { href: '/certification-roadmap', label: 'Roadmap',   icon: '⬡' },
 ];
 
 const PROGRESS_PCT = (() => {

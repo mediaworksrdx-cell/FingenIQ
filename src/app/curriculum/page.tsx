@@ -62,8 +62,8 @@ export default function CurriculumPage() {
                 </div>
                 <div style={{ width: '1px', height: '44px', background: 'rgba(0,0,0,0.08)' }}></div>
                 <div style={{ textAlign: 'center' }}>
-                  <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>SEBI</div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Equivalence Roadmap</div>
+                  <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>CFA / CA</div>
+                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Benchmarked Curriculum</div>
                 </div>
               </div>
             </div>

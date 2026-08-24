@@ -1,11 +1,11 @@
 import PlatformNav from '@/components/nav/PlatformNav';
 import Footer from '@/components/layout/Footer';
-import { SEBI_MILESTONES, EQUIVALENCE_MAP } from '@/lib/data';
+import { STANDARDS_MILESTONES, EQUIVALENCE_MAP } from '@/lib/data';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'SEBI-Equivalence Roadmap',
-  description: 'FingenIQ’s structured path toward seeking regulatory recognition.',
+  title: 'Institutional Standards & Curriculum Roadmap',
+  description: 'FingenIQ’s structured path toward academic excellence and global syllabus benchmarking.',
 };
 
 export default function CertificationRoadmap() {
@@ -19,12 +19,12 @@ export default function CertificationRoadmap() {
 
             {/* Header */}
             <div className="section-header animate-fadeUp">
-              <span className="section-label">Regulatory Strategy</span>
+              <span className="section-label">Standards &amp; Governance</span>
               <h1 className="hero__title" style={{ fontSize: 'var(--text-3xl)', marginTop: '4px' }}>
-                SEBI-Equivalence Roadmap
+                Institutional Standards &amp; Curriculum Roadmap
               </h1>
               <p className="section-subtitle" style={{ marginTop: '4px' }}>
-                FinGeniQ’s structured path toward seeking regulatory recognition with defined milestones.
+                FinGeniQ’s structured roadmap for academic rigor, third-party question audits, and global syllabus benchmarking.
               </p>
             </div>
 
@@ -32,7 +32,7 @@ export default function CertificationRoadmap() {
             <div className="card p-6 animate-fadeUp mb-8">
               <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-6)' }}>Roadmap Milestones</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-6)' }}>
-                {SEBI_MILESTONES.map((ms, idx) => {
+                {STANDARDS_MILESTONES.map((ms, idx) => {
                   const isAchieved = ms.status === 'achieved';
                   const isActive = ms.status === 'active';
                   const badgeClass = isAchieved ? 'badge--completed' : isActive ? 'badge--in-progress' : 'badge--not-started';
@@ -50,7 +50,7 @@ export default function CertificationRoadmap() {
                         }}>
                           {ms.icon}
                         </div>
-                        {idx < SEBI_MILESTONES.length - 1 && (
+                        {idx < STANDARDS_MILESTONES.length - 1 && (
                           <div style={{ width: '2px', flex: 1, background: 'var(--ink-800)', marginTop: '8px' }} />
                         )}
                       </div>
