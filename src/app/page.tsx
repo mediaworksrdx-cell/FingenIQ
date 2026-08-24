@@ -15,9 +15,9 @@ export default function Home() {
             <div className="hero__bg"></div>
             <div className="hero__grid"></div>
             <div className="container relative">
-              <div className="hero__content animate-fadeUp" style={{ maxWidth: '760px' }}>
+              <div className="hero__content animate-fadeUp" style={{ maxWidth: '920px' }}>
                 <div className="hero__eyebrow">🏛 Institution-Grade Financial Education</div>
-                <h1 className="hero__title">FingenIQ — <em>Learn. Grow. Prosper.</em></h1>
+                <h1 className="hero__title">FingenIQ — <em style={{ whiteSpace: 'nowrap' }}>Learn. Grow. Prosper.</em></h1>
                 <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xl)', fontWeight: 600, color: 'var(--brass-400)', marginBottom: 'var(--sp-5)' }}>
                   Empowering Financial Intelligence for Financial Freedom and Wealth Management
                 </h2>
