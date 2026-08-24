@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const metadata = {
   title: 'About Us',
-  description: 'Transforming static financial theory into lifelong financial confidence and wealth management.',
+  description: 'Financial education should do more than teach theory. We’re turning knowledge into action, confidence, and lasting wealth through structured, AI-powered learning.',
 };
 
 export default function About() {
@@ -24,7 +24,7 @@ export default function About() {
                 <div className="hero__eyebrow">ℹ️ Our Philosophy</div>
                 <h1 className="hero__title">About <span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-iq"> IQ</span></h1>
                 <p className="hero__subtitle">
-                  Transforming static textbook theory into lifelong financial confidence and wealth management. We are an institution-grade financial education platform dedicated to empowering individuals with practical, structured, AI-powered learning.
+                  Financial education should do more than teach theory. We’re turning knowledge into action, confidence, and lasting wealth through structured, AI-powered learning.
                 </p>
               </div>
             </div>
