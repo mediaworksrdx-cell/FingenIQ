@@ -16,10 +16,10 @@ export default function Home() {
             <div className="hero__grid"></div>
             <div className="container relative">
               <div className="hero__content animate-fadeUp" style={{ maxWidth: '960px' }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.82rem', fontWeight: 800, letterSpacing: '0.14em', color: '#DCFCE7', textTransform: 'uppercase', marginBottom: 'var(--sp-4)' }}>
-                  <span style={{ width: '28px', height: '2px', background: 'linear-gradient(90deg, transparent, #4ADE80)' }} />
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.82rem', fontWeight: 800, letterSpacing: '0.14em', color: '#15803D', textTransform: 'uppercase', marginBottom: 'var(--sp-4)' }}>
+                  <span style={{ width: '28px', height: '2px', background: 'linear-gradient(90deg, transparent, #16A34A)' }} />
                   <span>CONTINUOUS LEARNING. LIMITLESS GROWTH.</span>
-                  <span style={{ width: '28px', height: '2px', background: 'linear-gradient(90deg, #4ADE80, transparent)' }} />
+                  <span style={{ width: '28px', height: '2px', background: 'linear-gradient(90deg, #16A34A, transparent)' }} />
                 </div>
                 <h1 className="hero__title"><span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-iq"> IQ</span> <em style={{ whiteSpace: 'nowrap' }}><span className="tag-learn">Learn.</span> <span className="tag-grow">Grow.</span> <span className="tag-prosper">Prosper.</span></em></h1>
                 <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xl)', fontWeight: 600, color: 'var(--brass-400)', marginBottom: 'var(--sp-5)' }}>
@@ -54,7 +54,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="animate-fadeUp" style={{ animationDelay: '100ms' }}>
-                  <div style={{ background: 'var(--ink-900)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-7)' }}>
+                  <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-7)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
                     <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--brass-400)', marginBottom: 'var(--sp-5)' }}>Financial literacy helps individuals:</div>
                     <ul className="check-list">
                       <li>Make informed financial decisions</li>
@@ -75,7 +75,7 @@ export default function Home() {
           </section>
 
           {/* Path to Financial Freedom */}
-          <section className="py-20" id="financial-freedom" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
+          <section className="py-20" id="financial-freedom" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-14)', alignItems: 'start' }}>
                 <div className="animate-fadeUp">
@@ -89,7 +89,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="animate-fadeUp" style={{ animationDelay: '100ms' }}>
-                  <div style={{ background: 'var(--ink-900)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-7)' }}>
+                  <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-7)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
                     <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--brass-400)', marginBottom: 'var(--sp-5)' }}>FingenIQ helps learners build the knowledge required to:</div>
                     <ul className="check-list">
                       <li>Create realistic financial goals</li>
@@ -108,7 +108,7 @@ export default function Home() {
           </section>
 
           {/* Who Can Benefit */}
-          <section className="py-20" id="who-benefits" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
+          <section className="py-20" id="who-benefits" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
               <div className="section-header text-center animate-fadeUp" style={{ marginBottom: 'var(--sp-12)' }}>
                 <span className="section-label">FingenIQ Ecosystem</span>
