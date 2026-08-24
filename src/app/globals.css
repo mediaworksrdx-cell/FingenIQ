@@ -1197,43 +1197,100 @@ code {
 }
 .section-header { margin-bottom: var(--sp-10); }
 
-/* ─── MODULE TILE ────────────────────────────────────────────────────────────── */
+/* ─── MODULE TILE (Institutional Luxury Card) ────────────────────────────────── */
 .module-tile {
   background: #FFFFFF;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--radius-xl);
   padding: var(--sp-6);
-  transition: all var(--dur-base) var(--ease-out);
+  transition: all var(--dur-slow) var(--ease-spring-confident);
   cursor: pointer;
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
 }
 .module-tile:hover {
   background: #FFFFFF;
   border-color: rgba(22, 163, 74, 0.35);
-  transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(22, 101, 52, 0.12);
+  transform: translateY(-4px) scale(1.006);
+  box-shadow: 0 16px 40px -10px rgba(22, 101, 52, 0.14), 0 0 0 1px rgba(22, 163, 74, 0.25);
 }
-.module-tile__num {
+.module-tile__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-4);
+}
+.module-tile__badge {
   font-family: var(--font-mono);
-  font-size: var(--text-2xs);
+  font-size: 0.7rem;
   font-weight: 700;
-  color: #16A34A;
-  letter-spacing: var(--tracking-widest);
+  color: #15803D;
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin-bottom: var(--sp-3);
 }
-.module-tile__icon { font-size: 1.75rem; margin-bottom: var(--sp-4); }
+.module-tile__pill {
+  font-size: 0.72rem;
+  color: #64748B;
+  background: #FAF8F5;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+.module-tile__icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #FAF8F5;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: var(--sp-4);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
 .module-tile__title {
   font-family: var(--font-serif);
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: #0F172A;
-  margin-bottom: var(--sp-2);
+  margin-bottom: var(--sp-4);
   line-height: var(--leading-snug);
+  flex: 1;
 }
-.module-tile__count { font-size: var(--text-xs); color: #16A34A; font-weight: 500; }
+.module-tile__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: var(--sp-3);
+  margin-top: auto;
+}
+.module-tile__cta {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.module-tile__arrow {
+  color: #15803D;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: transform 0.2s ease;
+}
+.module-tile:hover .module-tile__arrow {
+  transform: translateX(3px);
+}
 
 /* ─── LESSON CARD ────────────────────────────────────────────────────────────── */
 .lesson-card {

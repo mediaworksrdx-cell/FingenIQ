@@ -79,13 +79,21 @@ export default function CurriculumPage() {
                   44 lessons across 8 modules, each built on a rigorous 20-step framework covering theory, application, case studies, and assessment.
                 </p>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--sp-4)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 'var(--sp-5)' }}>
                 {MODULES.map((m, idx) => (
                   <div key={m.id} className="module-tile animate-fadeUp" style={{ animationDelay: `${idx * 40}ms` }}>
-                    <div className="module-tile__num">M{m.order}</div>
-                    <div className="module-tile__icon">{m.icon}</div>
+                    <div className="module-tile__header">
+                      <span className="module-tile__badge">Module 0{m.order}</span>
+                      <span className="module-tile__pill">{m.lessonIds.length} Lessons</span>
+                    </div>
+                    <div className="module-tile__icon-box">
+                      {m.icon}
+                    </div>
                     <h3 className="module-tile__title">{m.title}</h3>
-                    <div className="module-tile__count">{m.lessonIds.length} Lessons</div>
+                    <div className="module-tile__footer">
+                      <span className="module-tile__cta">Structured Track</span>
+                      <span className="module-tile__arrow">→</span>
+                    </div>
                   </div>
                 ))}
               </div>
