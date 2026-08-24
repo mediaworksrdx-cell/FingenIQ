@@ -1075,13 +1075,30 @@ code {
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 .hero__title em {
-  background: linear-gradient(135deg, #A7F3D0 0%, #86EFAC 35%, #4ADE80 70%, #BEF264 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   font-style: normal;
   font-weight: 800;
   white-space: nowrap;
-  filter: drop-shadow(0 0 24px rgba(74, 222, 128, 0.45));
+}
+.tag-learn {
+  background: linear-gradient(135deg, #059669 0%, #10B981 60%, #22C55E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  filter: drop-shadow(0 0 14px rgba(16, 185, 129, 0.45));
+}
+.tag-grow {
+  background: linear-gradient(135deg, #4ADE80 0%, #86EFAC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  filter: drop-shadow(0 0 20px rgba(74, 222, 128, 0.55));
+}
+.tag-prosper {
+  background: linear-gradient(135deg, #86EFAC 0%, #BEF264 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  filter: drop-shadow(0 0 24px rgba(190, 242, 100, 0.6));
 }
 .hero__subtitle {
   font-size: var(--text-lg);
