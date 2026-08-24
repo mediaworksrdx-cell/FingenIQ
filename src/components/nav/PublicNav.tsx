@@ -47,9 +47,13 @@ export default function PublicNav() {
         aria-label="Public navigation"
       >
         <div className="nav__inner">
-          <Link href="/" className="nav__logo" aria-label="FingenIQ home">
+          <Link href="/" className="nav__logo" aria-label="FinGen IQ home">
             <FinGenIqLogo size={28} />
-            <span className="nav__logo-text">Fingen<span>IQ</span></span>
+            <span className="nav__logo-text">
+              <span className="logo-fin">Fin</span>
+              <span className="logo-gen">Gen</span>
+              <span className="logo-iq">IQ</span>
+            </span>
           </Link>
 
           {/* Desktop Links */}

@@ -458,17 +458,38 @@ code {
   text-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
 }
 .nav__logo-text {
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #FFFFFF;
+  font-family: var(--font-sans), 'Inter', -apple-system, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
   letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: center;
 }
-.nav__logo-text span {
-  background: linear-gradient(135deg, #4ADE80 0%, #A3E635 100%);
+.logo-fin {
+  color: #FFFFFF;
+  font-weight: 800;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.logo-gen {
+  background: linear-gradient(135deg, #86EFAC 0%, #4ADE80 50%, #22C55E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
+  filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.4));
+}
+.logo-iq {
+  background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 50%, #2563EB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  margin-left: 0.18em;
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
+}
+.nav__logo:hover .logo-gen {
+  filter: drop-shadow(0 0 14px rgba(74, 222, 128, 0.65));
+}
+.nav__logo:hover .logo-iq {
+  filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.65));
 }
 
 .nav__links {

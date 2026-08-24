@@ -120,9 +120,13 @@ export default function PlatformNav() {
       <nav className="nav" aria-label="Platform navigation">
         <div className="nav__inner">
           {/* Logo */}
-          <Link href={sessionUser?.role === 'admin' ? '/admin/credentials' : '/dashboard'} className="nav__logo" aria-label="FingenIQ platform">
+          <Link href={sessionUser?.role === 'admin' ? '/admin/credentials' : '/dashboard'} className="nav__logo" aria-label="FinGen IQ platform">
             <FinGenIqLogo size={28} />
-            <span className="nav__logo-text">Fingen<span>IQ</span></span>
+            <span className="nav__logo-text">
+              <span className="logo-fin">Fin</span>
+              <span className="logo-gen">Gen</span>
+              <span className="logo-iq">IQ</span>
+            </span>
           </Link>
 
           {/* Desktop Links */}

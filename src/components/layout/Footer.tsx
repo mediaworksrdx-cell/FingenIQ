@@ -17,7 +17,11 @@ export default function Footer() {
           <div>
             <Link href="/" className="nav__logo" style={{ marginBottom: 'var(--sp-5)', display: 'inline-flex' }}>
               <FinGenIqLogo size={28} />
-              <span className="nav__logo-text">Fingen<span>IQ</span></span>
+              <span className="nav__logo-text">
+                <span className="logo-fin">Fin</span>
+                <span className="logo-gen">Gen</span>
+                <span className="logo-iq">IQ</span>
+              </span>
             </Link>
             <p className="footer__brand-desc">
               An institution-grade financial education platform. Empowering Financial Intelligence for Financial Freedom and Wealth Management.

@@ -22,7 +22,7 @@ export default function About() {
             <div className="container relative">
               <div className="hero__content animate-fadeUp" style={{ maxWidth: '700px' }}>
                 <div className="hero__eyebrow">ℹ️ Our Philosophy</div>
-                <h1 className="hero__title">About <em>FingenIQ</em></h1>
+                <h1 className="hero__title">About <span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-iq"> IQ</span></h1>
                 <p className="hero__subtitle">
                   Transforming static textbook theory into lifelong financial confidence and wealth management. We are an institution-grade financial education platform dedicated to empowering individuals with practical, structured, AI-powered learning.
                 </p>
