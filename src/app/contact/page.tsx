@@ -111,7 +111,7 @@ export default function Contact() {
                 <div className="hero__eyebrow">✉️ Support &amp; Inquiries</div>
                 <h1 className="hero__title">Contact <em>Us</em></h1>
                 <p className="hero__subtitle">
-                  Have questions about admissions, enterprise cohort pricing, platform technical support, or partnership opportunities? Our team is here to help.
+                  Have questions about admissions, enterprise cohort pricing, technical support, or partnership opportunities? Our team is here to help.
                 </p>
               </div>
             </div>
@@ -130,7 +130,7 @@ export default function Contact() {
                     <div className="card p-5" style={{ display: 'flex', gap: 'var(--sp-4)', alignItems: 'start' }}>
                       <span style={{ fontSize: '1.5rem' }}>🏢</span>
                       <div>
-                        <div className="font-semi text-primary mb-1">Platform Headquarters</div>
+                        <div className="font-semi text-primary mb-1">Headquarters</div>
                         <div className="text-sm font-semibold text-primary">VIVIN Synergy</div>
                         <div className="text-xs text-muted mt-1">United Arab Emirates</div>
                       </div>
@@ -139,7 +139,7 @@ export default function Contact() {
                     <div className="card p-5" style={{ display: 'flex', gap: 'var(--sp-4)', alignItems: 'start' }}>
                       <span style={{ fontSize: '1.5rem' }}>📍</span>
                       <div>
-                        <div className="font-semi text-primary mb-1">Platform Indian Office</div>
+                        <div className="font-semi text-primary mb-1">Indian Office</div>
                         <div className="text-sm font-semibold text-primary">Syntjetix Analytics</div>
                         <div className="text-sm text-secondary">Chennai, Tamil Nadu</div>
                         <div className="text-xs text-muted mt-1">India</div>
@@ -162,7 +162,7 @@ export default function Contact() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
                       <div className="text-xs text-secondary"><span className="text-brass">→</span> Individual admissions and enrollment</div>
                       <div className="text-xs text-secondary"><span className="text-brass">→</span> Enterprise cohort and institutional pricing</div>
-                      <div className="text-xs text-secondary"><span className="text-brass">→</span> Technical platform support</div>
+                      <div className="text-xs text-secondary"><span className="text-brass">→</span> Technical support</div>
                       <div className="text-xs text-secondary"><span className="text-brass">→</span> Certification verification requests</div>
                       <div className="text-xs text-secondary"><span className="text-brass">→</span> Recruiter and marketplace access</div>
                       <div className="text-xs text-secondary"><span className="text-brass">→</span> Partnership and curriculum collaboration</div>
