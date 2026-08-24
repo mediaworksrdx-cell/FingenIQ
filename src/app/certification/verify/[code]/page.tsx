@@ -2,6 +2,7 @@
 // No PlatformNav, no sidebar, no authenticated shell
 // Accessible to employers, regulators, and any external party
 import Link from 'next/link';
+import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 import { db } from '@/lib/db';
 import { PROFESSIONAL_TRACKS } from '@/lib/data';
 
@@ -105,26 +106,12 @@ export default async function VerifyCredential({
 
       {/* Brand Header */}
       <header role="banner" style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          marginBottom: '0.75rem',
-        }}>
-          <div style={{
-            width: 44, height: 44,
-            background: 'linear-gradient(135deg, #183070, #050F24)',
-            border: '1px solid rgba(184,150,46,0.35)',
-            borderRadius: '0.75rem',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1.25rem',
-            fontFamily: 'Georgia, serif',
-            color: '#CEAE56',
-          }}>
-            F
-          </div>
-          <span style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', color: '#E6EDF6', letterSpacing: '-0.02em' }}>
-            Fingen<span style={{ color: '#B8962E' }}>IQ</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+          <FinGenIqLogo size={38} />
+          <span className="nav__logo-text" style={{ fontSize: '1.6rem' }}>
+            <span className="logo-fin">Fin</span>
+            <span className="logo-gen">Gen</span>
+            <span className="logo-iq">IQ</span>
           </span>
         </div>
         <p style={{ fontSize: '0.75rem', color: '#566078', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' }}>

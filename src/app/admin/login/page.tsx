@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState, Suspense } from 'react';
 import { loginAction } from '@/app/actions/authActions';
 import Link from 'next/link';
+import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 
 function AdminLoginContent() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
@@ -36,23 +37,17 @@ function AdminLoginContent() {
       <main style={{ width: '100%', maxWidth: 440 }} role="main" aria-labelledby="admin-login-title">
         {/* Brand logo & Badge */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 52,
-            height: 52,
-            borderRadius: '0.75rem',
-            background: 'linear-gradient(135deg, #1E293B, #0F172A)',
-            border: '1px solid #CEAE56',
-            boxShadow: '0 0 25px rgba(206,174,86,0.2)',
-            marginBottom: '1rem',
-          }}>
-            <span style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#CEAE56' }}>F</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+            <FinGenIqLogo size={42} />
+            <span className="nav__logo-text" style={{ fontSize: '1.65rem' }}>
+              <span className="logo-fin">Fin</span>
+              <span className="logo-gen">Gen</span>
+              <span className="logo-iq">IQ</span>
+            </span>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <h1 id="admin-login-title" style={{ fontFamily: 'Georgia, serif', fontSize: '1.75rem', fontWeight: 600, color: '#F1F5F9', margin: 0 }}>
+            <h1 id="admin-login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#F1F5F9', margin: 0 }}>
               Staff & Admin Portal
             </h1>
           </div>

@@ -3,6 +3,7 @@
 import { useActionState, useState, useEffect, Suspense } from 'react';
 import { communityLoginAction, communityRegisterAction } from '@/app/actions/communityAuthActions';
 import Link from 'next/link';
+import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 import { useSearchParams } from 'next/navigation';
 
 function CommunityAuthContent() {
@@ -45,22 +46,13 @@ function CommunityAuthContent() {
         
         {/* Header Branding */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Link href="/community" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-            <div style={{
-              width: 44, height: 44,
-              background: 'linear-gradient(135deg, #183070, #050F24)',
-              border: '1px solid rgba(184,150,46,0.4)',
-              borderRadius: '0.75rem',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.3rem',
-              fontFamily: 'Georgia, serif',
-              color: '#CEAE56',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-            }}>
-              F
-            </div>
-            <span style={{ fontFamily: 'Georgia, serif', fontSize: '1.45rem', color: '#E6EDF6', letterSpacing: '-0.02em' }}>
-              Fingen<span style={{ color: '#B8962E' }}>IQ</span> <span style={{ fontSize: '1.1rem', color: '#9AAABF', fontFamily: 'Inter, sans-serif', fontWeight: 300 }}>Community</span>
+          <Link href="/community" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+            <FinGenIqLogo size={38} />
+            <span className="nav__logo-text" style={{ fontSize: '1.55rem' }}>
+              <span className="logo-fin">Fin</span>
+              <span className="logo-gen">Gen</span>
+              <span className="logo-iq">IQ</span>
+              <span style={{ fontSize: '1.05rem', color: '#9AAABF', fontFamily: 'Inter, sans-serif', fontWeight: 300, marginLeft: '0.5rem' }}>Community</span>
             </span>
           </Link>
           <h1 id="community-auth-title" style={{ fontFamily: 'Georgia, serif', fontSize: '1.75rem', color: '#E8EEF8', fontWeight: 500, margin: '0.5rem 0 0.25rem' }}>

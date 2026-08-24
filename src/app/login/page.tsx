@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState, Suspense } from 'react';
 import { loginAction } from '@/app/actions/authActions';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 
 function LoginContent() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
@@ -74,22 +75,11 @@ function LoginContent() {
             marginBottom: '0.75rem',
             textDecoration: 'none',
           }}>
-            <div style={{
-              width: 44, height: 44,
-              background: 'linear-gradient(135deg, rgba(22, 101, 52, 0.9), rgba(6, 40, 18, 0.95))',
-              border: '1px solid rgba(74, 222, 128, 0.45)',
-              borderRadius: '0.85rem',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.35rem',
-              fontFamily: 'var(--font-serif)',
-              fontWeight: 800,
-              color: '#4ADE80',
-              boxShadow: '0 0 15px rgba(74, 222, 128, 0.3)',
-            }}>
-              F
-            </div>
-            <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: '#FFFFFF', letterSpacing: '-0.02em', fontWeight: 700 }}>
-              Fingen<span style={{ background: 'linear-gradient(135deg, #4ADE80 0%, #A3E635 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800 }}>IQ</span>
+            <FinGenIqLogo size={40} />
+            <span className="nav__logo-text" style={{ fontSize: '1.65rem' }}>
+              <span className="logo-fin">Fin</span>
+              <span className="logo-gen">Gen</span>
+              <span className="logo-iq">IQ</span>
             </span>
           </Link>
           <h1 id="login-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', color: '#FFFFFF', fontWeight: 700, letterSpacing: '-0.02em', margin: '0.5rem 0 0' }}>
