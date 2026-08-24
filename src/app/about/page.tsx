@@ -34,7 +34,6 @@ export default function About() {
           <section className="py-20 bg-900 border-muted" id="mission">
             <div className="container container--narrow">
               <div className="section-header text-center animate-fadeUp">
-                <span className="section-label">Why We Exist</span>
                 <h2 className="section-title">Our Mission</h2>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-6)', color: 'var(--ink-300)', fontSize: 'var(--text-base)', lineHeight: 'var(--leading-relaxed)' }} className="animate-fadeUp">
