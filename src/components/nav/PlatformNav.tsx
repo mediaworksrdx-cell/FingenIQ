@@ -121,11 +121,9 @@ export default function PlatformNav() {
         <div className="nav__inner">
           {/* Logo */}
           <Link href={sessionUser?.role === 'admin' ? '/admin/credentials' : '/dashboard'} className="nav__logo" aria-label="FinGen IQ platform">
-            <FinGenIqLogo size={28} />
+            <FinGenIqLogo size={32} />
             <span className="nav__logo-text">
-              <span className="logo-fin">Fin</span>
-              <span className="logo-gen">Gen</span>
-              <span className="logo-iq">IQ</span>
+              <span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-space">&nbsp;</span><span className="logo-iq">IQ</span>
             </span>
           </Link>
 

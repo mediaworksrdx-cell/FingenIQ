@@ -6,38 +6,37 @@ interface LogoProps {
   showGlow?: boolean;
 }
 
-export default function FinGenIqLogo({ className = '', size = 36, showGlow = true }: LogoProps) {
-  // Height is scaled proportionally (original viewBox 240 x 140 -> aspect ratio ~ 1.71)
-  const width = typeof size === 'number' ? size * 1.71 : size;
+export default function FinGenIqLogo({ className = '', size = 34, showGlow = true }: LogoProps) {
+  // Height is scaled proportionally (viewBox 220 x 130 -> aspect ratio ~ 1.69)
+  const width = typeof size === 'number' ? size * 1.69 : size;
   const height = size;
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 240 140"
+      viewBox="0 0 220 130"
       fill="none"
       width={width}
       height={height}
       className={`fingeniq-logo ${className}`}
       style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}
-      aria-label="FinGenIQ Logo"
+      aria-label="FinGen IQ Logo"
     >
       <defs>
-        {/* Vibrant FinGenIQ Emerald -> Cyan -> Sapphire Gradient */}
-        <linearGradient id="fq-ribbon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#86EFAC" />
-          <stop offset="22%" stopColor="#4ADE80" />
-          <stop offset="48%" stopColor="#10B981" />
-          <stop offset="70%" stopColor="#06B6D4" />
-          <stop offset="88%" stopColor="#38BDF8" />
-          <stop offset="100%" stopColor="#2563EB" />
+        {/* Vibrant FinGenIQ Emerald -> Electric Cyan -> Royal Blue Gradient */}
+        <linearGradient id="fq-ribbon-grad" x1="0%" y1="30%" x2="100%" y2="70%">
+          <stop offset="0%" stopColor="#4ADE80" />
+          <stop offset="30%" stopColor="#22C55E" />
+          <stop offset="55%" stopColor="#06B6D4" />
+          <stop offset="80%" stopColor="#38BDF8" />
+          <stop offset="100%" stopColor="#3B82F6" />
         </linearGradient>
 
-        {/* Ambient Theme Glow */}
+        {/* Soft Ambient Theme Glow */}
         {showGlow && (
-          <filter id="fq-logo-glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="1" stdDeviation="4" floodColor="#4ADE80" floodOpacity="0.45" />
-            <feDropShadow dx="0" dy="3" stdDeviation="10" floodColor="#06B6D4" floodOpacity="0.3" />
+          <filter id="fq-logo-glow" x="-25%" y="-25%" width="150%" height="150%">
+            <feDropShadow dx="0" dy="1" stdDeviation="3.5" floodColor="#22C55E" floodOpacity="0.4" />
+            <feDropShadow dx="0" dy="2" stdDeviation="7" floodColor="#06B6D4" floodOpacity="0.3" />
           </filter>
         )}
       </defs>
@@ -45,18 +44,18 @@ export default function FinGenIqLogo({ className = '', size = 36, showGlow = tru
       <g filter={showGlow ? 'url(#fq-logo-glow)' : undefined}>
         {/* Continuous 3D Infinity-F Ribbon */}
         <path
-          d="M 134 20 
-             L 52 20 
-             C 32 20, 18 34, 18 54 
-             L 18 80 
-             C 18 102, 36 120, 58 120 
-             C 80 120, 102 104, 120 80 
-             C 138 56, 160 40, 182 40 
-             C 204 40, 222 58, 222 80 
-             C 222 102, 204 120, 182 120 
-             C 160 120, 138 104, 120 80 
-             C 102 56, 80 40, 58 40 
-             C 36 40, 18 58, 18 80"
+          d="M 120 22 
+             L 52 22 
+             C 30 22, 16 36, 16 58 
+             L 16 72 
+             C 16 94, 32 110, 54 110 
+             C 76 110, 96 94, 110 72 
+             C 124 50, 144 34, 166 34 
+             C 188 34, 204 50, 204 72 
+             C 204 94, 188 110, 166 110 
+             C 144 110, 124 94, 110 72 
+             C 96 50, 76 34, 54 34 
+             C 32 34, 16 50, 16 72"
           stroke="url(#fq-ribbon-grad)"
           strokeWidth="18"
           strokeLinecap="round"

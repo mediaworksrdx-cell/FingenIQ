@@ -15,12 +15,10 @@ export default function Footer() {
         <div className="footer__inner">
           {/* Brand Column */}
           <div>
-            <Link href="/" className="nav__logo" style={{ marginBottom: 'var(--sp-5)', display: 'inline-flex' }}>
-              <FinGenIqLogo size={28} />
+            <Link href="/" className="nav__logo" style={{ marginBottom: 'var(--sp-5)', display: 'inline-flex', alignItems: 'center', gap: '0.65rem' }}>
+              <FinGenIqLogo size={34} />
               <span className="nav__logo-text">
-                <span className="logo-fin">Fin</span>
-                <span className="logo-gen">Gen</span>
-                <span className="logo-iq">IQ</span>
+                <span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-space">&nbsp;</span><span className="logo-iq">IQ</span>
               </span>
             </Link>
             <p className="footer__brand-desc">

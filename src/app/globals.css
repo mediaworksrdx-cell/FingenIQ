@@ -458,38 +458,43 @@ code {
   text-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
 }
 .nav__logo-text {
-  font-family: var(--font-sans), 'Inter', -apple-system, sans-serif;
-  font-size: 1.4rem;
+  font-family: var(--font-sans), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1.5rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   display: inline-flex;
   align-items: center;
+  line-height: 1;
+  text-decoration: none;
 }
 .logo-fin {
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   font-weight: 800;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 .logo-gen {
-  background: linear-gradient(135deg, #86EFAC 0%, #4ADE80 50%, #22C55E 100%);
+  background: linear-gradient(180deg, #4ADE80 0%, #22C55E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
-  filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.4));
+  filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.45));
+}
+.logo-space {
+  display: inline-block;
+  width: 0.22em;
 }
 .logo-iq {
-  background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 50%, #2563EB 100%);
+  background: linear-gradient(180deg, #60A5FA 0%, #3B82F6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
-  margin-left: 0.18em;
-  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.45));
 }
 .nav__logo:hover .logo-gen {
-  filter: drop-shadow(0 0 14px rgba(74, 222, 128, 0.65));
+  filter: drop-shadow(0 0 14px rgba(74, 222, 128, 0.7));
 }
 .nav__logo:hover .logo-iq {
-  filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.65));
+  filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.7));
 }
 
 .nav__links {
