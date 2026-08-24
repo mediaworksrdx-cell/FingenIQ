@@ -22,8 +22,8 @@ export default function Home() {
                   <span style={{ width: '28px', height: '2px', background: 'linear-gradient(90deg, #16A34A, transparent)' }} />
                 </div>
                 <h1 className="hero__title"><span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-iq"> IQ</span> <em style={{ whiteSpace: 'nowrap' }}><span className="tag-learn">Learn.</span> <span className="tag-grow">Grow.</span> <span className="tag-prosper">Prosper.</span></em></h1>
-                <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xl)', fontWeight: 600, color: 'var(--brass-400)', marginBottom: 'var(--sp-5)' }}>
-                  Empowering Financial Intelligence for Financial Freedom and Wealth Management
+                <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xl)', fontWeight: 600, color: 'var(--brass-400)', marginBottom: 'var(--sp-5)', lineHeight: 'var(--leading-snug)' }}>
+                  We are building the financial intelligence platform for the next generation—where knowledge becomes confidence, confidence becomes better decisions, and better decisions create lasting wealth.
                 </h2>
                 <p className="hero__subtitle" style={{ marginBottom: 'var(--sp-5)' }}>
                   Financial success is not determined solely by how much money you earn—it is shaped by how well you understand, manage, grow, and protect your money. In today's rapidly evolving economy, financial education has become an essential life skill that empowers individuals to make informed decisions, achieve financial independence, and build lasting wealth.
