@@ -71,36 +71,46 @@ export default function About() {
                 <span className="section-label">What Drives Us</span>
                 <h2 className="section-title">Our Core Values</h2>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--sp-6)' }}>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '100ms' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>🎯</div>
-                  <h3 className="font-semi text-brass mb-3">Academic Rigour</h3>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Every lesson, module, and assessment is built to institution-grade standards. Our 20-step framework ensures deep, structured comprehension — not surface-level familiarity.</p>
+              <div className="values-grid">
+                <div className="values-card animate-fadeUp" style={{ animationDelay: '100ms' }}>
+                  <div className="values-card__icon-box">🎯</div>
+                  <h3 className="values-card__title">Academic Rigour</h3>
+                  <p className="values-card__desc">Every lesson, module, and assessment is built to institution-grade standards. Our 20-step framework ensures deep, structured comprehension — not surface-level familiarity.</p>
                 </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '200ms' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>🤝</div>
-                  <h3 className="font-semi text-brass mb-3">Universal Accessibility</h3>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>World-class financial education should not be gated by income, geography, or privilege. FingenIQ is built to serve students, professionals, entrepreneurs, and families equally.</p>
+                <div className="values-card animate-fadeUp" style={{ animationDelay: '150ms' }}>
+                  <div className="values-card__icon-box">🤝</div>
+                  <h3 className="values-card__title">Universal Accessibility</h3>
+                  <p className="values-card__desc">World-class financial education should not be gated by income, geography, or privilege. FingenIQ is built to serve students, professionals, entrepreneurs, and families equally.</p>
                 </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '300ms' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>🤖</div>
-                  <h3 className="font-semi text-brass mb-3">AI-Powered Personalisation</h3>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Our AI Tutor adapts to each learner's pace, identifies knowledge gaps, generates remediation plans, and provides contextual explanations at every step of the journey.</p>
+                <div className="values-card animate-fadeUp" style={{ animationDelay: '200ms' }}>
+                  <div className="values-card__icon-box">🤖</div>
+                  <h3 className="values-card__title">AI-Powered Personalisation</h3>
+                  <p className="values-card__desc">Our AI Tutor adapts to each learner's pace, identifies knowledge gaps, generates remediation plans, and provides contextual explanations at every step of the journey.</p>
                 </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '100ms' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>🏅</div>
-                  <h3 className="font-semi text-brass mb-3">Verifiable Credentials</h3>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Three distinct certification tiers — Completion, Proficiency, and Distinction — with tamper-proof verification codes and a professional marketplace to showcase your achievements.</p>
+                <div className="values-card animate-fadeUp" style={{ animationDelay: '250ms' }}>
+                  <div className="values-card__icon-box">🏅</div>
+                  <h3 className="values-card__title">Verifiable Credentials</h3>
+                  <p className="values-card__desc">Three distinct certification tiers — Completion, Proficiency, and Distinction — with tamper-proof verification codes and a professional marketplace to showcase your achievements.</p>
                 </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '200ms' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>📊</div>
-                  <h3 className="font-semi text-brass mb-3">Outcome-Oriented Design</h3>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Every component of the platform — lessons, knowledge checks, quizzes, assignments, module assessments, and the capstone — is designed to produce measurable financial competency gains.</p>
+                <div className="values-card animate-fadeUp" style={{ animationDelay: '300ms' }}>
+                  <div className="values-card__icon-box">📊</div>
+                  <h3 className="values-card__title">Outcome-Oriented Design</h3>
+                  <p className="values-card__desc">Every component of the platform — lessons, knowledge checks, quizzes, assignments, module assessments, and the capstone — is designed to produce measurable financial competency gains.</p>
                 </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '300ms' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>🌱</div>
-                  <h3 className="font-semi text-brass mb-3">Lifelong Learning</h3>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Financial education is not a one-time event. FingenIQ is built as a lifelong companion — continuously updated to reflect regulatory changes, market developments, and evolving best practices.</p>
+                <div className="values-card animate-fadeUp" style={{ animationDelay: '350ms' }}>
+                  <div className="values-card__icon-box">🌱</div>
+                  <h3 className="values-card__title">Lifelong Learning</h3>
+                  <p className="values-card__desc">Financial education is not a one-time event. FingenIQ is built as a lifelong companion — continuously updated to reflect regulatory changes, market developments, and evolving best practices.</p>
+                </div>
+                <div className="values-card animate-fadeUp" style={{ animationDelay: '400ms' }}>
+                  <div className="values-card__icon-box">🛡️</div>
+                  <h3 className="values-card__title">Institutional Integrity</h3>
+                  <p className="values-card__desc">Zero commercial bias and fiduciary-level educational ethics. Content is free from sponsored product pitches, proprietary fund promotions, and financial conflicts of interest.</p>
+                </div>
+                <div className="values-card animate-fadeUp" style={{ animationDelay: '450ms' }}>
+                  <div className="values-card__icon-box">🌐</div>
+                  <h3 className="values-card__title">Global Market Standards</h3>
+                  <p className="values-card__desc">Curriculum harmonized across global benchmark standards including CFA Institute guidelines, CA/ICWA principles, SEBI RA frameworks, and international wealth management bodies.</p>
                 </div>
               </div>
             </div>

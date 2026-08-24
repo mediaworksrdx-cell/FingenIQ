@@ -1292,6 +1292,71 @@ code {
   transform: translateX(3px);
 }
 
+/* ─── VALUES GRID (4x2 on Desktop, 2x4 on Tablet, 1 col on Mobile) ─────────── */
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-6);
+}
+
+@media (max-width: 1024px) {
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.values-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: all var(--dur-slow) var(--ease-spring-confident);
+}
+
+.values-card:hover {
+  border-color: rgba(22, 163, 74, 0.35);
+  transform: translateY(-4px) scale(1.006);
+  box-shadow: 0 16px 40px -10px rgba(22, 101, 52, 0.14), 0 0 0 1px rgba(22, 163, 74, 0.25);
+}
+
+.values-card__icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #FAF8F5;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.values-card__title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.values-card__desc {
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.6;
+  flex: 1;
+}
+
 /* ─── LESSON CARD ────────────────────────────────────────────────────────────── */
 .lesson-card {
   background: #FFFFFF;
