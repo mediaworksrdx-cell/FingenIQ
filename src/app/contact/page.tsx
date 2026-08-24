@@ -178,28 +178,32 @@ export default function Contact() {
                     gap: '0',
                     marginBottom: 'var(--sp-6)',
                     borderRadius: 'var(--radius-lg)',
-                    overflow: 'hidden',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    overflowX: 'auto',
+                    WebkitOverflowScrolling: 'touch',
+                    border: '1px solid rgba(0,0,0,0.08)',
+                    background: '#FFFFFF',
                   }}>
                     {TABS.map((tab) => (
                       <button
                         key={tab.key}
                         onClick={() => handleTabChange(tab.key)}
                         style={{
-                          flex: 1,
+                          flex: '1 0 auto',
+                          whiteSpace: 'nowrap',
+                          minWidth: '120px',
                           padding: 'var(--sp-3) var(--sp-4)',
                           background: activeTab === tab.key
-                            ? 'rgba(201,168,76,0.12)'
-                            : 'rgba(255,255,255,0.02)',
+                            ? 'rgba(22, 163, 74, 0.08)'
+                            : 'transparent',
                           color: activeTab === tab.key
-                            ? 'var(--brass-400)'
-                            : 'var(--ink-400)',
+                            ? '#15803D'
+                            : '#64748B',
                           border: 'none',
                           borderBottom: activeTab === tab.key
-                            ? '2px solid var(--brass-500)'
+                            ? '2px solid #16A34A'
                             : '2px solid transparent',
                           fontSize: 'var(--text-xs)',
-                          fontWeight: activeTab === tab.key ? 600 : 400,
+                          fontWeight: activeTab === tab.key ? 600 : 500,
                           fontFamily: 'var(--font-sans)',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
@@ -221,7 +225,7 @@ export default function Contact() {
                     <p className="text-xs text-secondary mb-6">{config.description}</p>
 
                     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-4)' }}>
+                      <div className="form-row-2col">
                         <div className="form-group">
                           <label className="form-label" htmlFor="contact-name">Full Name <span style={{ color: 'var(--brass-500)' }}>*</span></label>
                           <input type="text" id="contact-name" className="form-input" required placeholder="Arjun Mehta" value={name} onChange={e => setName(e.target.value)} />
@@ -232,7 +236,7 @@ export default function Contact() {
                         </div>
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-4)' }}>
+                      <div className="form-row-2col">
                         <div className="form-group">
                           <label className="form-label" htmlFor="contact-phone">Phone Number</label>
                           <input type="tel" id="contact-phone" className="form-input" placeholder="+91 XXXXX XXXXX" value={phone} onChange={e => setPhone(e.target.value)} />

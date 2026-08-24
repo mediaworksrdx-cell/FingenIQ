@@ -123,7 +123,7 @@ export default function About() {
                 <h2 className="section-title">What Makes FingenIQ Different</h2>
                 <p className="section-subtitle mx-auto" style={{ marginTop: 'var(--sp-4)' }}>Most financial education platforms offer scattered videos and generic content. FingenIQ is built from the ground up as a structured, outcome-driven credentialing body.</p>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--sp-8)', marginTop: 'var(--sp-8)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--sp-8)', marginTop: 'var(--sp-8)' }}>
                 <div className="animate-fadeUp">
                   <h3 className="text-lg font-semi text-brass mb-4">The FingenIQ Difference</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>

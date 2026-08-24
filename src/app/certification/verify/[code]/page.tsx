@@ -202,7 +202,7 @@ export default async function VerifyCredential({
           </div>
 
           {/* Score and Tracks */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
             <div style={{ padding: '1.25rem', background: '#FAF8F5', border: '1px solid rgba(0, 0, 0, 0.08)', borderRadius: '0.75rem', textAlign: 'center' }}>
               <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
                 Weighted Score

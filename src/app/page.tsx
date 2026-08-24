@@ -42,7 +42,7 @@ export default function Home() {
           {/* Why Financial Education Matters */}
           <section className="py-20" id="why-it-matters">
             <div className="container">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-14)', alignItems: 'start' }}>
+              <div className="split-section-grid">
                 <div className="animate-fadeUp">
                   <span className="section-label">Core Philosophy</span>
                   <h2 className="section-title" style={{ marginTop: 'var(--sp-3)', marginBottom: 'var(--sp-6)' }}>Why Financial Education Matters</h2>
@@ -77,7 +77,7 @@ export default function Home() {
           {/* Path to Financial Freedom */}
           <section className="py-20" id="financial-freedom" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-14)', alignItems: 'start' }}>
+              <div className="split-section-grid">
                 <div className="animate-fadeUp">
                   <span className="section-label">FingenIQ Strategy</span>
                   <h2 className="section-title" style={{ marginTop: 'var(--sp-3)', marginBottom: 'var(--sp-6)' }}>The Path to Financial Freedom</h2>
@@ -115,7 +115,7 @@ export default function Home() {
                 <h2 className="section-title" style={{ marginTop: 'var(--sp-3)' }}>Who Can Benefit?</h2>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--sp-6)' }}>
+              <div className="audience-grid">
                 <div className="card p-6 animate-fadeUp" style={{ animationDelay: '0ms' }}>
                   <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>🎓</div>
                   <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Students</div>
@@ -123,28 +123,18 @@ export default function Home() {
                 </div>
                 <div className="card p-6 animate-fadeUp" style={{ animationDelay: '80ms' }}>
                   <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>💼</div>
-                  <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Professionals</div>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Learn to effectively manage income, savings, taxes, investments, retirement planning, and long-term financial goals while improving overall financial well-being.</p>
+                  <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Professionals &amp; Employees</div>
+                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Optimize salary, manage taxes, plan investments, and build long-term wealth, while navigating employee benefits, equity compensation, and retirement planning options.</p>
                 </div>
                 <div className="card p-6 animate-fadeUp" style={{ animationDelay: '160ms' }}>
                   <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>🚀</div>
-                  <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Entrepreneurs</div>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Understand business finance, cash flow management, funding strategies, financial planning, profitability, and sustainable business growth to make informed business decisions.</p>
+                  <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Entrepreneurs &amp; Business Owners</div>
+                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Understand business finance, manage cash flow, and separate personal and business assets, while evaluating growth strategies, funding options, and risk management practices.</p>
                 </div>
                 <div className="card p-6 animate-fadeUp" style={{ animationDelay: '240ms' }}>
                   <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>📈</div>
-                  <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Investors</div>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Develop the knowledge and analytical skills to evaluate investment opportunities, diversify portfolios, understand financial markets, manage risk, and build long-term wealth.</p>
-                </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '320ms' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>👨‍👩‍👧</div>
-                  <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Families</div>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Plan household finances, manage expenses, protect assets, prepare for education and retirement, and work toward shared financial goals with greater confidence.</p>
-                </div>
-                <div className="card p-6 animate-fadeUp" style={{ animationDelay: '400ms' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-3)' }}>🌍</div>
-                  <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Lifelong Learners</div>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Strengthen financial confidence, stay informed about evolving financial systems, adapt to changing economic environments, and continue developing financial intelligence throughout life.</p>
+                  <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)' }}>Aspiring &amp; Active Investors</div>
+                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Learn investment strategies, risk management, and portfolio diversification principles, while developing analytical skills to evaluate asset classes and market trends objectively.</p>
                 </div>
               </div>
             </div>
@@ -153,7 +143,7 @@ export default function Home() {
           {/* Learn Beyond Theory */}
           <section className="py-20" id="beyond-theory" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 'var(--sp-14)', alignItems: 'start' }}>
+              <div className="learn-beyond-grid">
                 <div className="animate-fadeUp">
                   <span className="section-label">Practical Learning</span>
                   <h2 className="section-title" style={{ marginTop: 'var(--sp-3)', marginBottom: 'var(--sp-6)' }}>Learn Beyond Theory</h2>
@@ -164,7 +154,7 @@ export default function Home() {
                     The focus is not simply on understanding concepts, but on applying them confidently in everyday financial situations.
                   </p>
                 </div>
-                <div className="grid animate-fadeUp" style={{ gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-4)', animationDelay: '100ms' }}>
+                <div className="learn-beyond-cards animate-fadeUp" style={{ animationDelay: '100ms' }}>
                   {[
                     { title: 'Interactive Learning', desc: 'Scenario-based exercises, financial calculators, and compound modelers.' },
                     { title: 'Visual Explanations', desc: 'Complex macroeconomics translated into clean infographics and diagrams.' },
@@ -196,7 +186,7 @@ export default function Home() {
                 </p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--sp-3)' }}>
+              <div className="intel-grid">
                 {[
                   'Think critically about financial decisions',
                   'Evaluate risks and opportunities',
@@ -218,7 +208,7 @@ export default function Home() {
           {/* AI-Powered Learning */}
           <section className="py-20" id="ai-learning" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-14)', alignItems: 'start' }}>
+              <div className="split-section-grid">
                 <div className="animate-fadeUp">
                   <span className="section-label">Personalized Assistance</span>
                   <h2 className="section-title" style={{ marginTop: 'var(--sp-3)', marginBottom: 'var(--sp-6)' }}>AI-Powered Personalized Learning</h2>
@@ -250,7 +240,7 @@ export default function Home() {
           {/* Supporting Financial Well-Being */}
           <section className="py-20" id="financial-wellbeing">
             <div className="container container--narrow">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-12)', alignItems: 'center' }}>
+              <div className="wellbeing-grid">
                 <div className="animate-fadeUp">
                   <span className="section-label">Broader Impact</span>
                   <h2 className="section-title" style={{ marginTop: 'var(--sp-3)', marginBottom: 'var(--sp-6)' }}>Supporting Financial Well-Being</h2>
@@ -259,7 +249,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="animate-fadeUp" style={{ animationDelay: '100ms' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-3)' }}>
+                  <div className="wellbeing-cards">
                     <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-5)', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
                       <div style={{ fontSize: '1.8rem', marginBottom: 'var(--sp-2)' }}>💡</div>
                       <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', fontWeight: 500 }}>Better Financial Behaviours</div>

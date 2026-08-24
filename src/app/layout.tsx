@@ -1,6 +1,13 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import GlobalChatBubble from '@/components/chat/GlobalChatBubble';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#FAF8F5',
+};
 
 export const metadata: Metadata = {
   title: { default: 'FinGen IQ — Learn. Grow. Prosper.', template: '%s — FinGen IQ' },
