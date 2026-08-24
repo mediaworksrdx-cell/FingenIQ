@@ -24,7 +24,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="footer__brand-desc">
-              An institution-grade financial education platform. Empowering Financial Intelligence for Financial Freedom and Wealth Management.
+              Continuous Learning. Limitless Growth. An institution-grade financial education platform empowering wealth creation, institutional mastery, and financial freedom.
             </p>
             <div className="footer__accreditation" style={{ marginTop: 'var(--sp-6)' }}>
               <span className="footer__accreditation-badge">Educational Use Only</span>

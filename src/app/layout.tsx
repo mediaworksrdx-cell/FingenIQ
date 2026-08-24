@@ -3,8 +3,8 @@ import './globals.css';
 import GlobalChatBubble from '@/components/chat/GlobalChatBubble';
 
 export const metadata: Metadata = {
-  title: { default: 'FingenIQ — Learn. Grow. Prosper.', template: '%s — FingenIQ' },
-  description: 'Institution-grade financial education platform. 44 lessons, 8 modules, 3 credential tiers, AI tutor.',
+  title: { default: 'FinGen IQ — Continuous Learning. Limitless Growth.', template: '%s — FinGen IQ' },
+  description: 'Institution-grade financial education platform. Continuous Learning. Limitless Growth. 44 lessons, 8 modules, 3 credential tiers, AI tutor.',
   icons: {
     icon: '/icon.svg',
     shortcut: '/logo.svg',
