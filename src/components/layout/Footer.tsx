@@ -14,12 +14,27 @@ export default function Footer() {
 
         <div className="footer__inner">
           {/* Brand Column */}
-          <div>
-            <Link href="/" className="nav__logo" style={{ marginBottom: 'var(--sp-5)', display: 'inline-flex' }}>
-              <FinGenIqLogo showText={true} size={36} />
+          <div style={{ maxWidth: '360px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.12em', color: '#DCFCE7', textTransform: 'uppercase', marginBottom: '0.65rem' }}>
+              <span style={{ width: '16px', height: '2px', background: 'linear-gradient(90deg, transparent, #4ADE80)' }} />
+              <span>CONTINUOUS LEARNING. LIMITLESS GROWTH.</span>
+              <span style={{ width: '16px', height: '2px', background: 'linear-gradient(90deg, #4ADE80, transparent)' }} />
+            </div>
+
+            <Link href="/" style={{ textDecoration: 'none', display: 'block', marginBottom: 'var(--sp-4)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
+                <FinGenIqLogo size={30} />
+                <span className="nav__logo-text" style={{ fontSize: '1.6rem' }}>
+                  <span className="logo-fin">Fin</span><span className="logo-gen">Gen</span> <span className="logo-iq">IQ</span>
+                </span>
+              </div>
+              <div style={{ fontSize: '1.35rem', fontWeight: 800, fontFamily: 'var(--font-serif)', marginTop: '0.25rem', whiteSpace: 'nowrap' }}>
+                <span className="tag-learn">Learn.</span> <span className="tag-grow">Grow.</span> <span className="tag-prosper">Prosper.</span>
+              </div>
             </Link>
+
             <p className="footer__brand-desc">
-              Continuous Learning. Limitless Growth. An institution-grade financial education platform empowering wealth creation, institutional mastery, and financial freedom.
+              An institution-grade financial education platform empowering wealth creation, institutional mastery, and financial freedom.
             </p>
             <div className="footer__accreditation" style={{ marginTop: 'var(--sp-6)' }}>
               <span className="footer__accreditation-badge">Educational Use Only</span>
