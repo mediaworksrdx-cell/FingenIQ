@@ -4,6 +4,7 @@ import { LESSON_STEPS, LESSONS, MODULES } from '@/lib/data';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchUserProgress, saveStepProgress, submitQuizScore } from '@/app/actions/progressActions';
+import LessonGallery from '@/components/gallery/LessonGallery';
 import dynamic from 'next/dynamic';
 
 const FinancialNode3D = dynamic(() => import('@/components/3d/FinancialNode3D'), {
@@ -60,7 +61,7 @@ export default function LessonPlayerComponent() {
       {
         id: `init-${Date.now()}`,
         sender: 'ai',
-        text: `Hello! I am your contextualised AI Tutor for Lesson ${baseLesson.order}: ${baseLesson.title}.\n\nPowered by **Gemini 3.7** & **Aarkaa AI**. Ask me anything about this lesson, or request a practice quiz.`,
+        text: `Hello! I am your AI Tutor for Lesson ${baseLesson.order}: ${baseLesson.title}.\n\nAsk me anything about this lesson or financial concepts!`,
         time: formatTime(),
         model: selectedModel,
       },
@@ -323,20 +324,17 @@ export default function LessonPlayerComponent() {
                 <span style={{ color: 'var(--brass-400)', fontWeight: 500 }}>{LESSON_STEPS[currentStep]?.name ?? ''}</span>
               </nav>
 
-              {/* YouTube Video Player (Prominent at the top) */}
-              {lesson.youtubeId && (
-                <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: 'var(--border-muted)', marginBottom: 'var(--sp-6)', boxShadow: 'var(--shadow-md)' }}>
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src={`https://www.youtube.com/embed/${lesson.youtubeId}`}
-                    title={`${lesson.title} - Video Lesson`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              )}
+              {/* Image Gallery (replaces old YouTube embed) */}
+              {(() => {
+                const images = lesson.galleryImages?.length
+                  ? lesson.galleryImages
+                  : [
+                      `/lessons/${lesson.id}/slide-1.svg`,
+                      `/lessons/${lesson.id}/slide-2.svg`,
+                      `/lessons/${lesson.id}/slide-3.svg`,
+                    ];
+                return <LessonGallery images={images} title={lesson.title} />;
+              })()}
 
               <div className="animate-fadeIn" key={currentStep}>
                 {LESSON_STEPS[currentStep]?.type === 'kc' || LESSON_STEPS[currentStep]?.type === 'quiz' ? (
@@ -472,29 +470,26 @@ export default function LessonPlayerComponent() {
 
         {/* AI Tutor Panel */}
         <aside className="ai-panel" aria-label="AI Tutor">
-          <div className="ai-panel__header">
-            <div style={{ width: 32, height: 32, borderRadius: 'var(--radius-full)', background: 'var(--navy-700)', border: 'var(--border-sapphire)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', flexShrink: 0 }}>
-              🤖
-            </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>AI Tutor</div>
-              <div style={{ fontSize: '10px', color: 'var(--sapphire-400)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Contextualised · Lesson {lesson.order}</div>
+          <div className="ai-panel__header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.08)', background: '#FAF8F5' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '1.1rem' }}>🤖</span>
+              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--ink-100)' }}>AI Tutor</span>
             </div>
 
             {/* Model Selector Toggle */}
-            <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.4)', padding: '2px', borderRadius: '5px', border: '1px solid rgba(184,150,46,0.2)', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', background: '#FFFFFF', padding: '2px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.12)' }}>
               <button
                 type="button"
                 onClick={() => setSelectedModel('gemini-3.7')}
                 title="Google Gemini 3.7 Engine"
                 style={{
-                  background: selectedModel === 'gemini-3.7' ? 'rgba(74, 222, 128, 0.2)' : 'transparent',
-                  color: selectedModel === 'gemini-3.7' ? '#4ADE80' : 'var(--ink-400)',
+                  background: selectedModel === 'gemini-3.7' ? '#16A34A' : 'transparent',
+                  color: selectedModel === 'gemini-3.7' ? '#FFFFFF' : '#64748B',
                   border: 'none',
-                  borderRadius: '3px',
-                  padding: '2px 5px',
-                  fontSize: '9px',
-                  fontWeight: 700,
+                  borderRadius: '4px',
+                  padding: '3px 8px',
+                  fontSize: '11px',
+                  fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.15s',
                 }}
@@ -506,13 +501,13 @@ export default function LessonPlayerComponent() {
                 onClick={() => setSelectedModel('aarka-2.0')}
                 title="Aarkaa 2.0 Engine"
                 style={{
-                  background: selectedModel === 'aarka-2.0' ? 'rgba(184, 150, 46, 0.25)' : 'transparent',
-                  color: selectedModel === 'aarka-2.0' ? 'var(--brass-300)' : 'var(--ink-400)',
+                  background: selectedModel === 'aarka-2.0' ? '#B8962E' : 'transparent',
+                  color: selectedModel === 'aarka-2.0' ? '#FFFFFF' : '#64748B',
                   border: 'none',
-                  borderRadius: '3px',
-                  padding: '2px 5px',
-                  fontSize: '9px',
-                  fontWeight: 700,
+                  borderRadius: '4px',
+                  padding: '3px 8px',
+                  fontSize: '11px',
+                  fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.15s',
                 }}
@@ -521,59 +516,52 @@ export default function LessonPlayerComponent() {
               </button>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-1)', flexShrink: 0 }}>
-              <button
-                onClick={resetMessages}
-                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--ink-400)', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s' }}
-                title="Reset conversation"
-              >
-                Clear
-              </button>
-            </div>
+            <button
+              onClick={resetMessages}
+              style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.12)', color: '#64748B', fontSize: '11px', padding: '3px 7px', borderRadius: '4px', cursor: 'pointer' }}
+              title="Reset conversation"
+            >
+              Clear
+            </button>
           </div>
 
-          <div className="ai-panel__messages" aria-live="polite" aria-label="Conversation">
+          <div className="ai-panel__messages" aria-live="polite" aria-label="Conversation" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {messages.map((msg) => (
               <div key={msg.id} className={`ai-msg ai-msg--${msg.sender}`}>
                 {msg.sender === 'ai' ? (
-                  <div style={{ width: '100%', background: 'var(--ink-850)', border: '1px solid rgba(184,150,46,0.2)', borderRadius: 'var(--radius-lg)', padding: 'var(--sp-3) var(--sp-4)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--sp-2)', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 'var(--sp-1)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--brass-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          Institutional Analysis
-                        </span>
-                        <span style={{ fontSize: '9px', background: 'rgba(255,255,255,0.06)', color: 'var(--brass-300)', padding: '1px 5px', borderRadius: '3px', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600 }}>
-                          {msg.model?.includes('gemini') ? '✨ Gemini 3.7' : '⚡ Aarkaa 2.0'}
-                        </span>
-                      </div>
+                  <div style={{ width: '100%', background: '#F8FAFC', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '0.75rem', padding: '0.75rem 0.9rem', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                      <span style={{ fontSize: '10px', background: msg.model?.includes('gemini') ? 'rgba(22, 163, 74, 0.1)' : 'rgba(184, 150, 46, 0.1)', color: msg.model?.includes('gemini') ? '#15803D' : '#92400E', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                        {msg.model?.includes('gemini') ? '✨ Gemini 3.7' : '⚡ Aarkaa 2.0'}
+                      </span>
                       <button
                         onClick={() => handleCopy(msg.text, msg.id)}
-                        style={{ background: 'transparent', border: 'none', color: copiedId === msg.id ? 'var(--emerald-400)' : 'var(--ink-400)', fontSize: '11px', cursor: 'pointer', padding: '2px 4px', display: 'flex', alignItems: 'center', gap: '3px' }}
+                        style={{ background: 'transparent', border: 'none', color: copiedId === msg.id ? '#16A34A' : '#94A3B8', fontSize: '11px', cursor: 'pointer', padding: '2px 4px' }}
                       >
                         {copiedId === msg.id ? '✓ Copied' : '📋 Copy'}
                       </button>
                     </div>
-                    <div style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-100)', lineHeight: '1.6' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#1E293B', lineHeight: '1.55' }}>
                       {renderFormattedMarkdown(msg.text)}
                     </div>
-                    <div style={{ fontSize: '10px', color: 'var(--ink-500)', marginTop: 'var(--sp-2)', textAlign: 'right' }}>
+                    <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '0.35rem', textAlign: 'right' }}>
                       {msg.time}
                     </div>
                   </div>
                 ) : (
-                  <>
-                    <div className="ai-msg__bubble" role="note">
+                  <div style={{ alignSelf: 'flex-end', maxWidth: '85%' }}>
+                    <div style={{ background: '#16A34A', color: '#FFFFFF', padding: '0.6rem 0.85rem', borderRadius: '0.75rem 0.75rem 0.15rem 0.75rem', fontSize: '0.85rem', lineHeight: '1.5' }}>
                       {msg.text}
                     </div>
-                    <div className="ai-msg__time">{msg.time}</div>
-                  </>
+                    <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '2px', textAlign: 'right' }}>{msg.time}</div>
+                  </div>
                 )}
               </div>
             ))}
             {isTyping && (
               <div className="ai-msg ai-msg--ai" aria-live="assertive" aria-label="AI is typing">
-                <div style={{ background: 'var(--ink-850)', border: '1px solid rgba(184,150,46,0.2)', borderRadius: 'var(--radius-lg)', padding: 'var(--sp-3) var(--sp-4)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--brass-400)' }}>Analyzing with Aarkaa AI...</span>
+                <div style={{ background: '#F8FAFC', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '0.75rem', padding: '0.6rem 0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '11px', color: '#64748B' }}>Thinking with {selectedModel === 'gemini-3.7' ? 'Gemini 3.7' : 'Aarkaa 2.0'}...</span>
                   <div className="ai-typing" style={{ background: 'transparent', border: 'none', padding: 0 }}>
                     <span /><span /><span />
                   </div>
@@ -583,39 +571,28 @@ export default function LessonPlayerComponent() {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="ai-panel__input-area">
-            {/* Quick prompts */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
-              {['Explain WRR', 'Sequencing Imperative?', 'Quiz me'].map(p => (
-                <button key={p} className="tag-chip" style={{ cursor: 'pointer', fontSize: '11px', padding: '3px 8px' }} onClick={() => sendAI(p)} aria-label={`Ask: ${p}`}>
-                  {p}
-                </button>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: 'var(--sp-2)' }}>
+          <div className="ai-panel__input-area" style={{ padding: '0.75rem 1rem', borderTop: '1px solid rgba(0,0,0,0.08)', background: '#FAF8F5' }}>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
               <textarea
                 ref={inputRef}
                 className="ai-panel__textarea"
                 rows={2}
-                placeholder="Ask about this step..."
+                placeholder={`Ask ${selectedModel === 'gemini-3.7' ? 'Gemini 3.7' : 'Aarkaa 2.0'} about this step...`}
                 value={aiInput}
                 onChange={e => setAiInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAI(); } }}
                 aria-label="Type a question for the AI tutor"
-                aria-describedby="ai-hint"
+                style={{ flex: 1, padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid rgba(0,0,0,0.15)', fontSize: '0.85rem', resize: 'none' }}
               />
               <button
                 className="btn btn--primary"
-                style={{ padding: '0 var(--sp-4)', alignSelf: 'stretch' }}
+                style={{ padding: '0 1rem', alignSelf: 'stretch', borderRadius: '0.5rem', background: '#16A34A', border: 'none', color: '#FFFFFF', fontWeight: 700 }}
                 onClick={() => sendAI()}
                 aria-label="Send message"
                 disabled={!aiInput.trim() || isTyping}
               >
                 ↑
               </button>
-            </div>
-            <div id="ai-hint" style={{ fontSize: '11px', color: 'var(--ink-500)', marginTop: 'var(--sp-1)' }}>
-              Press Enter to send · Shift+Enter for new line
             </div>
           </div>
         </aside>

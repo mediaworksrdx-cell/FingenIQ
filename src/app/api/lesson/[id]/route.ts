@@ -21,6 +21,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         }
       }
 
+      let galleryImages = defaultLesson.galleryImages;
+      if (override.galleryImagesJson) {
+        try {
+          galleryImages = JSON.parse(override.galleryImagesJson);
+        } catch {
+          galleryImages = defaultLesson.galleryImages;
+        }
+      }
+
       const mergedLesson = {
         ...defaultLesson,
         title: override.title || defaultLesson.title,
@@ -31,6 +40,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         contentMarkdown: override.contentMarkdown || defaultLesson.contentMarkdown,
         youtubeId: override.youtubeId || defaultLesson.youtubeId,
         pdfPath: override.pdfPath || defaultLesson.pdfPath,
+        galleryImages,
         quiz,
       };
 

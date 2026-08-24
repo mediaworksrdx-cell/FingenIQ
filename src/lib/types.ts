@@ -36,6 +36,7 @@ export interface Lesson {
   score: number | null;
   tags: string[];
   youtubeId?: string;
+  galleryImages?: string[];
   steps?: any[];
   pdfPath?: string;
   contentMarkdown?: string;

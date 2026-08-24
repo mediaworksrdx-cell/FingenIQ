@@ -61,6 +61,8 @@ export default function AdminCredentials() {
   const [lessonContentMarkdown, setLessonContentMarkdown] = useState('');
   const [lessonYoutubeId, setLessonYoutubeId] = useState('');
   const [lessonPdfPath, setLessonPdfPath] = useState('');
+  const [lessonGalleryImages, setLessonGalleryImages] = useState<string[]>([]);
+  const [newGalleryImageInput, setNewGalleryImageInput] = useState('');
   const [keyTakeaways, setKeyTakeaways] = useState<string[]>([]);
   const [newTakeawayInput, setNewTakeawayInput] = useState('');
   
@@ -146,6 +148,22 @@ export default function AdminCredentials() {
       }
 
       try {
+        if (override.galleryImagesJson) {
+          setLessonGalleryImages(JSON.parse(override.galleryImagesJson));
+        } else if (defaultLesson?.galleryImages && defaultLesson.galleryImages.length > 0) {
+          setLessonGalleryImages(defaultLesson.galleryImages);
+        } else {
+          setLessonGalleryImages([
+            `/lessons/${selectedLessonId}/slide-1.svg`,
+            `/lessons/${selectedLessonId}/slide-2.svg`,
+            `/lessons/${selectedLessonId}/slide-3.svg`,
+          ]);
+        }
+      } catch {
+        setLessonGalleryImages([]);
+      }
+
+      try {
         if (override.quizJson) {
           setLessonQuiz(JSON.parse(override.quizJson));
         } else {
@@ -163,6 +181,15 @@ export default function AdminCredentials() {
       setLessonContentMarkdown(defaultLesson.contentMarkdown || '');
       setLessonYoutubeId(defaultLesson.youtubeId || '');
       setLessonPdfPath(defaultLesson.pdfPath || '');
+      setLessonGalleryImages(
+        defaultLesson.galleryImages && defaultLesson.galleryImages.length > 0
+          ? defaultLesson.galleryImages
+          : [
+              `/lessons/${defaultLesson.id}/slide-1.svg`,
+              `/lessons/${defaultLesson.id}/slide-2.svg`,
+              `/lessons/${defaultLesson.id}/slide-3.svg`,
+            ]
+      );
       setKeyTakeaways(defaultLesson.keyTakeaways || []);
       setLessonQuiz(defaultLesson.quiz || []);
       setCustomSimJson('{}');
@@ -330,6 +357,7 @@ export default function AdminCredentials() {
         keyTakeawaysJson: JSON.stringify(keyTakeaways),
         youtubeId: lessonYoutubeId,
         pdfPath: lessonPdfPath,
+        galleryImagesJson: JSON.stringify(lessonGalleryImages),
         simulatorJson: compiledSimulatorJson,
         quizJson: JSON.stringify(lessonQuiz),
       });
@@ -1258,7 +1286,7 @@ export default function AdminCredentials() {
                 {/* Subtitle & Media */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>▶ YouTube Embed ID</label>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>▶ YouTube Embed ID (Optional)</label>
                     <input
                       type="text"
                       value={lessonYoutubeId}
@@ -1276,6 +1304,183 @@ export default function AdminCredentials() {
                       placeholder="/resources/module_guide.pdf"
                       style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.6rem', color: '#F1F5F9', fontSize: '0.85rem' }}
                     />
+                  </div>
+                </div>
+
+                {/* ─── LESSON SLIDE GALLERY CONFIGURATOR ─────────────────── */}
+                <div style={{ background: '#070E1A', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '0.75rem', padding: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1rem' }}>🖼️</span>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#60A5FA' }}>
+                        Lesson Slide Gallery & Carousel ({lessonGalleryImages.length} Slides)
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLessonGalleryImages([
+                          `/lessons/${selectedLessonId}/slide-1.svg`,
+                          `/lessons/${selectedLessonId}/slide-2.svg`,
+                          `/lessons/${selectedLessonId}/slide-3.svg`,
+                        ]);
+                      }}
+                      style={{
+                        background: 'rgba(59, 130, 246, 0.15)',
+                        border: '1px solid rgba(59, 130, 246, 0.4)',
+                        borderRadius: '0.375rem',
+                        padding: '0.35rem 0.75rem',
+                        color: '#93C5FD',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      ✨ Load Default SVG Samples
+                    </button>
+                  </div>
+
+                  <p style={{ fontSize: '0.75rem', color: '#94A3B8', marginBottom: '1rem', lineHeight: '1.4' }}>
+                    These slides appear at the top of the lesson player in a swipeable carousel with left/right page navigation. You can use SVG samples or upload your custom images into <code style={{ color: '#FCD34D' }}>public/lessons/{selectedLessonId}/</code>.
+                  </p>
+
+                  {/* Slide List */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1rem' }}>
+                    {lessonGalleryImages.map((imgUrl, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          background: '#0B1528',
+                          border: '1px solid #1E293B',
+                          borderRadius: '0.5rem',
+                          padding: '0.5rem 0.75rem',
+                        }}
+                      >
+                        {/* Thumbnail Preview */}
+                        <div
+                          style={{
+                            width: '56px',
+                            height: '34px',
+                            borderRadius: '4px',
+                            overflow: 'hidden',
+                            background: '#1E293B',
+                            flexShrink: 0,
+                            border: '1px solid #334155',
+                          }}
+                        >
+                          <img
+                            src={imgUrl}
+                            alt={`Slide ${idx + 1}`}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={e => {
+                              (e.currentTarget as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            color: '#93C5FD',
+                            minWidth: '55px',
+                          }}
+                        >
+                          Slide {idx + 1}:
+                        </span>
+
+                        <input
+                          type="text"
+                          value={imgUrl}
+                          onChange={e => {
+                            const updated = [...lessonGalleryImages];
+                            updated[idx] = e.target.value;
+                            setLessonGalleryImages(updated);
+                          }}
+                          placeholder="/lessons/L1/slide-1.svg"
+                          style={{
+                            flex: 1,
+                            background: '#070E1A',
+                            border: '1px solid #334155',
+                            borderRadius: '0.375rem',
+                            padding: '0.4rem 0.6rem',
+                            color: '#F1F5F9',
+                            fontSize: '0.8rem',
+                          }}
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLessonGalleryImages(lessonGalleryImages.filter((_, i) => i !== idx));
+                          }}
+                          title="Remove slide"
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.15)',
+                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                            borderRadius: '0.375rem',
+                            padding: '0.35rem 0.6rem',
+                            color: '#F87171',
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add New Slide Form */}
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input
+                      type="text"
+                      value={newGalleryImageInput}
+                      onChange={e => setNewGalleryImageInput(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (newGalleryImageInput.trim()) {
+                            setLessonGalleryImages([...lessonGalleryImages, newGalleryImageInput.trim()]);
+                            setNewGalleryImageInput('');
+                          }
+                        }
+                      }}
+                      placeholder={`e.g. /lessons/${selectedLessonId}/slide-${lessonGalleryImages.length + 1}.png or https://...`}
+                      style={{
+                        flex: 1,
+                        background: '#0B1528',
+                        border: '1px solid #334155',
+                        borderRadius: '0.375rem',
+                        padding: '0.45rem 0.6rem',
+                        color: '#F1F5F9',
+                        fontSize: '0.8rem',
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (newGalleryImageInput.trim()) {
+                          setLessonGalleryImages([...lessonGalleryImages, newGalleryImageInput.trim()]);
+                          setNewGalleryImageInput('');
+                        }
+                      }}
+                      style={{
+                        background: '#2563EB',
+                        border: 'none',
+                        borderRadius: '0.375rem',
+                        padding: '0.45rem 0.9rem',
+                        color: '#FFFFFF',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      ➕ Add Slide URL
+                    </button>
                   </div>
                 </div>
 

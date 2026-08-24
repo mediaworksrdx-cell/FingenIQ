@@ -74,10 +74,17 @@ db.exec(`
     pdfPath           TEXT,
     simulatorJson     TEXT,
     quizJson          TEXT,
+    galleryImagesJson TEXT,
     updatedAt         TEXT,
     updatedByAdminId  TEXT
   );
 `);
+
+try {
+  db.exec(`ALTER TABLE lesson_overrides ADD COLUMN galleryImagesJson TEXT;`);
+} catch {
+  // Column already exists
+}
 const now = new Date().toISOString();
 const seedPackages = [
   { id: 'PKG_B2C_STARTER',     name: 'B2C Starter',         desc: 'Individual — Foundational modules (M1–M3)',                loginCategory: 'b2c',   modules: '["M1","M2","M3"]',                                     days: 90  },

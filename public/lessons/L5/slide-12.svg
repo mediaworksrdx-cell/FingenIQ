@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0284c799"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  
+  <!-- Card Container -->
+  <rect x="60" y="40" width="1160" height="640" rx="20" fill="#ffffff" filter="url(#shadow)" opacity="0.92"/>
+  <rect x="60" y="40" width="1160" height="640" rx="20" fill="none" stroke="#0284c7" stroke-width="1.5" opacity="0.25"/>
+  
+  <!-- Top accent bar -->
+  <rect x="60" y="40" width="1160" height="6" rx="3" fill="url(#accent)"/>
+  
+  <!-- Lesson badge -->
+  <rect x="90" y="65" width="110" height="34" rx="17" fill="#0284c7" opacity="0.12"/>
+  <text x="145" y="87" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="800" fill="#0284c7">L5</text>
+  
+  <!-- Slide counter badge -->
+  <rect x="1080" y="65" width="110" height="34" rx="17" fill="#0284c7" opacity="0.12"/>
+  <text x="1135" y="87" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#0284c7">12 of 30</text>
+  
+  <!-- Emoji Icon -->
+  <text x="640" y="195" text-anchor="middle" font-size="64">🛠️</text>
+  
+  <!-- Lesson Title -->
+  <text text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#0c4a6e" y="260">
+    <tspan x="640" dy="0">Financial Assets &amp; Asset Classes</tspan>
+  </text>
+  
+  <!-- Divider -->
+  <rect x="540" y="310" width="200" height="3" rx="1.5" fill="#0284c7" opacity="0.45"/>
+  
+  <!-- Step Name -->
+  <text x="640" y="350" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" fill="#0369a1">Practice Activity</text>
+  
+  <!-- Step Description -->
+  <text text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#334155" y="397">
+    <tspan x="640" dy="0">Hands-on spreadsheet exercise or calculation sandbox to test your</tspan>
+        <tspan x="640" dy="28">skills.</tspan>
+  </text>
+  
+  <!-- Bottom watermark -->
+  <text x="640" y="650" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b" opacity="0.6" font-weight="600">FinGenIQ · Institutional Financial Intelligence</text>
+</svg>
