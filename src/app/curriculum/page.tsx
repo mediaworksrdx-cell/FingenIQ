@@ -111,7 +111,7 @@ export default function CurriculumPage() {
                 </p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--sp-3)' }}>
+              <div className="stages-grid">
                 {[
                   'Managing your first income',
                   'Building healthy saving habits',
@@ -126,11 +126,11 @@ export default function CurriculumPage() {
                   'Building and managing a business',
                   'Creating long-term financial security'
                 ].map((stage, idx) => (
-                  <div key={idx} className="card p-4 animate-fadeUp" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', animationDelay: `${idx * 40}ms` }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--brass-500)' }}>
+                  <div key={idx} className="stage-tile animate-fadeUp" style={{ animationDelay: `${idx * 35}ms` }}>
+                    <span className="stage-tile__num">
                       {String(idx + 1).padStart(2, '0')}
                     </span>
-                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', lineHeight: 'var(--leading-relaxed)' }}>{stage}</span>
+                    <span className="stage-tile__text">{stage}</span>
                   </div>
                 ))}
               </div>
@@ -148,7 +148,7 @@ export default function CurriculumPage() {
                 </p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--sp-4)' }}>
+              <div className="wealth-grid-4">
                 <div className="card p-6 animate-fadeUp" style={{ animationDelay: '0ms' }}>
                   <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', color: 'var(--brass-500)', marginBottom: 'var(--sp-4)' }}>Wealth Creation</div>
                   <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
