@@ -62,7 +62,17 @@ export default function PublicNav() {
     window.location.href = '/';
   };
 
-  const portalHref = sessionUser?.role === 'admin' ? '/admin/credentials' : '/dashboard';
+  const portalHref = sessionUser?.role === 'admin'
+    ? '/admin/credentials'
+    : sessionUser?.role === 'community_member'
+    ? '/community'
+    : '/dashboard';
+
+  const portalLabel = sessionUser?.role === 'admin'
+    ? 'Admin Suite →'
+    : sessionUser?.role === 'community_member'
+    ? 'Community Feed →'
+    : 'Dashboard →';
 
   return (
     <>
@@ -112,7 +122,7 @@ export default function PublicNav() {
                     animationDelay: '1.5s',
                   }}
                 >
-                  Dashboard →
+                  {portalLabel}
                 </a>
                 <button
                   onClick={handleLogout}
@@ -184,7 +194,7 @@ export default function PublicNav() {
                 style={{ width: '100%', textAlign: 'center', display: 'block' }}
                 onClick={() => setDrawerOpen(false)}
               >
-                Dashboard →
+                {portalLabel}
               </a>
               <button
                 onClick={() => {

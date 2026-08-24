@@ -100,30 +100,30 @@ export default function CommunityPage() {
 
           {/* Community Header */}
           <header style={{ marginBottom: 'var(--sp-8)', textAlign: 'center' }}>
-            <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 700, color: 'var(--brass-400)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginBottom: 'var(--sp-3)' }}>
+            <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 700, color: '#15803D', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginBottom: 'var(--sp-3)' }}>
               FinGenIQ Community
             </div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 5vw, 2.75rem)', color: 'var(--ink-50)', lineHeight: 'var(--leading-tight)', marginBottom: 'var(--sp-3)', letterSpacing: 'var(--tracking-tight)' }}>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 5vw, 2.75rem)', color: '#0F172A', lineHeight: 'var(--leading-tight)', marginBottom: 'var(--sp-3)', letterSpacing: 'var(--tracking-tight)' }}>
               Institutional Research & Peer Insights
             </h1>
-            <p style={{ fontSize: 'var(--text-md)', color: 'var(--ink-400)', maxWidth: 560, margin: '0 auto', lineHeight: 'var(--leading-relaxed)' }}>
+            <p style={{ fontSize: 'var(--text-md)', color: '#475569', maxWidth: 560, margin: '0 auto', lineHeight: 'var(--leading-relaxed)' }}>
               Peer-reviewed financial case studies, valuation models, and sector analysis published by certified professionals.
             </p>
 
             {/* User bar */}
             <div style={{ marginTop: 'var(--sp-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--sp-3)', flexWrap: 'wrap' }}>
               {user ? (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-3)', padding: 'var(--sp-2) var(--sp-4)', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-full)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-3)', padding: 'var(--sp-2) var(--sp-4)', background: '#FFFFFF', borderRadius: 'var(--radius-full)', border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                   <div style={{
                     width: 28, height: 28, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, var(--navy-700), var(--navy-900))',
+                    background: '#15803D',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '10px', fontWeight: 700, color: 'var(--brass-400)',
+                    fontSize: '10px', fontWeight: 700, color: '#FFFFFF',
                   }}>
                     {getInitials(user.name)}
                   </div>
-                  <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)' }}>{user.name}</span>
-                  <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--brass-400)', padding: '2px 8px', background: 'rgba(184,150,46,0.08)', borderRadius: 'var(--radius-full)' }}>
+                  <span style={{ fontSize: 'var(--text-xs)', color: '#0F172A', fontWeight: 600 }}>{user.name}</span>
+                  <span style={{ fontSize: 'var(--text-2xs)', color: '#15803D', padding: '2px 8px', background: 'rgba(22, 163, 74, 0.1)', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>
                     {user.role === 'community_member' ? 'Member' : user.role === 'learner' ? 'Learner' : user.role === 'admin' ? 'Admin' : user.role === 'employee' ? 'Staff' : user.role}
                   </span>
                   <button
@@ -134,11 +134,11 @@ export default function CommunityPage() {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: 'var(--ink-500)',
+                      color: '#DC2626',
                       fontSize: 'var(--text-2xs)',
                       cursor: 'pointer',
                       padding: '2px 4px',
-                      textDecoration: 'underline',
+                      fontWeight: 600,
                     }}
                   >
                     Sign Out
@@ -147,12 +147,11 @@ export default function CommunityPage() {
               ) : (
                 <Link
                   href="/community/login?redirect=/community"
+                  className="btn btn--brass"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 18px',
-                    background: 'linear-gradient(135deg, #8F6E1C 0%, #B8962E 100%)',
-                    color: '#060A16', border: '1px solid #CEAE56',
-                    borderRadius: '0.5rem', fontSize: '13px', fontWeight: 600,
+                    padding: '8px 20px',
+                    borderRadius: '0.5rem', fontSize: '13px', fontWeight: 700,
                     textDecoration: 'none',
                   }}
                 >
@@ -166,11 +165,12 @@ export default function CommunityPage() {
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '6px',
                     padding: '8px 18px',
-                    background: 'rgba(184,150,46,0.12)',
-                    color: 'var(--brass-400)',
-                    border: '1px solid rgba(184,150,46,0.25)',
+                    background: '#FFFFFF',
+                    color: '#15803D',
+                    border: '1px solid rgba(22, 163, 74, 0.3)',
                     borderRadius: '0.5rem', fontSize: '13px', fontWeight: 600,
                     textDecoration: 'none',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
                   }}
                 >
                   ✍️ New Article
@@ -180,14 +180,14 @@ export default function CommunityPage() {
           </header>
 
           {/* Search & Sector Filters */}
-          <div style={{ display: 'flex', gap: 'var(--sp-3)', flexWrap: 'wrap', alignItems: 'center', marginBottom: 'var(--sp-8)', paddingBottom: 'var(--sp-6)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', gap: 'var(--sp-3)', flexWrap: 'wrap', alignItems: 'center', marginBottom: 'var(--sp-8)', paddingBottom: 'var(--sp-6)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
             <div style={{ flex: 1, minWidth: 220 }}>
               <input
                 type="text"
                 placeholder="Search articles..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                style={{ width: '100%', padding: '10px 16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-full)', color: 'var(--ink-100)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-sans)', outline: 'none', transition: 'border-color 0.2s' }}
+                style={{ width: '100%', padding: '10px 16px', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.12)', borderRadius: 'var(--radius-full)', color: '#0F172A', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-sans)', outline: 'none', transition: 'border-color 0.2s', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}
               />
             </div>
             <div style={{ display: 'flex', gap: 'var(--sp-1)', flexWrap: 'wrap' }}>
@@ -198,14 +198,15 @@ export default function CommunityPage() {
                   style={{
                     padding: '6px 16px',
                     borderRadius: 'var(--radius-full)',
-                    border: 'none',
-                    background: sectorFilter === s ? 'var(--ink-100)' : 'transparent',
-                    color: sectorFilter === s ? 'var(--ink-950)' : 'var(--ink-400)',
+                    border: sectorFilter === s ? '1px solid #15803D' : '1px solid rgba(0,0,0,0.08)',
+                    background: sectorFilter === s ? '#15803D' : '#FFFFFF',
+                    color: sectorFilter === s ? '#FFFFFF' : '#475569',
                     fontSize: 'var(--text-xs)',
-                    fontWeight: sectorFilter === s ? 600 : 400,
+                    fontWeight: sectorFilter === s ? 700 : 500,
                     cursor: 'pointer',
                     fontFamily: 'var(--font-sans)',
                     transition: 'all 0.2s',
+                    boxShadow: sectorFilter === s ? '0 2px 8px rgba(22, 163, 74, 0.25)' : 'none',
                   }}
                 >
                   {s === 'all' ? 'All' : s}
@@ -217,7 +218,7 @@ export default function CommunityPage() {
           {/* Loading state */}
           {loadingArticles && (
             <div style={{ textAlign: 'center', padding: 'var(--sp-12) 0' }}>
-              <p style={{ fontSize: 'var(--text-md)', color: 'var(--ink-500)' }}>Loading articles...</p>
+              <p style={{ fontSize: 'var(--text-md)', color: '#64748B' }}>Loading articles...</p>
             </div>
           )}
 
@@ -233,40 +234,46 @@ export default function CommunityPage() {
                     color: 'inherit',
                     display: 'block',
                     paddingBottom: 'var(--sp-8)',
-                    borderBottom: idx < filteredArticles.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
-                    transition: 'opacity 0.2s',
+                    borderBottom: idx < filteredArticles.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
+                    transition: 'transform 0.2s, opacity 0.2s',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.opacity = '0.9';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.opacity = '1';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
                 >
                   {/* Author line */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg, var(--navy-700), var(--navy-900))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: 'var(--brass-400)' }}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#15803D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, color: '#FFFFFF' }}>
                       {getInitials(article.author_name)}
                     </div>
-                    <span style={{ fontSize: 'var(--text-xs)', fontWeight: 500, color: 'var(--ink-300)' }}>{article.author_name}</span>
-                    <span style={{ fontSize: '11px', color: 'var(--ink-600)' }}>·</span>
-                    <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>{formatDate(article.created_at)}</span>
+                    <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: '#0F172A' }}>{article.author_name}</span>
+                    <span style={{ fontSize: '11px', color: '#94A3B8' }}>·</span>
+                    <span style={{ fontSize: '11px', color: '#64748B' }}>{formatDate(article.created_at)}</span>
                   </div>
 
                   {/* Title & summary */}
-                  <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', color: 'var(--ink-50)', lineHeight: 'var(--leading-snug)', marginBottom: 'var(--sp-2)', letterSpacing: 'var(--tracking-tight)' }}>
+                  <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', color: '#0F172A', lineHeight: 'var(--leading-snug)', marginBottom: 'var(--sp-2)', letterSpacing: 'var(--tracking-tight)' }}>
                     {article.title}
                   </h2>
-                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--sp-4)', maxWidth: 640 }}>
+                  <p style={{ fontSize: 'var(--text-sm)', color: '#475569', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--sp-4)', maxWidth: 640 }}>
                     {article.summary}
                   </p>
 
                   {/* Bottom meta */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)', flexWrap: 'wrap' }}>
                     {article.sector && (
-                      <span style={{ fontSize: '11px', padding: '3px 10px', borderRadius: 'var(--radius-full)', background: 'rgba(255,255,255,0.05)', color: 'var(--ink-400)' }}>{article.sector}</span>
+                      <span style={{ fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: 'var(--radius-full)', background: 'rgba(22, 163, 74, 0.08)', color: '#15803D', border: '1px solid rgba(22, 163, 74, 0.2)' }}>{article.sector}</span>
                     )}
-                    <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>{article.read_time} min read</span>
+                    <span style={{ fontSize: '11px', color: '#64748B' }}>{article.read_time} min read</span>
                     {article.score > 0 && (
-                      <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>★ {article.score}/10</span>
+                      <span style={{ fontSize: '11px', color: '#B45309', fontWeight: 600 }}>★ {article.score}/10</span>
                     )}
-                    <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>👏 {article.claps}</span>
+                    <span style={{ fontSize: '11px', color: '#64748B' }}>👏 {article.claps}</span>
                   </div>
                 </Link>
               ))}
@@ -275,17 +282,16 @@ export default function CommunityPage() {
 
           {!loadingArticles && filteredArticles.length === 0 && (
             <div style={{ textAlign: 'center', padding: 'var(--sp-12) 0' }}>
-              <p style={{ fontSize: 'var(--text-md)', color: 'var(--ink-500)', marginBottom: 'var(--sp-4)' }}>
+              <p style={{ fontSize: 'var(--text-md)', color: '#64748B', marginBottom: 'var(--sp-4)' }}>
                 {articles.length === 0 ? 'No articles published yet.' : 'No articles found matching your search.'}
               </p>
               {canPost && articles.length === 0 && (
                 <Link
                   href="/community/new"
+                  className="btn btn--brass"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '6px',
                     padding: '10px 24px',
-                    background: 'linear-gradient(135deg, #8F6E1C 0%, #B8962E 100%)',
-                    color: '#060A16', border: '1px solid #CEAE56',
                     borderRadius: '0.5rem', fontSize: '14px', fontWeight: 600,
                     textDecoration: 'none',
                   }}

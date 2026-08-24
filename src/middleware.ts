@@ -28,7 +28,10 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('session_token')?.value;
 
   if (!token) {
-    // For community routes, redirect with ?redirect= to the community login page
+    // Separate login redirections based on route context
+    if (pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
     if (pathname.startsWith('/community/')) {
       const redirectUrl = new URL('/community/login', request.url);
       redirectUrl.searchParams.set('redirect', pathname);
@@ -45,8 +48,12 @@ export async function middleware(request: NextRequest) {
       },
     });
 
+    const isInternalAdmin = pathname.startsWith('/admin');
+    const isCommunityProtected = pathname.startsWith('/community/');
+
     if (!sessionRes.ok) {
-      const res = NextResponse.redirect(new URL('/login', request.url));
+      const fallbackLogin = isInternalAdmin ? '/admin/login' : isCommunityProtected ? '/community/login' : '/login';
+      const res = NextResponse.redirect(new URL(fallbackLogin, request.url));
       res.cookies.delete('session_token');
       return res;
     }
@@ -54,7 +61,8 @@ export async function middleware(request: NextRequest) {
     const auth = await sessionRes.json();
 
     if (!auth.success) {
-      const res = NextResponse.redirect(new URL('/login', request.url));
+      const fallbackLogin = isInternalAdmin ? '/admin/login' : isCommunityProtected ? '/community/login' : '/login';
+      const res = NextResponse.redirect(new URL(fallbackLogin, request.url));
       res.cookies.delete('session_token');
       return res;
     }
@@ -64,7 +72,7 @@ export async function middleware(request: NextRequest) {
     // Role-Based Authorization Checks
     // 1. /admin/* -> admin only
     if (pathname.startsWith('/admin') && role !== 'admin') {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/admin/login', request.url));
     }
 
     // 2. /marketplace/* -> employer or admin only
@@ -91,7 +99,10 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.next();
   } catch (err) {
-    const res = NextResponse.redirect(new URL('/login', request.url));
+    const isInternalAdmin = pathname.startsWith('/admin');
+    const isCommunityProtected = pathname.startsWith('/community/');
+    const fallbackLogin = isInternalAdmin ? '/admin/login' : isCommunityProtected ? '/community/login' : '/login';
+    const res = NextResponse.redirect(new URL(fallbackLogin, request.url));
     res.cookies.delete('session_token');
     return res;
   }
