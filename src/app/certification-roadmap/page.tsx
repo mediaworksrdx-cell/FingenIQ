@@ -24,18 +24,8 @@ export default function CertificationRoadmap() {
                 SEBI-Equivalence Roadmap
               </h1>
               <p className="section-subtitle" style={{ marginTop: '4px' }}>
-                FinGeniQ’s structured path toward seeking regulatory recognition. This is an aspiration with defined milestones — not a present-tense regulatory claim.
+                FinGeniQ’s structured path toward seeking regulatory recognition with defined milestones.
               </p>
-            </div>
-
-            {/* Disclaimer banner */}
-            <div className="card p-5 animate-fadeUp mb-8" style={{ background: 'rgba(244,63,94,0.06)', borderColor: 'rgba(244,63,94,0.25)' }}>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <span style={{ fontSize: '1.5rem' }}>⚠️</span>
-                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--rose-400)', lineHeight: 'var(--leading-relaxed)' }}>
-                  <strong>Important:</strong> FinGeniQ does not currently hold SEBI recognition or equivalence status for any of its programs. The milestones on this page represent FinGeniQ’s internal programme-improvement roadmap toward preparing a future submission for SEBI’s review. SEBI’s review process and outcome remain at SEBI’s sole discretion.
-                </p>
-              </div>
             </div>
 
             {/* Stepper Timeline */}
