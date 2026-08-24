@@ -89,12 +89,13 @@ export default function Contact() {
       {toast && (
         <div style={{
           position: 'fixed', bottom: 'var(--sp-6)', right: 'var(--sp-6)',
-          zIndex: 1000, background: 'var(--ink-900)', border: 'var(--border-brass)',
+          zIndex: 1000, background: '#FFFFFF', border: '1px solid rgba(22,163,74,0.3)',
+          boxShadow: '0 10px 36px rgba(0,0,0,0.1)',
           padding: 'var(--sp-4)', borderRadius: 'var(--radius-lg)', maxWidth: '320px',
           animation: 'fadeUp 0.3s ease-out'
         }}>
-          <div style={{ color: 'var(--brass-400)', fontWeight: 600, fontSize: 'var(--text-sm)' }}>{toast.title}</div>
-          <div style={{ color: 'var(--ink-200)', fontSize: 'var(--text-xs)', marginTop: '4px' }}>{toast.desc}</div>
+          <div style={{ color: '#15803D', fontWeight: 600, fontSize: 'var(--text-sm)' }}>{toast.title}</div>
+          <div style={{ color: '#475569', fontSize: 'var(--text-xs)', marginTop: '4px' }}>{toast.desc}</div>
         </div>
       )}
 

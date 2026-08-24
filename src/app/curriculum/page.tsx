@@ -33,34 +33,34 @@ export default function CurriculumPage() {
           </section>
 
           {/* Stats Bar */}
-          <div style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)', padding: 'var(--sp-5) 0' }}>
+          <div style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)', padding: 'var(--sp-5) 0' }}>
             <div className="container">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 'var(--sp-6)' }}>
                 <div style={{ textAlign: 'center' }}>
                   <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>44</div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Lessons</div>
                 </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
+                <div style={{ width: '1px', height: '44px', background: 'rgba(0,0,0,0.08)' }}></div>
                 <div style={{ textAlign: 'center' }}>
                   <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>8</div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Modules</div>
                 </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
+                <div style={{ width: '1px', height: '44px', background: 'rgba(0,0,0,0.08)' }}></div>
                 <div style={{ textAlign: 'center' }}>
                   <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>3</div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Credential Tiers</div>
                 </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
+                <div style={{ width: '1px', height: '44px', background: 'rgba(0,0,0,0.08)' }}></div>
                 <div style={{ textAlign: 'center' }}>
                   <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>20</div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Steps / Lesson</div>
                 </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
+                <div style={{ width: '1px', height: '44px', background: 'rgba(0,0,0,0.08)' }}></div>
                 <div style={{ textAlign: 'center' }}>
                   <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>AI</div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Powered Tutor</div>
                 </div>
-                <div style={{ width: '1px', height: '44px', background: 'var(--ink-700)' }}></div>
+                <div style={{ width: '1px', height: '44px', background: 'rgba(0,0,0,0.08)' }}></div>
                 <div style={{ textAlign: 'center' }}>
                   <div className="num" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--brass-400)' }}>SEBI</div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginTop: '2px' }}>Equivalence Roadmap</div>
@@ -70,7 +70,7 @@ export default function CurriculumPage() {
           </div>
 
           {/* 8 Structured Modules */}
-          <section className="py-20" id="modules" style={{ background: 'var(--ink-950)', borderBottom: 'var(--border-subtle)' }}>
+          <section className="py-20" id="modules" style={{ background: '#FAF8F5', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
               <div className="section-header text-center animate-fadeUp" style={{ marginBottom: 'var(--sp-10)' }}>
                 <span className="section-label">Curriculum Overview</span>
@@ -130,7 +130,7 @@ export default function CurriculumPage() {
           </section>
 
           {/* Wealth Management */}
-          <section className="py-20" id="wealth-management" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
+          <section className="py-20" id="wealth-management" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
               <div className="section-header text-center animate-fadeUp" style={{ marginBottom: 'var(--sp-12)' }}>
                 <span className="section-label">Structured Wealth Strategy</span>
@@ -186,7 +186,7 @@ export default function CurriculumPage() {
           </section>
 
           {/* Gateway CTA */}
-          <section className="py-20" id="enter-platform" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', textAlign: 'center' }}>
+          <section className="py-20" id="enter-platform" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', textAlign: 'center' }}>
             <div className="container container--narrow" style={{ position: 'relative', zIndex: 1 }}>
               <div className="animate-fadeUp" style={{ textAlign: 'center' }}>
                 <span className="section-label">Ready to Begin?</span>

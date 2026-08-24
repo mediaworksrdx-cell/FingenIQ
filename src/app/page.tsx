@@ -151,7 +151,7 @@ export default function Home() {
           </section>
 
           {/* Learn Beyond Theory */}
-          <section className="py-20" id="beyond-theory" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
+          <section className="py-20" id="beyond-theory" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 'var(--sp-14)', alignItems: 'start' }}>
                 <div className="animate-fadeUp">
@@ -216,7 +216,7 @@ export default function Home() {
           </section>
 
           {/* AI-Powered Learning */}
-          <section className="py-20" id="ai-learning" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
+          <section className="py-20" id="ai-learning" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', borderBottom: 'var(--border-subtle)' }}>
             <div className="container">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-14)', alignItems: 'start' }}>
                 <div className="animate-fadeUp">
@@ -230,7 +230,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="animate-fadeUp" style={{ animationDelay: '100ms' }}>
-                  <div style={{ background: 'var(--ink-900)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-7)' }}>
+                  <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-7)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
                     <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--brass-400)', marginBottom: 'var(--sp-5)' }}>Learners can:</div>
                     <ul className="bullet-list">
                       <li>Ask questions anytime — contextualised to the current lesson step</li>
@@ -260,19 +260,19 @@ export default function Home() {
                 </div>
                 <div className="animate-fadeUp" style={{ animationDelay: '100ms' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-3)' }}>
-                    <div style={{ background: 'var(--ink-900)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-5)', textAlign: 'center' }}>
+                    <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-5)', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
                       <div style={{ fontSize: '1.8rem', marginBottom: 'var(--sp-2)' }}>💡</div>
                       <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', fontWeight: 500 }}>Better Financial Behaviours</div>
                     </div>
-                    <div style={{ background: 'var(--ink-900)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-5)', textAlign: 'center' }}>
+                    <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-5)', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
                       <div style={{ fontSize: '1.8rem', marginBottom: 'var(--sp-2)' }}>📊</div>
                       <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', fontWeight: 500 }}>Improved Money Management</div>
                     </div>
-                    <div style={{ background: 'var(--ink-900)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-5)', textAlign: 'center' }}>
+                    <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-5)', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
                       <div style={{ fontSize: '1.8rem', marginBottom: 'var(--sp-2)' }}>📈</div>
                       <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', fontWeight: 500 }}>Informed Investment Decisions</div>
                     </div>
-                    <div style={{ background: 'var(--ink-900)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-5)', textAlign: 'center' }}>
+                    <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 'var(--radius-xl)', padding: 'var(--sp-5)', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
                       <div style={{ fontSize: '1.8rem', marginBottom: 'var(--sp-2)' }}>🛡️</div>
                       <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', fontWeight: 500 }}>Greater Financial Resilience</div>
                     </div>
@@ -283,7 +283,7 @@ export default function Home() {
           </section>
 
           {/* Gateway CTA */}
-          <section className="py-20" id="enter-platform" style={{ background: 'var(--ink-950)', borderTop: 'var(--border-subtle)', textAlign: 'center' }}>
+          <section className="py-20" id="enter-platform" style={{ background: '#FAF8F5', borderTop: 'var(--border-subtle)', textAlign: 'center' }}>
             <div className="container container--narrow" style={{ position: 'relative', zIndex: 1 }}>
               <div className="animate-fadeUp" style={{ textAlign: 'center' }}>
                 <span className="section-label">Ready to Begin?</span>
