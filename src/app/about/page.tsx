@@ -38,11 +38,11 @@ export default function About() {
                 <h2 className="section-title">Our Mission</h2>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-6)', color: 'var(--ink-300)', fontSize: 'var(--text-base)', lineHeight: 'var(--leading-relaxed)' }} className="animate-fadeUp">
-                <p>
-                  FingenIQ is an institution-grade financial education platform dedicated to helping individuals develop financial intelligence through structured, practical, and AI-powered learning. Whether you are beginning your financial journey or expanding your expertise, FingenIQ equips you with the knowledge, confidence, and skills needed to navigate personal finance, investing, business, and wealth creation.
+                <p style={{ fontSize: 'var(--text-lg)', color: 'var(--ink-100)', fontWeight: 500, lineHeight: 'var(--leading-relaxed)', borderLeft: '3px solid var(--brass-500)', paddingLeft: 'var(--sp-4)' }}>
+                  To empower people worldwide with world-class financial knowledge and intelligent technology to make better decisions, build lasting wealth, and achieve financial independence across generations.
                 </p>
                 <p>
-                  Our mission is simple: <strong className="text-brass">transform financial knowledge into lifelong financial confidence, responsible wealth management, and sustainable financial freedom.</strong> We believe every person deserves access to the same level of financial education that has historically been reserved for elite institutions.
+                  FingenIQ is an institution-grade financial education platform dedicated to helping individuals develop financial intelligence through structured, practical, and AI-powered learning. Whether you are beginning your financial journey or expanding your expertise, FingenIQ equips you with the knowledge, confidence, and skills needed to navigate personal finance, investing, business, and wealth creation.
                 </p>
                 <p>
                   Financial success is not determined solely by how much money you earn — it is shaped by how well you understand, manage, grow, and protect your money. Through FingenIQ's structured curriculum, AI-powered tools, and professional certification framework, we ensure that every learner walks away with actionable, real-world financial intelligence.
@@ -57,8 +57,8 @@ export default function About() {
               <div className="card p-8 card--credential animate-fadeUp">
                 <span className="section-label" style={{ marginBottom: 'var(--sp-4)', display: 'block' }}>Our North Star</span>
                 <h2 className="section-title mb-4">Our Vision</h2>
-                <p className="text-secondary" style={{ fontSize: 'var(--text-base)', lineHeight: 'var(--leading-relaxed)' }}>
-                  To make world-class financial education accessible to everyone by empowering individuals with the knowledge, confidence, and practical skills to make informed financial decisions, manage wealth responsibly, achieve lasting financial freedom, and create a financially empowered future for themselves, their families, businesses, and communities.
+                <p className="text-secondary" style={{ fontSize: 'var(--text-lg)', color: 'var(--ink-100)', lineHeight: 'var(--leading-relaxed)', fontWeight: 500 }}>
+                  To empower individuals and businesses worldwide to build, grow, and preserve wealth through intelligent financial technology, deep business intelligence, and world-class education—powered by a global community of industry leaders and academic experts to create enduring, generational impact.
                 </p>
               </div>
             </div>
