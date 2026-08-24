@@ -45,11 +45,12 @@ export default function LessonPlayerComponent() {
   }, [lesson]);
 
   const [currentStep, setCurrentStep] = useState(0);
+  const [selectedModel, setSelectedModel] = useState<'gemini-3.7' | 'aarka-2.0'>('gemini-3.7');
   const [aiInput, setAiInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [selectedRadio, setSelectedRadio] = useState<number | null>(null);
-  const [messages, setMessages] = useState<{ id: string; sender: 'user' | 'ai'; text: string; time: string }[]>([]);
+  const [messages, setMessages] = useState<{ id: string; sender: 'user' | 'ai'; text: string; time: string; model?: string }[]>([]);
   const [allowedModules, setAllowedModules] = useState<string[] | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -59,8 +60,9 @@ export default function LessonPlayerComponent() {
       {
         id: `init-${Date.now()}`,
         sender: 'ai',
-        text: `Hello! I am your contextualised AI Tutor for Lesson ${baseLesson.order}: ${baseLesson.title}. Ask me anything about this lesson, or request a practice quiz.`,
+        text: `Hello! I am your contextualised AI Tutor for Lesson ${baseLesson.order}: ${baseLesson.title}.\n\nPowered by **Gemini 3.7** & **Aarkaa AI**. Ask me anything about this lesson, or request a practice quiz.`,
         time: formatTime(),
+        model: selectedModel,
       },
     ]);
   };
@@ -205,6 +207,7 @@ export default function LessonPlayerComponent() {
         body: JSON.stringify({
           message: contextualQuery,
           query: contextualQuery,
+          model: selectedModel,
         }),
       });
 
@@ -216,7 +219,7 @@ export default function LessonPlayerComponent() {
         reply = `For ${lesson.title}, remember that mastering these core financial disciplines is essential. Let me know if you need any clarification on this step!`;
       }
       const aiMsgId = `ai-${Date.now()}`;
-      setMessages(p => [...p, { id: aiMsgId, sender: 'ai', text: reply, time: formatTime() }]);
+      setMessages(p => [...p, { id: aiMsgId, sender: 'ai', text: reply, time: formatTime(), model: data.model || selectedModel }]);
     } catch {
       const errMsgId = `err-${Date.now()}`;
       setMessages(p => [
@@ -226,6 +229,7 @@ export default function LessonPlayerComponent() {
           sender: 'ai',
           text: 'The AI Tutor reasoning engine is experiencing heavy load. Please ask your question again in a moment.',
           time: formatTime(),
+          model: selectedModel,
         },
       ]);
     } finally {
@@ -469,22 +473,62 @@ export default function LessonPlayerComponent() {
         {/* AI Tutor Panel */}
         <aside className="ai-panel" aria-label="AI Tutor">
           <div className="ai-panel__header">
-            <div style={{ width: 34, height: 34, borderRadius: 'var(--radius-full)', background: 'var(--navy-700)', border: 'var(--border-sapphire)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.95rem', flexShrink: 0 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 'var(--radius-full)', background: 'var(--navy-700)', border: 'var(--border-sapphire)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', flexShrink: 0 }}>
               🤖
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>AI Tutor</div>
-              <div style={{ fontSize: '11px', color: 'var(--sapphire-400)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Contextualised · Lesson {lesson.order}</div>
+              <div style={{ fontSize: '10px', color: 'var(--sapphire-400)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Contextualised · Lesson {lesson.order}</div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)', flexShrink: 0 }}>
+
+            {/* Model Selector Toggle */}
+            <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.4)', padding: '2px', borderRadius: '5px', border: '1px solid rgba(184,150,46,0.2)', flexShrink: 0 }}>
+              <button
+                type="button"
+                onClick={() => setSelectedModel('gemini-3.7')}
+                title="Google Gemini 3.7 Engine"
+                style={{
+                  background: selectedModel === 'gemini-3.7' ? 'rgba(74, 222, 128, 0.2)' : 'transparent',
+                  color: selectedModel === 'gemini-3.7' ? '#4ADE80' : 'var(--ink-400)',
+                  border: 'none',
+                  borderRadius: '3px',
+                  padding: '2px 5px',
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                ✨ Gemini 3.7
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedModel('aarka-2.0')}
+                title="Aarkaa 2.0 Engine"
+                style={{
+                  background: selectedModel === 'aarka-2.0' ? 'rgba(184, 150, 46, 0.25)' : 'transparent',
+                  color: selectedModel === 'aarka-2.0' ? 'var(--brass-300)' : 'var(--ink-400)',
+                  border: 'none',
+                  borderRadius: '3px',
+                  padding: '2px 5px',
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                ⚡ Aarkaa 2.0
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-1)', flexShrink: 0 }}>
               <button
                 onClick={resetMessages}
-                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--ink-400)', fontSize: '10px', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--ink-400)', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s' }}
                 title="Reset conversation"
               >
                 Clear
               </button>
-              <span className="badge badge--in-progress" style={{ fontSize: '10px', padding: '2px 6px' }}>Online</span>
             </div>
           </div>
 
@@ -494,9 +538,14 @@ export default function LessonPlayerComponent() {
                 {msg.sender === 'ai' ? (
                   <div style={{ width: '100%', background: 'var(--ink-850)', border: '1px solid rgba(184,150,46,0.2)', borderRadius: 'var(--radius-lg)', padding: 'var(--sp-3) var(--sp-4)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--sp-2)', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 'var(--sp-1)' }}>
-                      <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--brass-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Institutional Analysis
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--brass-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          Institutional Analysis
+                        </span>
+                        <span style={{ fontSize: '9px', background: 'rgba(255,255,255,0.06)', color: 'var(--brass-300)', padding: '1px 5px', borderRadius: '3px', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600 }}>
+                          {msg.model?.includes('gemini') ? '✨ Gemini 3.7' : '⚡ Aarkaa 2.0'}
+                        </span>
+                      </div>
                       <button
                         onClick={() => handleCopy(msg.text, msg.id)}
                         style={{ background: 'transparent', border: 'none', color: copiedId === msg.id ? 'var(--emerald-400)' : 'var(--ink-400)', fontSize: '11px', cursor: 'pointer', padding: '2px 4px', display: 'flex', alignItems: 'center', gap: '3px' }}

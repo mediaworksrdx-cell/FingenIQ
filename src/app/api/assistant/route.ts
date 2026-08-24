@@ -27,6 +27,19 @@ export async function POST(request: Request) {
     }
 
     const rawQuery = (body.message || body.query || '').toString().trim();
+    const rawModel = (body.model || body.model_override || '').toString().trim().toLowerCase();
+    
+    // Model Selection: support Gemini 3.7 and Aarkaa 2.0
+    let modelOverride = 'gemini-3.7';
+    if (rawModel.includes('aarka')) {
+      modelOverride = 'aarka-2.0';
+    } else if (rawModel.includes('gemini-3.7') || rawModel.includes('3.7')) {
+      modelOverride = 'gemini-3.7';
+    } else if (rawModel.includes('gemini-2.0') || rawModel.includes('2.0')) {
+      modelOverride = 'gemini-2.0-flash';
+    } else if (rawModel) {
+      modelOverride = rawModel;
+    }
 
     if (!rawQuery) {
       return NextResponse.json({ success: false, error: 'Query is required' }, { status: 400 });
@@ -36,10 +49,12 @@ export async function POST(request: Request) {
 
     // 1. Basic Greeting
     if (/^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening)|namaste)\b/i.test(cleanLower) && cleanLower.split(' ').length <= 4) {
+      const modelDisplayName = modelOverride.includes('gemini') ? 'Google Gemini 3.7' : 'Aarkaa AI 2.0';
       return NextResponse.json({
         success: true,
-        response: "Hello! I am your **FinGenIQ Financial Assistant** powered by **Aarkaa AI**.\n\nAsk me any question about financial modeling, valuation (DCF, Multiples), corporate finance, portfolio strategy, investment analysis, or your platform curriculum.",
+        response: `Hello! I am your **FinGenIQ Financial Assistant** powered by **${modelDisplayName}**.\n\nAsk me any question about financial modeling, valuation (DCF, Multiples), corporate finance, portfolio strategy, investment analysis, or your platform curriculum.`,
         source: 'aarkaa-ai',
+        model: modelOverride,
       });
     }
 
@@ -53,7 +68,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // 3. Send query directly to Aarkaa AI Engine /prompt/stream and collect real live dynamic response
+    // 3. Send query directly to Aarkaa AI Engine /prompt/stream with dynamic model selection
     try {
       const aarkaaRes = await fetch(AARKAAI_STREAM_URL, {
         method: 'POST',
@@ -62,7 +77,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           query: `You are FinGenIQ Financial Assistance, an institutional financial analysis and educational intelligence engine. Answer thoroughly with detailed explanations, exact formulas, step-by-step calculations, and financial insights for: ${rawQuery}`,
-          model_override: 'aarka-2.0',
+          model_override: modelOverride,
         }),
         signal: AbortSignal.timeout(45000), // 45s timeout for deep LLM reasoning
       });
@@ -100,6 +115,7 @@ export async function POST(request: Request) {
             success: true,
             response: fullAiResponse.trim(),
             source: 'aarkaa-ai-live',
+            model: modelOverride,
           });
         }
       }
@@ -110,8 +126,9 @@ export async function POST(request: Request) {
     // Fallback only if model fails to connect
     return NextResponse.json({
       success: true,
-      response: `The AI financial reasoning engine is currently processing high load. Please ask your financial question again in a moment.`,
+      response: `The AI financial reasoning engine (${modelOverride}) is currently processing high load. Please ask your financial question again in a moment.`,
       source: 'aarkaa-ai-fallback',
+      model: modelOverride,
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

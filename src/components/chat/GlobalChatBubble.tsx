@@ -165,16 +165,19 @@ interface Message {
   sender: 'user' | 'assistant';
   text: string;
   timestamp: string;
+  model?: string;
 }
 
 export default function GlobalChatBubble() {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<'gemini-3.7' | 'aarka-2.0'>('gemini-3.7');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome-1',
       sender: 'assistant',
-      text: "Hi! 👋 I'm the **FinGenIQ Intelligence Assistant**. Ask me anything about our curriculum, certifications, financial concepts, or platform access.",
+      text: "Hi! 👋 I'm your **FinGenIQ Intelligence Assistant** powered by **Gemini 3.7** & **Aarkaa AI**.\n\nSelect your reasoning engine above (**Gemini 3.7** or **Aarkaa 2.0**) and ask me anything about our curriculum, valuation models, financial concepts, or certifications.",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      model: 'gemini-3.7',
     }
   ]);
   const [inputText, setInputText] = useState('');
@@ -230,11 +233,11 @@ export default function GlobalChatBubble() {
     setIsTyping(true);
 
     try {
-      // Connect to AarkaaAI via FinGenIQ assistant API
+      // Connect to AarkaaAI via FinGenIQ assistant API with dynamic model
       const res = await fetch('/api/assistant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, sessionId }),
+        body: JSON.stringify({ message: text, sessionId, model: selectedModel }),
       });
 
       const data = await res.json();
@@ -251,6 +254,7 @@ export default function GlobalChatBubble() {
         sender: 'assistant',
         text: answer,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        model: data.model || selectedModel,
       };
       setMessages(prev => [...prev, botMsg]);
     } catch {
@@ -261,6 +265,7 @@ export default function GlobalChatBubble() {
         sender: 'assistant',
         text: answer,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        model: selectedModel,
       };
       setMessages(prev => [...prev, botMsg]);
     } finally {
@@ -411,13 +416,13 @@ export default function GlobalChatBubble() {
                 fontWeight: 700,
                 fontSize: '0.9rem',
               }}>
-                A
+                🏛️
               </div>
               <div>
                 <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#EFEFE9', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  Aarkaa AI 2.0
-                  <span style={{ fontSize: '0.625rem', background: 'rgba(204,120,92,0.15)', color: '#CC785C', border: '1px solid rgba(204,120,92,0.3)', padding: '1px 6px', borderRadius: '9999px', fontWeight: 700 }}>
-                    CLAUDE ENGINE
+                  FinGenIQ Assistant
+                  <span style={{ fontSize: '0.625rem', background: selectedModel === 'gemini-3.7' ? 'rgba(74,222,128,0.15)' : 'rgba(204,120,92,0.15)', color: selectedModel === 'gemini-3.7' ? '#4ADE80' : '#CC785C', border: selectedModel === 'gemini-3.7' ? '1px solid rgba(74,222,128,0.3)' : '1px solid rgba(204,120,92,0.3)', padding: '1px 6px', borderRadius: '9999px', fontWeight: 700 }}>
+                    {selectedModel === 'gemini-3.7' ? 'GEMINI 3.7' : 'AARKAA 2.0'}
                   </span>
                 </div>
                 <div style={{ fontSize: '0.7rem', color: '#87867F' }}>
@@ -457,6 +462,59 @@ export default function GlobalChatBubble() {
                 }}
               >
                 —
+              </button>
+            </div>
+          </div>
+
+          {/* Model Switcher Bar */}
+          <div style={{
+            padding: '0.4rem 0.85rem',
+            background: '#141312',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexShrink: 0,
+          }}>
+            <span style={{ fontSize: '0.68rem', color: '#87867F', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Select Model:
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '2px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedModel('gemini-3.7')}
+                title="Google Gemini 3.7 Reasoning Engine"
+                style={{
+                  background: selectedModel === 'gemini-3.7' ? 'rgba(74, 222, 128, 0.2)' : 'transparent',
+                  color: selectedModel === 'gemini-3.7' ? '#4ADE80' : '#87867F',
+                  border: selectedModel === 'gemini-3.7' ? '1px solid rgba(74, 222, 128, 0.35)' : '1px solid transparent',
+                  borderRadius: '4px',
+                  padding: '2px 8px',
+                  fontSize: '0.68rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                ✨ Gemini 3.7
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedModel('aarka-2.0')}
+                title="Aarkaa 2.0 Institutional Engine"
+                style={{
+                  background: selectedModel === 'aarka-2.0' ? 'rgba(204, 120, 92, 0.25)' : 'transparent',
+                  color: selectedModel === 'aarka-2.0' ? '#E8C86A' : '#87867F',
+                  border: selectedModel === 'aarka-2.0' ? '1px solid rgba(204, 120, 92, 0.4)' : '1px solid transparent',
+                  borderRadius: '4px',
+                  padding: '2px 8px',
+                  fontSize: '0.68rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                ⚡ Aarkaa 2.0
               </button>
             </div>
           </div>

@@ -8,6 +8,7 @@ interface Message {
   text: string;
   timestamp: string;
   source?: string;
+  model?: string;
 }
 
 export default function PlatformAiTutor({
@@ -17,12 +18,14 @@ export default function PlatformAiTutor({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const [selectedModel, setSelectedModel] = useState<'gemini-3.7' | 'aarka-2.0'>('gemini-3.7');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       sender: 'assistant',
-      text: "👋 Welcome to **FinGenIQ Financial Assistance** powered by **Aarkaa AI**.\n\nI provide real-time institutional financial analysis, mathematical derivations, valuation models, portfolio theory, and curriculum guidance.\n\nEnter any financial question or modeling problem to begin.",
+      text: "👋 Welcome to **FinGenIQ Financial Assistance** powered by **Gemini 3.7** & **Aarkaa AI**.\n\nI provide real-time institutional financial analysis, mathematical derivations, valuation models, portfolio theory, and curriculum guidance.\n\nSelect your preferred reasoning model above (**Gemini 3.7** or **Aarkaa 2.0**) and enter any question to begin.",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      model: 'gemini-3.7',
     },
   ]);
   const [input, setInput] = useState('');
@@ -62,6 +65,7 @@ export default function PlatformAiTutor({
         body: JSON.stringify({
           message: text,
           sessionId: 'fingeniq-learner-session',
+          model: selectedModel,
         }),
       });
 
@@ -79,6 +83,7 @@ export default function PlatformAiTutor({
         text: reply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         source: data.source,
+        model: data.model || selectedModel,
       };
 
       setMessages(prev => [...prev, botMsg]);
@@ -88,6 +93,7 @@ export default function PlatformAiTutor({
         sender: 'assistant',
         text: "The financial assistance engine is currently busy. Please try asking your question again.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        model: selectedModel,
       };
       setMessages(prev => [...prev, fallbackMsg]);
     } finally {
@@ -305,15 +311,56 @@ export default function PlatformAiTutor({
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            {/* Model Selector Toggle */}
+            <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.45)', padding: '2px', borderRadius: '6px', border: '1px solid rgba(74, 222, 128, 0.25)' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedModel('gemini-3.7')}
+                title="Switch to Google Gemini 3.7 Reasoning Engine"
+                style={{
+                  background: selectedModel === 'gemini-3.7' ? 'rgba(74, 222, 128, 0.25)' : 'transparent',
+                  color: selectedModel === 'gemini-3.7' ? '#4ADE80' : '#86EFAC',
+                  border: selectedModel === 'gemini-3.7' ? '1px solid rgba(74, 222, 128, 0.4)' : '1px solid transparent',
+                  borderRadius: '4px',
+                  padding: '3px 8px',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                ✨ Gemini 3.7
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedModel('aarka-2.0')}
+                title="Switch to Aarkaa 2.0 Institutional Engine"
+                style={{
+                  background: selectedModel === 'aarka-2.0' ? 'rgba(74, 222, 128, 0.25)' : 'transparent',
+                  color: selectedModel === 'aarka-2.0' ? '#4ADE80' : '#86EFAC',
+                  border: selectedModel === 'aarka-2.0' ? '1px solid rgba(74, 222, 128, 0.4)' : '1px solid transparent',
+                  borderRadius: '4px',
+                  padding: '3px 8px',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                ⚡ Aarkaa 2.0
+              </button>
+            </div>
+
             <button
               onClick={() => {
                 setMessages([
                   {
                     id: 'cleared',
                     sender: 'assistant',
-                    text: 'Session reset. Enter any financial topic or question below.',
+                    text: `Session reset with **${selectedModel === 'gemini-3.7' ? 'Gemini 3.7' : 'Aarkaa 2.0'}**. Enter any financial topic or modeling question below.`,
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    model: selectedModel,
                   },
                 ]);
               }}
@@ -322,9 +369,9 @@ export default function PlatformAiTutor({
                 background: 'rgba(74, 222, 128, 0.1)',
                 border: '1px solid rgba(74, 222, 128, 0.25)',
                 color: '#DCFCE7',
-                padding: '0.35rem 0.75rem',
+                padding: '0.35rem 0.65rem',
                 borderRadius: '0.45rem',
-                fontSize: '0.75rem',
+                fontSize: '0.72rem',
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
@@ -342,11 +389,12 @@ export default function PlatformAiTutor({
                 width: 32,
                 height: 32,
                 borderRadius: '50%',
-                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                cursor: 'pointer',
                 fontSize: '1rem',
+                transition: 'all 0.2s',
               }}
             >
               ✕
@@ -354,12 +402,12 @@ export default function PlatformAiTutor({
           </div>
         </div>
 
-        {/* Message Container */}
+        {/* Message Log */}
         <div
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: '1.25rem',
+            padding: '1.5rem',
             display: 'flex',
             flexDirection: 'column',
             gap: '1.25rem',
@@ -396,9 +444,14 @@ export default function PlatformAiTutor({
                 >
                   {!isUser && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(74, 222, 128, 0.15)' }}>
-                      <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#4ADE80', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: 'var(--font-serif)' }}>
-                        Institutional Financial Analysis
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#4ADE80', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: 'var(--font-serif)' }}>
+                          Institutional Analysis
+                        </span>
+                        <span style={{ fontSize: '0.62rem', background: 'rgba(74,222,128,0.15)', color: '#86EFAC', padding: '1px 6px', borderRadius: '4px', border: '1px solid rgba(74,222,128,0.25)', fontWeight: 600 }}>
+                          {m.model?.includes('gemini') ? '✨ Gemini 3.7' : '⚡ Aarkaa 2.0'}
+                        </span>
+                      </div>
                       <button
                         onClick={() => copyToClipboard(m.text, m.id)}
                         style={{
