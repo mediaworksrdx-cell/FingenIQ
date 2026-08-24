@@ -667,6 +667,7 @@ code {
 @media (max-width: 1024px) {
   .nav__links { display: none; }
   .nav__hamburger { display: flex; }
+  .nav__desktop-cta { display: none !important; }
 }
 
 /* ─── BUTTONS (Confident Luxury Dynamics) ────────────────────────────────────── */
@@ -2041,19 +2042,130 @@ code {
   flex-shrink: 0;
 }
 
-/* ─── RESPONSIVE MEDIA QUERIES ───────────────────────────────────────────────── */
+/* ─── RESPONSIVE MEDIA QUERIES & MOBILE ALIGNMENT ────────────────────────────── */
 @media (max-width: 768px) {
-  .hero__title { font-size: clamp(2.25rem, 8vw, 3.5rem); }
-  .hero { padding: var(--sp-24) 0 var(--sp-16); }
-  .stat-grid { grid-template-columns: 1fr 1fr; }
-  .welcome-banner { flex-direction: column; align-items: flex-start; }
-  .welcome-banner__streak { align-self: flex-start; }
-  .lesson-player { grid-template-columns: 70px 1fr; }
-  .ai-panel { display: none; }
+  .nav {
+    height: 60px;
+  }
+  .nav__inner {
+    padding: 0 1rem !important;
+    gap: 0.5rem !important;
+    justify-content: space-between !important;
+    max-width: 100vw !important;
+  }
+  .nav__logo {
+    gap: 0.4rem;
+    flex-shrink: 1;
+  }
+  .nav__logo-text {
+    font-size: 1.25rem !important;
+  }
+  .fingeniq-brand {
+    height: 32px !important;
+    width: auto !important;
+    max-width: 140px;
+  }
+  .nav__hamburger {
+    width: 38px;
+    height: 38px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .container {
+    padding: 0 1.25rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .container--narrow {
+    padding: 0 1.25rem !important;
+  }
+  .hero {
+    padding: 5.5rem 0 2.5rem !important;
+    min-height: auto !important;
+  }
+  .hero__content {
+    max-width: 100% !important;
+  }
+  .hero__title {
+    font-size: clamp(1.75rem, 6.5vw, 2.5rem) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.75rem !important;
+    word-break: break-word;
+  }
+  .hero__subtitle {
+    font-size: 0.95rem !important;
+    line-height: 1.55 !important;
+  }
+  .hero__eyebrow {
+    font-size: 0.72rem !important;
+    padding: 4px 10px !important;
+    margin-bottom: 0.75rem !important;
+    display: inline-block;
+  }
+  .hero__actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+  .hero__actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+  .section-title {
+    font-size: clamp(1.5rem, 5.5vw, 2rem) !important;
+    line-height: 1.25 !important;
+  }
+  .values-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  .card {
+    padding: 1.25rem !important;
+  }
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .welcome-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem !important;
+  }
+  .welcome-banner__streak {
+    align-self: flex-start;
+  }
+  .lesson-player {
+    grid-template-columns: 1fr !important;
+  }
+  .ai-panel {
+    display: none;
+  }
 }
+
 @media (max-width: 480px) {
-  .stat-grid { grid-template-columns: 1fr; }
-  .metric-card__value { font-size: var(--text-2xl); }
+  .nav__inner {
+    padding: 0 0.75rem !important;
+  }
+  .container {
+    padding: 0 1rem !important;
+  }
+  .hero {
+    padding: 4.75rem 0 2rem !important;
+  }
+  .hero__title {
+    font-size: 1.75rem !important;
+  }
+  .fingeniq-brand {
+    height: 28px !important;
+    max-width: 125px;
+  }
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+  .metric-card__value {
+    font-size: var(--text-2xl);
+  }
 }
 
 /* ─── GLASSMORPHISM SURFACES (Ivory Light System) ────────────────────────── */

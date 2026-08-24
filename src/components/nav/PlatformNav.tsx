@@ -142,9 +142,10 @@ export default function PlatformNav() {
           </div>
 
           {/* Right side: User & Settings */}
-          <div className="nav__user" ref={dropdownRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {/* AI Tutor Button */}
+          <div className="nav__user" ref={dropdownRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            {/* AI Tutor Button (Desktop Only) */}
             <button
+              className="nav__desktop-cta"
               onClick={() => setAiTutorOpen(true)}
               aria-label="Open AI Financial Tutor"
               style={{
@@ -168,22 +169,10 @@ export default function PlatformNav() {
               <span>AI Tutor</span>
             </button>
 
-            {/* Mobile hamburger */}
-            <button
-              className="nav__hamburger"
-              aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={drawerOpen}
-              onClick={() => setDrawerOpen(v => !v)}
-            >
-              <span style={{ transform: drawerOpen ? 'rotate(45deg) translate(5px, 5px)' : '' }} />
-              <span style={{ opacity: drawerOpen ? 0 : 1 }} />
-              <span style={{ transform: drawerOpen ? 'rotate(-45deg) translate(5px, -5px)' : '' }} />
-            </button>
-
             {/* Avatar button with dropdown trigger */}
             <button
               onClick={() => setUserDropdownOpen(v => !v)}
-              aria-label="User account menu"
+              aria-label={`User: ${displayName}${hasTier ? `, Tier: ${certification.tier}` : ''}`}
               aria-expanded={userDropdownOpen}
               style={{
                 background: 'transparent',
@@ -198,11 +187,21 @@ export default function PlatformNav() {
               <div
                 className={`nav__avatar${hasTier ? ' nav__tier-ring' : ''}`}
                 title={displayName}
-                role="img"
-                aria-label={`User: ${displayName}${hasTier ? `, Tier: ${certification.tier}` : ''}`}
               >
                 {initials}
               </div>
+            </button>
+
+            {/* Mobile hamburger */}
+            <button
+              className="nav__hamburger"
+              aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={drawerOpen}
+              onClick={() => setDrawerOpen(v => !v)}
+            >
+              <span style={{ transform: drawerOpen ? 'rotate(45deg) translate(5px, 5px)' : '' }} />
+              <span style={{ opacity: drawerOpen ? 0 : 1 }} />
+              <span style={{ transform: drawerOpen ? 'rotate(-45deg) translate(5px, -5px)' : '' }} />
             </button>
 
             {/* Desktop User Dropdown Menu */}

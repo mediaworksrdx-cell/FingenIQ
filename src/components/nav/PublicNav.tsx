@@ -99,21 +99,10 @@ export default function PublicNav() {
             ))}
           </div>
 
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
-            {/* Mobile hamburger */}
-            <button
-              className="nav__hamburger"
-              aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={drawerOpen}
-              onClick={() => setDrawerOpen(v => !v)}
-            >
-              <span style={{ transform: drawerOpen ? 'rotate(45deg) translate(5px, 5px)' : '' }} />
-              <span style={{ opacity: drawerOpen ? 0 : 1 }} />
-              <span style={{ transform: drawerOpen ? 'rotate(-45deg) translate(5px, -5px)' : '' }} />
-            </button>
-
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* Desktop CTA (Hidden on mobile via CSS) */}
             {sessionUser ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <div className="nav__desktop-cta" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <a
                   href={portalHref}
                   className="btn btn--brass"
@@ -144,7 +133,7 @@ export default function PublicNav() {
             ) : (
               <a
                 href="/login"
-                className="btn btn--brass"
+                className="btn btn--brass nav__desktop-cta"
                 style={{
                   animation: 'pulseGlow 3s ease-in-out infinite',
                   animationDelay: '1.5s',
@@ -153,6 +142,18 @@ export default function PublicNav() {
                 Enter FingenIQ →
               </a>
             )}
+
+            {/* Mobile hamburger (Visible only on mobile/tablet) */}
+            <button
+              className="nav__hamburger"
+              aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={drawerOpen}
+              onClick={() => setDrawerOpen(v => !v)}
+            >
+              <span style={{ transform: drawerOpen ? 'rotate(45deg) translate(5px, 5px)' : '' }} />
+              <span style={{ opacity: drawerOpen ? 0 : 1 }} />
+              <span style={{ transform: drawerOpen ? 'rotate(-45deg) translate(5px, -5px)' : '' }} />
+            </button>
           </div>
         </div>
       </nav>

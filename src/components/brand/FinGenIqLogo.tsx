@@ -26,7 +26,7 @@ export default function FinGenIqLogo({
         height={height}
         width={width}
         className={`fingeniq-brand ${className}`}
-        style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}
+        style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0, maxWidth: '100%' }}
         aria-label="FinGen IQ"
       >
         <defs>
