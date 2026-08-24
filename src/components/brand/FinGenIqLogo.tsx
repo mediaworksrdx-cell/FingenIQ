@@ -88,7 +88,7 @@ export default function FinGenIqLogo({
           fontWeight="800"
           letterSpacing="-0.03em"
         >
-          <tspan fill="#FFFFFF">Fin</tspan>
+          <tspan fill="#FFFFF0">Fin</tspan>
           <tspan fill="url(#fq-brand-gen)">Gen</tspan>
           <tspan dx="8" fill="url(#fq-brand-iq)">IQ</tspan>
         </text>
