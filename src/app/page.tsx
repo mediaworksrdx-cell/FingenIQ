@@ -32,7 +32,7 @@ export default function Home() {
                   <strong style={{ color: 'var(--ink-100)' }}>FingenIQ</strong> is an institution-grade financial education platform dedicated to helping individuals develop financial intelligence through structured, practical, and AI-powered learning. Whether you are beginning your financial journey or expanding your expertise, FingenIQ equips you with the knowledge, confidence, and skills needed to navigate personal finance, investing, business, and wealth creation.
                 </p>
                 <div className="hero__actions">
-                  <Link href="/login" className="btn btn--brass btn--lg">Enter FingenIQ →</Link>
+                  <a href="/login" className="btn btn--brass btn--lg">Enter FingenIQ →</a>
                   <Link href="/about" className="btn btn--outline btn--lg">Read Our Story</Link>
                 </div>
               </div>

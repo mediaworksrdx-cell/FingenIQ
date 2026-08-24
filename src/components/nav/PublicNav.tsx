@@ -104,7 +104,7 @@ export default function PublicNav() {
 
             {sessionUser ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <Link
+                <a
                   href={portalHref}
                   className="btn btn--brass"
                   style={{
@@ -113,7 +113,7 @@ export default function PublicNav() {
                   }}
                 >
                   Dashboard →
-                </Link>
+                </a>
                 <button
                   onClick={handleLogout}
                   style={{
@@ -132,7 +132,7 @@ export default function PublicNav() {
                 </button>
               </div>
             ) : (
-              <Link
+              <a
                 href="/login"
                 className="btn btn--brass"
                 style={{
@@ -141,7 +141,7 @@ export default function PublicNav() {
                 }}
               >
                 Enter FingenIQ →
-              </Link>
+              </a>
             )}
           </div>
         </div>
@@ -178,14 +178,14 @@ export default function PublicNav() {
         <div style={{ marginTop: 'auto', paddingTop: 'var(--sp-6)', borderTop: 'var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {sessionUser ? (
             <>
-              <Link
+              <a
                 href={portalHref}
                 className="btn btn--brass"
                 style={{ width: '100%', textAlign: 'center', display: 'block' }}
                 onClick={() => setDrawerOpen(false)}
               >
                 Dashboard →
-              </Link>
+              </a>
               <button
                 onClick={() => {
                   setDrawerOpen(false);
@@ -208,14 +208,14 @@ export default function PublicNav() {
               </button>
             </>
           ) : (
-            <Link
+            <a
               href="/login"
               className="btn btn--brass"
               style={{ width: '100%', textAlign: 'center', display: 'block' }}
               onClick={() => setDrawerOpen(false)}
             >
               Enter FingenIQ →
-            </Link>
+            </a>
           )}
         </div>
       </nav>
