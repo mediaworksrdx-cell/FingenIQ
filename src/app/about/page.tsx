@@ -1,6 +1,7 @@
 import PublicNav from '@/components/nav/PublicNav';
 import Footer from '@/components/layout/Footer';
 import Link from 'next/link';
+import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 
 export const metadata = {
   title: 'About Us | FinGenIQ',
@@ -95,63 +96,51 @@ export default function About() {
                 {/* 1. Vision Card (First) */}
                 <div className="card animate-fadeUp" style={{
                   background: '#FFFFFF',
-                  border: '1px solid rgba(180, 83, 9, 0.25)',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
                   borderRadius: '1.25rem',
                   padding: '2.25rem',
-                  boxShadow: '0 10px 30px rgba(180, 83, 9, 0.07)',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '1rem',
+                  gap: '1.25rem',
                   position: 'relative',
                   overflow: 'hidden',
                 }}>
-                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #B45309, #F59E0B)' }} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ width: 48, height: 48, borderRadius: '12px', background: 'rgba(180, 83, 9, 0.1)', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
-                      🔭
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #15803D, #22C55E)' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <div style={{ width: 46, height: 46, borderRadius: '12px', background: 'rgba(22, 163, 74, 0.08)', border: '1px solid rgba(22, 163, 74, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <FinGenIqLogo size={24} showText={false} />
                     </div>
-                    <div>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Long-Term North Star</span>
-                      <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Our Vision</h3>
-                    </div>
+                    <h3 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Our Vision</h3>
                   </div>
-                  <p style={{ fontSize: '1.05rem', color: '#1E293B', lineHeight: 1.65, fontWeight: 500, margin: 0 }}>
+                  <p style={{ fontSize: '1.05rem', color: '#334155', lineHeight: 1.7, fontWeight: 500, margin: 0 }}>
                     To empower individuals, businesses, and families worldwide to build, grow, and preserve wealth through intelligent financial technology, deep business intelligence, and world-class education—powered by a global community of industry leaders and academic experts to create enduring, generational impact.
-                  </p>
-                  <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6, margin: 0 }}>
-                    We envision a world where financial literacy is universally accessible, verifiable, and transformed into enduring economic sovereignty.
                   </p>
                 </div>
 
                 {/* 2. Mission Card (Next) */}
                 <div className="card animate-fadeUp" style={{
                   background: '#FFFFFF',
-                  border: '1px solid rgba(22, 163, 74, 0.25)',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
                   borderRadius: '1.25rem',
                   padding: '2.25rem',
-                  boxShadow: '0 10px 30px rgba(22, 163, 74, 0.07)',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '1rem',
+                  gap: '1.25rem',
                   position: 'relative',
                   overflow: 'hidden',
                   animationDelay: '100ms',
                 }}>
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #15803D, #22C55E)' }} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ width: 48, height: 48, borderRadius: '12px', background: 'rgba(22, 163, 74, 0.1)', color: '#15803D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
-                      🎯
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <div style={{ width: 46, height: 46, borderRadius: '12px', background: 'rgba(22, 163, 74, 0.08)', border: '1px solid rgba(22, 163, 74, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <FinGenIqLogo size={24} showText={false} />
                     </div>
-                    <div>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Core Mandate</span>
-                      <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Our Mission</h3>
-                    </div>
+                    <h3 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Our Mission</h3>
                   </div>
-                  <p style={{ fontSize: '1.05rem', color: '#1E293B', lineHeight: 1.65, fontWeight: 500, margin: 0 }}>
+                  <p style={{ fontSize: '1.05rem', color: '#334155', lineHeight: 1.7, fontWeight: 500, margin: 0 }}>
                     To empower people worldwide with world-class financial knowledge, intelligent technology, and practical tools to make better financial decisions, build lasting wealth, and achieve true financial independence across generations.
-                  </p>
-                  <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6, margin: 0 }}>
-                    We replace financial fear, speculation, and confusion with clarity, discipline, and actionable intelligence through 44 structured lessons and AI-driven personalized feedback.
                   </p>
                 </div>
               </div>
