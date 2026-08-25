@@ -71,7 +71,7 @@ export default function Contact() {
     e.preventDefault();
     setToast({
       title: 'Message Submitted ✉️',
-      desc: `Thank you, ${name}. Our team will respond to ${email} within 1–2 business days.`,
+      desc: `Thank you, ${name}. Our team will respond to ${email} within 1–3 business days.`,
     });
     setName('');
     setEmail('');
@@ -140,7 +140,7 @@ export default function Contact() {
                       <span style={{ fontSize: '1.5rem' }}>📍</span>
                       <div>
                         <div className="font-semi text-primary mb-1">Indian Office</div>
-                        <div className="text-sm font-semibold text-primary">Syntjetix Analytics</div>
+                        <div className="text-sm font-semibold text-primary">Synthetix Analytics</div>
                         <div className="text-sm text-secondary">Chennai, Tamil Nadu</div>
                         <div className="text-xs text-muted mt-1">India</div>
                       </div>
@@ -151,7 +151,7 @@ export default function Contact() {
                       <div>
                         <div className="font-semi text-primary mb-1">Support &amp; Admissions Email</div>
                         <div className="text-sm text-brass">support@fingeniq.com</div>
-                        <div className="text-xs text-muted mt-1">Response within 1–2 business days</div>
+                        <div className="text-xs text-muted mt-1">Response within 1–3 business days</div>
                       </div>
                     </div>
                   </div>
@@ -269,7 +269,7 @@ export default function Contact() {
                       </div>
 
                       <p className="text-xs text-muted" style={{ marginTop: 'var(--sp-2)' }}>
-                        By submitting this form, you agree to our Privacy Policy. Typical response time is 1–2 business days.
+                        By submitting this form, you agree to our Privacy Policy. Typical response time is 1–3 business days.
                       </p>
                     </form>
                   </div>
