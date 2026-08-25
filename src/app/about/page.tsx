@@ -64,11 +64,11 @@ export default function About() {
           <section style={{ padding: '3.5rem 0', background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)', color: '#FFFFFF', textAlign: 'center', position: 'relative' }}>
             <div className="container container--narrow">
               <div className="animate-fadeUp" style={{ padding: '0 1rem' }}>
-                <p style={{ fontSize: 'clamp(1.25rem, 4vw, 1.85rem)', fontWeight: 600, color: '#94A3B8', margin: 0, lineHeight: 1.4 }}>
-                  We don&apos;t teach people to chase markets.
+                <p style={{ fontSize: 'clamp(1.15rem, 3.8vw, 1.65rem)', fontWeight: 600, color: '#94A3B8', margin: 0, lineHeight: 1.4 }}>
+                  We don&apos;t teach people to chase markets. We teach them to think.
                 </p>
-                <h2 style={{ fontSize: 'clamp(2rem, 6vw, 3rem)', fontWeight: 800, color: '#4ADE80', margin: '0.5rem 0 0 0', letterSpacing: '-0.02em', textShadow: '0 0 30px rgba(74, 222, 128, 0.3)' }}>
-                  We teach them to think.
+                <h2 style={{ fontSize: 'clamp(2.2rem, 6.5vw, 3.4rem)', fontWeight: 800, color: '#4ADE80', margin: '0.75rem 0 0 0', letterSpacing: '-0.02em', textShadow: '0 0 30px rgba(74, 222, 128, 0.35)' }}>
+                  Learn. Think. Build. Grow.
                 </h2>
               </div>
             </div>
