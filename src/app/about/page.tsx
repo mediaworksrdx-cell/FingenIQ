@@ -73,6 +73,91 @@ export default function About() {
             </div>
           </section>
 
+          {/* ── MISSION & VISION DUAL CARDS ─────────────────────────────── */}
+          <section className="py-20" id="mission-vision" style={{ padding: '4.5rem 0', background: 'rgba(255, 255, 255, 0.7)', borderBottom: '1px solid rgba(0, 0, 0, 0.06)' }}>
+            <div className="container">
+              <div className="section-header text-center animate-fadeUp" style={{ maxWidth: '640px', margin: '0 auto 3rem auto' }}>
+                <span className="section-label" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Our Guiding Purpose
+                </span>
+                <h2 className="section-title" style={{ fontSize: 'clamp(1.85rem, 5vw, 2.6rem)', fontWeight: 800, color: '#0F172A', marginTop: '0.5rem' }}>
+                  Mission &amp; Vision
+                </h2>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gap: '2rem',
+                maxWidth: '1050px',
+                margin: '0 auto',
+              }}>
+                {/* Mission Card */}
+                <div className="card animate-fadeUp" style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(22, 163, 74, 0.25)',
+                  borderRadius: '1.25rem',
+                  padding: '2.25rem',
+                  boxShadow: '0 10px 30px rgba(22, 163, 74, 0.07)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #15803D, #22C55E)' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ width: 48, height: 48, borderRadius: '12px', background: 'rgba(22, 163, 74, 0.1)', color: '#15803D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+                      🎯
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Core Mandate</span>
+                      <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Our Mission</h3>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '1.05rem', color: '#1E293B', lineHeight: 1.65, fontWeight: 500, margin: 0 }}>
+                    To empower people worldwide with world-class financial knowledge, intelligent technology, and practical tools to make better financial decisions, build lasting wealth, and achieve true financial independence across generations.
+                  </p>
+                  <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6, margin: 0 }}>
+                    We replace financial fear, speculation, and confusion with clarity, discipline, and actionable intelligence through 44 structured lessons and AI-driven personalized feedback.
+                  </p>
+                </div>
+
+                {/* Vision Card */}
+                <div className="card animate-fadeUp" style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(180, 83, 9, 0.25)',
+                  borderRadius: '1.25rem',
+                  padding: '2.25rem',
+                  boxShadow: '0 10px 30px rgba(180, 83, 9, 0.07)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  animationDelay: '100ms',
+                }}>
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #B45309, #F59E0B)' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ width: 48, height: 48, borderRadius: '12px', background: 'rgba(180, 83, 9, 0.1)', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+                      🔭
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Long-Term North Star</span>
+                      <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Our Vision</h3>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '1.05rem', color: '#1E293B', lineHeight: 1.65, fontWeight: 500, margin: 0 }}>
+                    To empower individuals, businesses, and families worldwide to build, grow, and preserve wealth through intelligent financial technology, deep business intelligence, and world-class education—powered by a global community of industry leaders and academic experts to create enduring, generational impact.
+                  </p>
+                  <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6, margin: 0 }}>
+                    We envision a world where financial literacy is universally accessible, verifiable, and transformed into enduring economic sovereignty.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* ── WHAT WE BELIEVE (4 PILLARS) ─────────────────────────────── */}
           <section className="py-20" id="what-we-believe" style={{ padding: '4.5rem 0' }}>
             <div className="container">
