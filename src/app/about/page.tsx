@@ -3,192 +3,328 @@ import Footer from '@/components/layout/Footer';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'About Us',
-  description: 'Financial education should do more than teach theory. We’re turning knowledge into action, confidence, and lasting wealth through structured, AI-powered learning.',
+  title: 'About Us | FinGenIQ',
+  description: 'Money should be understood—not feared. We’re here to change that. FinGenIQ combines AI, financial intelligence, and human expertise.',
 };
 
 export default function About() {
   return (
-    <div className="landing">
+    <div className="landing" style={{ minHeight: '100vh', background: '#FAF8F5' }}>
       <PublicNav />
 
       <div className="page-wrapper">
         <main className="page-main">
 
-          {/* Page Hero */}
-          <section className="hero" id="about-hero" style={{ minHeight: '55vh' }}>
+          {/* ── HERO SECTION ───────────────────────────────────────────── */}
+          <section className="hero" id="about-hero" style={{ padding: '6rem 0 3.5rem 0', position: 'relative', overflow: 'hidden' }}>
             <div className="hero__bg"></div>
             <div className="hero__grid"></div>
             <div className="container relative">
-              <div className="hero__content animate-fadeUp" style={{ maxWidth: '700px' }}>
-                <div className="hero__eyebrow">ℹ️ Our Philosophy</div>
-                <h1 className="hero__title">About <span className="logo-fin">Fin</span><span className="logo-gen">Gen</span><span className="logo-iq"> IQ</span></h1>
-                <p className="hero__subtitle">
-                  Financial education should do more than teach theory. We’re turning knowledge into action, confidence, and lasting wealth through structured, AI-powered learning.
-                </p>
-              </div>
-            </div>
-          </section>
+              <div className="hero__content animate-fadeUp" style={{ maxWidth: '820px', margin: '0 auto', textAlign: 'center' }}>
+                <div className="hero__eyebrow" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.25rem', background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.25)', color: '#15803D', fontWeight: 700, padding: '4px 14px', borderRadius: '9999px', fontSize: '0.8rem' }}>
+                  <span>💡</span> OUR PHILOSOPHY
+                </div>
 
-          {/* Mission */}
-          <section className="py-20 bg-900 border-muted" id="mission">
-            <div className="container container--narrow">
-              <div className="section-header text-center animate-fadeUp">
-                <h2 className="section-title">Our Mission</h2>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-6)', color: 'var(--ink-300)', fontSize: 'var(--text-base)', lineHeight: 'var(--leading-relaxed)' }} className="animate-fadeUp">
-                <p style={{ fontSize: 'var(--text-lg)', color: 'var(--ink-100)', fontWeight: 500, lineHeight: 'var(--leading-relaxed)', borderLeft: '3px solid var(--brass-500)', paddingLeft: 'var(--sp-4)' }}>
-                  To empower people worldwide with world-class financial knowledge and intelligent technology to make better decisions, build lasting wealth, and achieve financial independence across generations.
-                </p>
-                <p>
-                  FingenIQ is an institution-grade financial education platform dedicated to helping individuals develop financial intelligence through structured, practical, and AI-powered learning. Whether you are beginning your financial journey or expanding your expertise, FingenIQ equips you with the knowledge, confidence, and skills needed to navigate personal finance, investing, business, and wealth creation.
-                </p>
-                <p>
-                  Financial success is not determined solely by how much money you earn — it is shaped by how well you understand, manage, grow, and protect your money. Through FingenIQ's structured curriculum, AI-powered tools, and professional certification framework, we ensure that every learner walks away with actionable, real-world financial intelligence.
-                </p>
-              </div>
-            </div>
-          </section>
+                <h1 className="hero__title" style={{ fontSize: 'clamp(2rem, 5.5vw, 3.4rem)', fontWeight: 800, color: '#0F172A', lineHeight: 1.18, marginBottom: '1rem', letterSpacing: '-0.03em' }}>
+                  Money should be understood—<br style={{ display: 'none' }} />not feared.
+                </h1>
 
-          {/* Vision */}
-          <section className="py-20" id="vision">
-            <div className="container container--narrow">
-              <div className="card p-8 card--credential animate-fadeUp">
-                <span className="section-label" style={{ marginBottom: 'var(--sp-4)', display: 'block' }}>Our North Star</span>
-                <h2 className="section-title mb-4">Our Vision</h2>
-                <p className="text-secondary" style={{ fontSize: 'var(--text-lg)', color: 'var(--ink-100)', lineHeight: 'var(--leading-relaxed)', fontWeight: 500 }}>
-                  To empower individuals and businesses worldwide to build, grow, and preserve wealth through intelligent financial technology, deep business intelligence, and world-class education—powered by a global community of industry leaders and academic experts to create enduring, generational impact.
+                <p style={{ fontSize: 'clamp(1.2rem, 3.5vw, 1.6rem)', fontWeight: 700, color: '#15803D', marginBottom: '1.5rem', lineHeight: 1.3 }}>
+                  We’re here to change that.
                 </p>
-              </div>
-            </div>
-          </section>
 
-          {/* Core Values */}
-          <section className="py-20 bg-900 border-muted" id="values">
-            <div className="container">
-              <div className="section-header text-center animate-fadeUp">
-                <span className="section-label">What Drives Us</span>
-                <h2 className="section-title">Our Core Values</h2>
-              </div>
-              <div className="values-grid">
-                <div className="values-card animate-fadeUp" style={{ animationDelay: '100ms' }}>
-                  <div className="values-card__icon-box">🎯</div>
-                  <h3 className="values-card__title">Academic Rigour</h3>
-                  <p className="values-card__desc">Every lesson, module, and assessment is built to institution-grade standards. Our 20-step framework ensures deep, structured comprehension — not surface-level familiarity.</p>
-                </div>
-                <div className="values-card animate-fadeUp" style={{ animationDelay: '150ms' }}>
-                  <div className="values-card__icon-box">🤝</div>
-                  <h3 className="values-card__title">Universal Accessibility</h3>
-                  <p className="values-card__desc">World-class financial education should not be gated by income, geography, or privilege. FingenIQ is built to serve students, professionals, entrepreneurs, and families equally.</p>
-                </div>
-                <div className="values-card animate-fadeUp" style={{ animationDelay: '200ms' }}>
-                  <div className="values-card__icon-box">🤖</div>
-                  <h3 className="values-card__title">AI-Powered Personalisation</h3>
-                  <p className="values-card__desc">Our AI Tutor adapts to each learner's pace, identifies knowledge gaps, generates remediation plans, and provides contextual explanations at every step of the journey.</p>
-                </div>
-                <div className="values-card animate-fadeUp" style={{ animationDelay: '250ms' }}>
-                  <div className="values-card__icon-box">🏅</div>
-                  <h3 className="values-card__title">Verifiable Credentials</h3>
-                  <p className="values-card__desc">Three distinct certification tiers — Completion, Proficiency, and Distinction — with tamper-proof verification codes and a professional marketplace to showcase your achievements.</p>
-                </div>
-                <div className="values-card animate-fadeUp" style={{ animationDelay: '300ms' }}>
-                  <div className="values-card__icon-box">📊</div>
-                  <h3 className="values-card__title">Outcome-Oriented Design</h3>
-                  <p className="values-card__desc">Every component of the platform — lessons, knowledge checks, quizzes, assignments, module assessments, and the capstone — is designed to produce measurable financial competency gains.</p>
-                </div>
-                <div className="values-card animate-fadeUp" style={{ animationDelay: '350ms' }}>
-                  <div className="values-card__icon-box">🌱</div>
-                  <h3 className="values-card__title">Lifelong Learning</h3>
-                  <p className="values-card__desc">Financial education is not a one-time event. FingenIQ is built as a lifelong companion — continuously updated to reflect regulatory changes, market developments, and evolving best practices.</p>
-                </div>
-                <div className="values-card animate-fadeUp" style={{ animationDelay: '400ms' }}>
-                  <div className="values-card__icon-box">🛡️</div>
-                  <h3 className="values-card__title">Institutional Integrity</h3>
-                  <p className="values-card__desc">Zero commercial bias and fiduciary-level educational ethics. Content is free from sponsored product pitches, proprietary fund promotions, and financial conflicts of interest.</p>
-                </div>
-                <div className="values-card animate-fadeUp" style={{ animationDelay: '450ms' }}>
-                  <div className="values-card__icon-box">🌐</div>
-                  <h3 className="values-card__title">Global Market Standards</h3>
-                  <p className="values-card__desc">Curriculum harmonized across global benchmark standards including CFA Institute guidelines, CA/ICWA principles, and international wealth management bodies.</p>
-                </div>
-              </div>
-            </div>
-          </section>
+                <p className="hero__subtitle" style={{ fontSize: '1.1rem', color: '#475569', lineHeight: 1.65, maxWidth: '680px', margin: '0 auto 1.5rem auto' }}>
+                  <strong style={{ color: '#0F172A' }}>FinGenIQ</strong> combines AI, financial intelligence, and human expertise to make financial education radically simpler, smarter, and more practical.
+                </p>
 
-          {/* Differentiators */}
-          <section className="py-20" id="differentiation">
-            <div className="container">
-              <div className="section-header text-center animate-fadeUp">
-                <span className="section-label">Platform Differentiators</span>
-                <h2 className="section-title">What Makes FingenIQ Different</h2>
-                <p className="section-subtitle mx-auto" style={{ marginTop: 'var(--sp-4)' }}>Most financial education platforms offer scattered videos and generic content. FingenIQ is built from the ground up as a structured, outcome-driven credentialing body.</p>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--sp-8)', marginTop: 'var(--sp-8)' }}>
-                <div className="animate-fadeUp">
-                  <h3 className="text-lg font-semi text-brass mb-4">The FingenIQ Difference</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
-                    <div className="card p-4" style={{ display: 'flex', gap: 'var(--sp-3)', alignItems: 'start' }}>
-                      <span className="text-brass font-bold">01</span>
-                      <div>
-                        <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-1)' }}>20-Step Lesson Framework</div>
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Every lesson follows a structured 20-step methodology spanning orientation, concept delivery, visual explanation, case study, knowledge check, and reflection.</p>
-                      </div>
-                    </div>
-                    <div className="card p-4" style={{ display: 'flex', gap: 'var(--sp-3)', alignItems: 'start' }}>
-                      <span className="text-brass font-bold">02</span>
-                      <div>
-                        <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-1)' }}>Weighted Scoring Architecture</div>
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Certification is determined by a composite weighted score: KCs (10%), Assignments (15%), Quizzes (25%), Module Assessments (30%), and Capstone (20%).</p>
-                      </div>
-                    </div>
-                    <div className="card p-4" style={{ display: 'flex', gap: 'var(--sp-3)', alignItems: 'start' }}>
-                      <span className="text-brass font-bold">03</span>
-                      <div>
-                        <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-1)' }}>Proctored Assessments</div>
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Module-level assessments are conducted under remote proctoring with webcam monitoring and tab-switch detection, ensuring the integrity of issued credentials.</p>
-                      </div>
-                    </div>
+                {/* Collaboration Box */}
+                <div style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
+                  borderRadius: '1rem',
+                  padding: '1.25rem 1.5rem',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+                  maxWidth: '700px',
+                  margin: '1.75rem auto 0 auto',
+                  textAlign: 'center',
+                }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.4rem' }}>
+                    🌐 Global Collaborative Intelligence
                   </div>
-                </div>
-
-                <div className="animate-fadeUp" style={{ animationDelay: '100ms' }}>
-                  <h3 className="text-lg font-semi text-brass mb-4">Professional Recognition</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
-                    <div className="card p-4" style={{ display: 'flex', gap: 'var(--sp-3)', alignItems: 'start' }}>
-                      <span className="text-brass font-bold">04</span>
-                      <div>
-                        <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-1)' }}>Global Curriculum Benchmarking</div>
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>FingenIQ is built with global benchmark standards in mind. Our curriculum is mapped against CA/ICWA, CFA Level I, and BPF professional competencies.</p>
-                      </div>
-                    </div>
-                    <div className="card p-4" style={{ display: 'flex', gap: 'var(--sp-3)', alignItems: 'start' }}>
-                      <span className="text-brass font-bold">05</span>
-                      <div>
-                        <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-1)' }}>Talent Marketplace</div>
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Certified learners gain access to a professional talent marketplace where employers can discover, filter, and recruit verified FingenIQ-certified financial talent.</p>
-                      </div>
-                    </div>
-                    <div className="card p-4" style={{ display: 'flex', gap: 'var(--sp-3)', alignItems: 'start' }}>
-                      <span className="text-brass font-bold">06</span>
-                      <div>
-                        <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-1)' }}>Shareable Verified Credentials</div>
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>Every issued credential carries a unique tamper-evident verification code that can be shared publicly on LinkedIn, resumes, and professional portfolios.</p>
-                      </div>
-                    </div>
-                  </div>
+                  <p style={{ margin: 0, fontSize: '0.95rem', color: '#334155', lineHeight: 1.55 }}>
+                    Built through the collaboration of <strong>Vivin Synergy (UAE)</strong> and <strong>Synthetix Analytics (India)</strong>, FinGenIQ is designed to help people understand money, make better decisions, and build wealth that lasts for generations.
+                  </p>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* CTA */}
-          <section className="py-20 bg-900 border-muted" style={{ textAlign: 'center' }}>
+          {/* ── BOLD MANIFESTO BANNER ───────────────────────────────────── */}
+          <section style={{ padding: '3.5rem 0', background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)', color: '#FFFFFF', textAlign: 'center', position: 'relative' }}>
+            <div className="container container--narrow">
+              <div className="animate-fadeUp" style={{ padding: '0 1rem' }}>
+                <p style={{ fontSize: 'clamp(1.25rem, 4vw, 1.85rem)', fontWeight: 600, color: '#94A3B8', margin: 0, lineHeight: 1.4 }}>
+                  We don&apos;t teach people to chase markets.
+                </p>
+                <h2 style={{ fontSize: 'clamp(2rem, 6vw, 3rem)', fontWeight: 800, color: '#4ADE80', margin: '0.5rem 0 0 0', letterSpacing: '-0.02em', textShadow: '0 0 30px rgba(74, 222, 128, 0.3)' }}>
+                  We teach them to think.
+                </h2>
+              </div>
+            </div>
+          </section>
+
+          {/* ── WHAT WE BELIEVE (4 PILLARS) ─────────────────────────────── */}
+          <section className="py-20" id="what-we-believe" style={{ padding: '4.5rem 0' }}>
+            <div className="container">
+              <div className="section-header text-center animate-fadeUp" style={{ maxWidth: '640px', margin: '0 auto 3rem auto' }}>
+                <span className="section-label" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Our Core Pillars
+                </span>
+                <h2 className="section-title" style={{ fontSize: 'clamp(1.85rem, 5vw, 2.6rem)', fontWeight: 800, color: '#0F172A', marginTop: '0.5rem', marginBottom: '0.75rem' }}>
+                  What We Believe
+                </h2>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(206,174,86,0.12)', border: '1px solid rgba(206,174,86,0.3)', padding: '6px 16px', borderRadius: '9999px', color: '#B45309', fontWeight: 700, fontSize: '0.88rem' }}>
+                  Understand. Decide. Build. Protect.
+                </div>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                gap: '1.5rem',
+                maxWidth: '1100px',
+                margin: '0 auto',
+              }}>
+                {/* Pillar 1 */}
+                <div className="card animate-fadeUp" style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
+                  borderRadius: '1rem',
+                  padding: '1.75rem',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '0.75rem', background: 'rgba(22,163,74,0.1)', color: '#15803D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                    🤖
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                    AI Intelligence
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                    Turn complex financial information into clear, actionable decisions with intuitive generative modeling and real-time guidance.
+                  </p>
+                </div>
+
+                {/* Pillar 2 */}
+                <div className="card animate-fadeUp" style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
+                  borderRadius: '1rem',
+                  padding: '1.75rem',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                  animationDelay: '100ms',
+                }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '0.75rem', background: 'rgba(37,99,235,0.1)', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                    🌐
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                    Real-World Knowledge
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                    Learn from people who have actually worked with capital, global markets, financial institutions, and enterprise businesses.
+                  </p>
+                </div>
+
+                {/* Pillar 3 */}
+                <div className="card animate-fadeUp" style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
+                  borderRadius: '1rem',
+                  padding: '1.75rem',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                  animationDelay: '150ms',
+                }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '0.75rem', background: 'rgba(180,83,9,0.1)', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                    📈
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                    Long-Term Wealth
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                    Focus on building, growing, and protecting enduring wealth across compounding cycles—not short-term speculation or noise.
+                  </p>
+                </div>
+
+                {/* Pillar 4 */}
+                <div className="card animate-fadeUp" style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
+                  borderRadius: '1rem',
+                  padding: '1.75rem',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                  animationDelay: '200ms',
+                }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '0.75rem', background: 'rgba(124,58,237,0.1)', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                    🎯
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                    Personalized Learning
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                    The right financial knowledge and interactive simulators tailored for every stage of personal, professional, and family life.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ── WHO WE EMPOWER ─────────────────────────────────────────── */}
+          <section className="py-20" id="who-we-empower" style={{ padding: '4.5rem 0', background: 'rgba(255, 255, 255, 0.6)', borderTop: '1px solid rgba(0, 0, 0, 0.06)', borderBottom: '1px solid rgba(0, 0, 0, 0.06)' }}>
+            <div className="container">
+              <div className="section-header text-center animate-fadeUp" style={{ maxWidth: '600px', margin: '0 auto 3rem auto' }}>
+                <span className="section-label" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Targeted Impact
+                </span>
+                <h2 className="section-title" style={{ fontSize: 'clamp(1.85rem, 5vw, 2.6rem)', fontWeight: 800, color: '#0F172A', marginTop: '0.5rem' }}>
+                  Who We Empower
+                </h2>
+                <p style={{ fontSize: '1rem', color: '#64748B', marginTop: '0.5rem' }}>
+                  Structured pathways built to empower every individual at every milestone.
+                </p>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '1.5rem',
+                maxWidth: '1000px',
+                margin: '0 auto',
+              }}>
+                {/* Students */}
+                <div className="card animate-fadeUp" style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(22,163,74,0.2)',
+                  borderRadius: '1.25rem',
+                  padding: '2rem',
+                  boxShadow: '0 6px 24px rgba(22, 163, 74, 0.06)',
+                  textAlign: 'center',
+                }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🎓</div>
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                    Students
+                  </h3>
+                  <p style={{ fontSize: '1rem', fontWeight: 600, color: '#15803D', marginBottom: '0.75rem' }}>
+                    Start financially smart.
+                  </p>
+                  <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                    Build rock-solid money habits, master banking fundamentals, understand credit, and start compound investing early.
+                  </p>
+                </div>
+
+                {/* Professionals */}
+                <div className="card animate-fadeUp" style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(37,99,235,0.2)',
+                  borderRadius: '1.25rem',
+                  padding: '2rem',
+                  boxShadow: '0 6px 24px rgba(37, 99, 235, 0.06)',
+                  textAlign: 'center',
+                  animationDelay: '100ms',
+                }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>💼</div>
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                    Professionals
+                  </h3>
+                  <p style={{ fontSize: '1rem', fontWeight: 600, color: '#2563EB', marginBottom: '0.75rem' }}>
+                    Turn income into long-term financial independence.
+                  </p>
+                  <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                    Optimize equity portfolios, master corporate finance &amp; valuation, and convert active earning power into self-sustaining capital.
+                  </p>
+                </div>
+
+                {/* Families */}
+                <div className="card animate-fadeUp" style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(180,83,9,0.2)',
+                  borderRadius: '1.25rem',
+                  padding: '2rem',
+                  boxShadow: '0 6px 24px rgba(180, 83, 9, 0.06)',
+                  textAlign: 'center',
+                  animationDelay: '200ms',
+                }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🏡</div>
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                    Families
+                  </h3>
+                  <p style={{ fontSize: '1rem', fontWeight: 600, color: '#B45309', marginBottom: '0.75rem' }}>
+                    Build wealth that can outlive a generation.
+                  </p>
+                  <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                    Safeguard estates, protect assets from downside risk, navigate insurance, and establish multi-generational financial freedom.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ── MISSION SUMMARY & CTA ──────────────────────────────────── */}
+          <section style={{ padding: '5rem 0', textAlign: 'center', background: '#FAF8F5' }}>
             <div className="container container--narrow animate-fadeUp">
-              <h2 className="section-title mb-4">Start Your Financial Education Journey</h2>
-              <p className="text-secondary mx-auto mb-8" style={{ maxWidth: '440px' }}>44 lessons, 8 modules, 3 credential tiers, and an AI tutor — all waiting for you inside the platform.</p>
-              <div style={{ display: 'flex', gap: 'var(--sp-4)', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href="/dashboard" className="btn btn--brass btn--lg">Enter FingenIQ →</Link>
-                <Link href="/contact" className="btn btn--outline btn--lg">Get in Touch</Link>
+              <div style={{
+                background: 'linear-gradient(135deg, #0F172A 0%, #15803D 100%)',
+                borderRadius: '1.5rem',
+                padding: '3rem 2rem',
+                color: '#FFFFFF',
+                boxShadow: '0 12px 40px rgba(22, 163, 74, 0.15)',
+              }}>
+                <h2 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', fontWeight: 800, color: '#FFFFFF', marginBottom: '1rem', lineHeight: 1.25 }}>
+                  FinGenIQ helps people understand money, make smarter financial decisions, and build lasting wealth.
+                </h2>
+                <p style={{ fontSize: '1rem', color: 'rgba(255, 255, 255, 0.85)', maxWidth: '520px', margin: '0 auto 2rem auto', lineHeight: 1.6 }}>
+                  Join 44 comprehensive lessons across 8 foundational modules with AI-powered personalized mentoring.
+                </p>
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <Link
+                    href="/login"
+                    className="btn btn--brass btn--lg"
+                    style={{
+                      background: 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)',
+                      color: '#FFFFFF',
+                      padding: '0.85rem 1.75rem',
+                      fontWeight: 700,
+                      borderRadius: '0.65rem',
+                      border: 'none',
+                    }}
+                  >
+                    Enter FinGenIQ →
+                  </Link>
+                  <Link
+                    href="/curriculum"
+                    className="btn btn--outline btn--lg"
+                    style={{
+                      background: 'rgba(255,255,255,0.1)',
+                      color: '#FFFFFF',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      padding: '0.85rem 1.75rem',
+                      fontWeight: 600,
+                      borderRadius: '0.65rem',
+                    }}
+                  >
+                    Explore Curriculum
+                  </Link>
+                </div>
               </div>
             </div>
           </section>
