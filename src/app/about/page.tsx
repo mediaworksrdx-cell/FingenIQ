@@ -5,7 +5,7 @@ import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 
 export const metadata = {
   title: 'About Us | FinGenIQ',
-  description: 'Money should be understood—not feared. We’re here to change that. FinGenIQ combines AI, financial intelligence, and human expertise.',
+  description: 'Financial clarity belongs to everyone. From families to governments, we build the simple systems that secure long-term wealth.',
 };
 
 export default function About() {
@@ -26,12 +26,12 @@ export default function About() {
                   <span>💡</span> OUR PHILOSOPHY
                 </div>
 
-                <h1 className="hero__title" style={{ fontSize: 'clamp(2rem, 5.5vw, 3.4rem)', fontWeight: 800, color: '#0F172A', lineHeight: 1.18, marginBottom: '1rem', letterSpacing: '-0.03em' }}>
-                  Money should be understood—<br style={{ display: 'none' }} />not feared.
+                <h1 className="hero__title" style={{ fontSize: 'clamp(2rem, 5.5vw, 3.4rem)', fontWeight: 800, color: '#0F172A', lineHeight: 1.18, marginBottom: '1.25rem', letterSpacing: '-0.03em' }}>
+                  Financial clarity belongs to everyone.
                 </h1>
 
-                <p style={{ fontSize: 'clamp(1.2rem, 3.5vw, 1.6rem)', fontWeight: 700, color: '#15803D', marginBottom: '1.5rem', lineHeight: 1.3 }}>
-                  We’re here to change that.
+                <p style={{ fontSize: 'clamp(1.15rem, 3.2vw, 1.45rem)', fontWeight: 600, color: '#15803D', marginBottom: '1.5rem', lineHeight: 1.4, maxWidth: '720px', margin: '0 auto 1.5rem auto' }}>
+                  From families to governments, we build the simple systems that secure long-term wealth.
                 </p>
 
                 <p className="hero__subtitle" style={{ fontSize: '1.1rem', color: '#475569', lineHeight: 1.65, maxWidth: '680px', margin: '0 auto 1.5rem auto' }}>
@@ -162,13 +162,7 @@ export default function About() {
                 </div>
               </div>
 
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                gap: '1.5rem',
-                maxWidth: '1100px',
-                margin: '0 auto',
-              }}>
+              <div className="pillars-2x2-grid">
                 {/* Pillar 1 */}
                 <div className="card animate-fadeUp" style={{
                   background: '#FFFFFF',

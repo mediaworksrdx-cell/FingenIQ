@@ -2675,3 +2675,21 @@ html, body {
   .lesson-gallery__arrow--left { left: 6px; }
   .lesson-gallery__arrow--right { right: 6px; }
 }
+
+/* Pillars 2x2 Quadrant Grid */
+.pillars-2x2-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .pillars-2x2-grid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    gap: 1.25rem;
+  }
+}
+
