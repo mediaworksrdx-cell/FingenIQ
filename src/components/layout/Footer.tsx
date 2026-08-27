@@ -15,10 +15,10 @@ export default function Footer() {
         <div className="footer__inner">
           {/* Brand Column */}
           <div style={{ maxWidth: '360px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.12em', color: '#15803D', textTransform: 'uppercase', marginBottom: '0.65rem' }}>
-              <span style={{ width: '16px', height: '2px', background: 'linear-gradient(90deg, transparent, #16A34A)' }} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.12em', color: '#2563EB', textTransform: 'uppercase', marginBottom: '0.65rem' }}>
+              <span style={{ width: '16px', height: '2px', background: 'linear-gradient(90deg, transparent, #2563EB)' }} />
               <span>CONTINUOUS LEARNING. LIMITLESS GROWTH.</span>
-              <span style={{ width: '16px', height: '2px', background: 'linear-gradient(90deg, #16A34A, transparent)' }} />
+              <span style={{ width: '16px', height: '2px', background: 'linear-gradient(90deg, #2563EB, transparent)' }} />
             </div>
 
             <Link href="/" style={{ textDecoration: 'none', display: 'block', marginBottom: 'var(--sp-4)' }}>

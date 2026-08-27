@@ -40,7 +40,17 @@ export async function createCredentialAction(adminToken: string | undefined, for
       return { success: false, error: 'Email address already registered.' };
     }
 
-    const userId = 'U_' + generateSecureToken().substring(0, 10);
+    const customUserId = (formData.get('customUserId') as string || '').trim();
+    const customPassword = (formData.get('customPassword') as string || '').trim();
+
+    if (customUserId) {
+      const idExists = db.prepare('SELECT id FROM users WHERE id = ?').get(customUserId);
+      if (idExists) {
+        return { success: false, error: `User ID "${customUserId}" is already in use. Please choose another.` };
+      }
+    }
+
+    const userId = customUserId || ('U_' + generateSecureToken().substring(0, 10));
     const issuedAt = new Date().toISOString();
 
     let tempPassword = '';
@@ -48,19 +58,27 @@ export async function createCredentialAction(adminToken: string | undefined, for
     let activationToken: string | null = null;
     let activationTokenExpiresAt: string | null = null;
     let accountStatus = 'pending_activation';
+    let mustReset = 1;
 
-    if (deliveryMethod === 'password') {
+    if (customPassword) {
+      tempPassword = customPassword;
+      passwordHash = bcrypt.hashSync(customPassword, 12);
+      accountStatus = 'active';
+      mustReset = 0; // Direct admin-assigned password allows immediate login
+    } else if (deliveryMethod === 'password') {
       // Option 1: temp password
       // Generate a structured temp password: Temp@ + 8 random hex chars
       tempPassword = 'Temp@' + generateSecureToken().substring(0, 8);
       passwordHash = bcrypt.hashSync(tempPassword, 12);
       accountStatus = 'active'; // ready to login directly, but mustResetPassword remains true
+      mustReset = 1;
     } else {
       // Option 2: activation link token
       activationToken = generateSecureToken();
       const expiry = new Date();
       expiry.setHours(expiry.getHours() + 72); // 72 hours
       activationTokenExpiresAt = expiry.toISOString();
+      mustReset = 1;
     }
 
     db.prepare(`
@@ -70,7 +88,7 @@ export async function createCredentialAction(adminToken: string | undefined, for
         loginCategory, businessEntityId, packageId
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      userId, name, email, role, passwordHash, 1, adminId,
+      userId, name, email, role, passwordHash, mustReset, adminId,
       activationToken, activationTokenExpiresAt, accountStatus, validityPeriod, issuedAt,
       loginCategory, businessEntityId, packageId
     );
@@ -481,10 +499,14 @@ export async function saveLessonFullContentAction(adminToken: string | undefined
         if (youtubeId !== undefined) lessonData.youtubeId = youtubeId || null;
         if (pdfPath !== undefined) lessonData.pdfPath = pdfPath || null;
         if (parsedGalleryImages.length > 0) lessonData.galleryImages = parsedGalleryImages;
-        fs.writeFileSync(filePath, JSON.stringify(lessonData, null, 2), 'utf8');
+        try {
+          fs.writeFileSync(filePath, JSON.stringify(lessonData, null, 2), 'utf8');
+        } catch (e: any) {
+          console.warn('Failed to save lesson full content:', e.message);
+        }
       }
-    } catch {
-      // ignore disk sync failure
+    } catch (e: any) {
+      console.warn('Failed to process static lesson file:', e.message);
     }
 
     logAudit('LESSON_MODIFIED', adminId, lessonId, null, { title, updatedAt });
@@ -1052,4 +1074,217 @@ export async function resetChatbotQAsAction(adminToken: string | undefined) {
   }
 }
 
+// ── USER MANAGEMENT ACTIONS ────────────────────────────────
+export async function editUserAction(adminToken: string | undefined, data: { userId: string, newUserId?: string, name?: string, email?: string, role?: string, loginCategory?: string, packageId?: string, businessEntityId?: string, newPassword?: string }) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!data.userId) return { success: false, error: 'User ID is required.' };
+    
+    // Check if new user ID is requested and available
+    if (data.newUserId && data.newUserId !== data.userId) {
+      const idExists = db.prepare('SELECT id FROM users WHERE id = ?').get(data.newUserId);
+      if (idExists) return { success: false, error: `User ID "${data.newUserId}" is already in use.` };
 
+      // Update foreign key references in a transaction
+      db.transaction(() => {
+        db.prepare('UPDATE sessions SET userId = ? WHERE userId = ?').run(data.newUserId, data.userId);
+        db.prepare('UPDATE renewal_history SET userId = ? WHERE userId = ?').run(data.newUserId, data.userId);
+        db.prepare('UPDATE user_progress SET userId = ? WHERE userId = ?').run(data.newUserId, data.userId);
+        db.prepare('UPDATE user_certifications SET userId = ? WHERE userId = ?').run(data.newUserId, data.userId);
+        db.prepare('UPDATE community_articles SET author_id = ? WHERE author_id = ?').run(data.newUserId, data.userId);
+        db.prepare('UPDATE community_comments SET user_id = ? WHERE user_id = ?').run(data.newUserId, data.userId);
+        db.prepare('UPDATE users SET id = ? WHERE id = ?').run(data.newUserId, data.userId);
+      })();
+      data.userId = data.newUserId;
+    }
+
+    if (data.email) {
+      const emailExists = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(data.email, data.userId);
+      if (emailExists) {
+        return { success: false, error: 'Email address already registered to another user.' };
+      }
+    }
+
+    const updates: string[] = [];
+    const values: any[] = [];
+    
+    if (data.name !== undefined) { updates.push('name = ?'); values.push(data.name); }
+    if (data.email !== undefined) { updates.push('email = ?'); values.push(data.email); }
+    if (data.role !== undefined) { updates.push('role = ?'); values.push(data.role); }
+    if (data.loginCategory !== undefined) { updates.push('loginCategory = ?'); values.push(data.loginCategory); }
+    if (data.packageId !== undefined) { updates.push('packageId = ?'); values.push(data.packageId); }
+    if (data.businessEntityId !== undefined) { updates.push('businessEntityId = ?'); values.push(data.businessEntityId); }
+    if (data.newPassword) {
+      const passwordHash = bcrypt.hashSync(data.newPassword, 12);
+      updates.push('passwordHash = ?, mustResetPassword = 0');
+      values.push(passwordHash);
+    }
+
+    if (updates.length > 0) {
+      values.push(data.userId);
+      db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).run(...values);
+      logAudit('edit_user', adminId, data.userId, null, { updates: data });
+      revalidatePath('/admin/credentials');
+    }
+
+    return { success: true, newUserId: data.userId };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function createNewLessonAction(adminToken: string | undefined, data: { lessonId: string; moduleId: string; title: string; duration?: string; level?: string; summary?: string }) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!data.lessonId || !data.moduleId || !data.title) {
+      return { success: false, error: 'Lesson ID, Module ID, and Title are required.' };
+    }
+
+    const id = data.lessonId.trim();
+    const existing = db.prepare('SELECT lessonId FROM lesson_overrides WHERE lessonId = ?').get(id);
+    if (existing) {
+      return { success: false, error: `Lesson with ID "${id}" already exists.` };
+    }
+
+    const now = new Date().toISOString();
+    db.prepare(`
+      INSERT INTO lesson_overrides (
+        lessonId, moduleId, title, duration, level, summary, updatedAt, updatedByAdminId
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id,
+      data.moduleId,
+      data.title,
+      data.duration || '45 min',
+      data.level || 'Foundational',
+      data.summary || '',
+      now,
+      adminId
+    );
+
+    logAudit('CREATE_LESSON', adminId, id, null, data);
+    revalidatePath('/admin/credentials');
+    revalidatePath('/lessons');
+    return { success: true, lessonId: id };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deleteLessonAction(adminToken: string | undefined, lessonId: string) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!lessonId) return { success: false, error: 'Lesson ID is required.' };
+
+    db.prepare('DELETE FROM lesson_overrides WHERE lessonId = ?').run(lessonId);
+    logAudit('DELETE_LESSON', adminId, lessonId, null, null);
+    revalidatePath('/admin/credentials');
+    revalidatePath('/lessons');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deleteUserAction(adminToken: string | undefined, userId: string) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!userId) return { success: false, error: 'User ID is required.' };
+
+    const user = db.prepare('SELECT id FROM users WHERE id = ?').get(userId);
+    if (!user) return { success: false, error: 'User not found.' };
+
+    // Delete user
+    db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+    
+    logAudit('delete_user', adminId, userId, null, null);
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function changeUserPasswordAction(adminToken: string | undefined, userId: string, newPassword: string) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!userId || !newPassword) return { success: false, error: 'User ID and new password are required.' };
+
+    const passwordHash = bcrypt.hashSync(newPassword, 12);
+    db.prepare('UPDATE users SET passwordHash = ?, mustResetPassword = 0 WHERE id = ?').run(passwordHash, userId);
+    
+    logAudit('change_password', adminId, userId, null, null);
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+// ── ENTITY & PACKAGE MANAGEMENT ACTIONS ────────────────────────────────
+export async function editEntityAction(adminToken: string | undefined, data: { entityId: string, name?: string, contactEmail?: string, contactPhone?: string, address?: string, maxUsers?: number }) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!data.entityId) return { success: false, error: 'Entity ID is required.' };
+
+    const updates: string[] = [];
+    const values: any[] = [];
+    
+    if (data.name !== undefined) { updates.push('name = ?'); values.push(data.name); }
+    if (data.contactEmail !== undefined) { updates.push('contactEmail = ?'); values.push(data.contactEmail); }
+    if (data.contactPhone !== undefined) { updates.push('contactPhone = ?'); values.push(data.contactPhone); }
+    if (data.address !== undefined) { updates.push('address = ?'); values.push(data.address); }
+    if (data.maxUsers !== undefined) { updates.push('maxUsers = ?'); values.push(data.maxUsers); }
+
+    if (updates.length > 0) {
+      values.push(data.entityId);
+      db.prepare(`UPDATE business_entities SET ${updates.join(', ')} WHERE id = ?`).run(...values);
+      logAudit('edit_entity', adminId, data.entityId, null, { updates: data });
+      revalidatePath('/admin/credentials');
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deleteEntityAction(adminToken: string | undefined, entityId: string) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!entityId) return { success: false, error: 'Entity ID is required.' };
+
+    const result = db.prepare('SELECT COUNT(*) as count FROM users WHERE businessEntityId = ?').get(entityId) as any;
+    if (result && result.count > 0) {
+      return { success: false, error: 'Cannot delete entity with linked users. Remove or reassign users first.' };
+    }
+
+    db.prepare('DELETE FROM business_entities WHERE id = ?').run(entityId);
+    
+    logAudit('delete_entity', adminId, entityId, null, null);
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deletePackageAction(adminToken: string | undefined, packageId: string) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!packageId) return { success: false, error: 'Package ID is required.' };
+
+    const result = db.prepare('SELECT COUNT(*) as count FROM users WHERE packageId = ?').get(packageId) as any;
+    if (result && result.count > 0) {
+      return { success: false, error: 'Cannot delete package with linked users.' };
+    }
+
+    db.prepare('DELETE FROM packages WHERE id = ?').run(packageId);
+    
+    logAudit('delete_package', adminId, packageId, null, null);
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}

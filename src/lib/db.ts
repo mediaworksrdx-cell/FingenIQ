@@ -85,6 +85,27 @@ try {
 } catch {
   // Column already exists
 }
+try {
+  db.exec(`ALTER TABLE lesson_overrides ADD COLUMN moduleId TEXT;`);
+} catch {
+  // Column already exists
+}
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS enquiries (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    name        TEXT NOT NULL,
+    email       TEXT NOT NULL,
+    phone       TEXT,
+    category    TEXT NOT NULL,
+    inquiryType TEXT,
+    subject     TEXT,
+    message     TEXT NOT NULL,
+    recipient   TEXT DEFAULT 'shivaram@vivinfacilitators.com',
+    status      TEXT DEFAULT 'new',
+    createdAt   TEXT DEFAULT (datetime('now'))
+  );
+`);
 const now = new Date().toISOString();
 const seedPackages = [
   { id: 'PKG_B2C_STARTER',     name: 'B2C Starter',         desc: 'Individual — Foundational modules (M1–M3)',                loginCategory: 'b2c',   modules: '["M1","M2","M3"]',                                     days: 90  },

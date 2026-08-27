@@ -60,6 +60,8 @@ export default function Contact() {
   const [message, setMessage] = useState('');
   const [toast, setToast] = useState<{ title: string; desc: string } | null>(null);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const config = TAB_CONFIG[activeTab];
 
   const handleTabChange = (tab: TabKey) => {
@@ -67,19 +69,51 @@ export default function Contact() {
     setType('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setToast({
-      title: 'Message Submitted ✉️',
-      desc: `Thank you, ${name}. Our team will respond to ${email} within 1–3 business days.`,
-    });
-    setName('');
-    setEmail('');
-    setPhone('');
-    setType('');
-    setSubject('');
-    setMessage('');
-    setTimeout(() => setToast(null), 5000);
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          category: activeTab,
+          inquiryType: type,
+          subject,
+          message,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setToast({
+          title: 'Enquiry Submitted Successfully ✉️',
+          desc: `Thank you, ${name}. Your message has been sent to our institutional desk. We will get back to you at ${email} shortly.`,
+        });
+        setName('');
+        setEmail('');
+        setPhone('');
+        setType('');
+        setSubject('');
+        setMessage('');
+      } else {
+        setToast({
+          title: 'Submission Issue ⚠️',
+          desc: data.error || 'Failed to submit enquiry. Please try again.',
+        });
+      }
+    } catch {
+      setToast({
+        title: 'Submission Issue ❌',
+        desc: 'Network error. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setToast(null), 6000);
+    }
   };
 
   return (
@@ -147,9 +181,9 @@ export default function Contact() {
                     </div>
 
                     <div className="card p-5" style={{ display: 'flex', gap: 'var(--sp-4)', alignItems: 'start' }}>
-                      <span style={{ fontSize: '1.5rem' }}>✉️</span>
+                      <span style={{ fontSize: '1.5rem' }}>🛡️</span>
                       <div>
-                        <div className="font-semi text-primary mb-1">Support &amp; Admissions Email</div>
+                        <div className="font-semi text-primary mb-1">General Support</div>
                         <div className="text-sm text-brass">support@fingeniq.com</div>
                         <div className="text-xs text-muted mt-1">Response within 1–3 business days</div>
                       </div>
@@ -263,8 +297,8 @@ export default function Contact() {
                       </div>
 
                       <div style={{ display: 'flex', gap: 'var(--sp-3)', marginTop: 'var(--sp-2)' }}>
-                        <button type="submit" className="btn btn--brass" style={{ flex: 1 }}>
-                          Submit Inquiry →
+                        <button type="submit" disabled={isSubmitting} className="btn btn--brass" style={{ flex: 1, opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
+                          {isSubmitting ? 'Sending Enquiry...' : 'Submit Inquiry →'}
                         </button>
                       </div>
 

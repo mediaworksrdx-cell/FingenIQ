@@ -499,6 +499,13 @@ code {
   -webkit-text-fill-color: transparent;
   font-weight: 800;
 }
+.about-hero__title--iq {
+  color: #2563EB !important;
+  background: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
 .nav__logo:hover .logo-gen {
   filter: drop-shadow(0 0 10px rgba(22, 163, 74, 0.4));
 }

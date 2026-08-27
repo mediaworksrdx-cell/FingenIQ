@@ -8,7 +8,9 @@ import {
   adminUpdateCommunityArticleAction, adminDeleteCommunityArticleAction, adminDeleteCommentAction,
   saveAiKnowledgeDocAction, toggleAiKnowledgeDocAction, deleteAiKnowledgeDocAction, updateAiSettingAction,
   saveChatbotQAAction, deleteChatbotQAAction, bulkSaveChatbotQAsAction, resetChatbotQAsAction,
-  adminResetUserProgressAction, BulkUserRow
+  adminResetUserProgressAction, BulkUserRow,
+  editUserAction, deleteUserAction, changeUserPasswordAction, editEntityAction, deleteEntityAction, deletePackageAction,
+  createNewLessonAction, deleteLessonAction
 } from '@/app/actions/adminActions';
 import { logoutAction } from '@/app/actions/authActions';
 import { LESSONS, MODULES } from '@/lib/data';
@@ -42,6 +44,16 @@ export default function AdminCredentials() {
   const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'chatbot_qa' | 'aarkaa' | 'community' | 'entities' | 'logs'>('analytics');
   const [selectedLoginCategory, setSelectedLoginCategory] = useState('b2c');
 
+  const [editingUser, setEditingUser] = useState<any>(null);
+  const [deletingUser, setDeletingUser] = useState<any>(null);
+  const [passwordUser, setPasswordUser] = useState<any>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [editingEntity, setEditingEntity] = useState<any>(null);
+  const [userPage, setUserPage] = useState(1);
+  const [userTotal, setUserTotal] = useState(0);
+  const USER_PAGE_SIZE = 50;
+
   // ─── USER ROSTER FILTERS & SEARCH ─────────────────────────────────────────
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('all');
@@ -59,6 +71,15 @@ export default function AdminCredentials() {
   const [selectedModuleId, setSelectedModuleId] = useState('M1');
   const [selectedLessonId, setSelectedLessonId] = useState(LESSONS[0]?.id || 'L1');
   const [editorViewMode, setEditorViewMode] = useState<'split' | 'edit' | 'preview'>('split');
+  const [showAddLessonModal, setShowAddLessonModal] = useState(false);
+  const [newLessonData, setNewLessonData] = useState({
+    lessonId: '',
+    moduleId: 'M1',
+    title: '',
+    duration: '45 min',
+    level: 'Foundational',
+    summary: '',
+  });
   
   // Lesson Form fields
   const [lessonTitle, setLessonTitle] = useState('');
@@ -421,6 +442,80 @@ export default function AdminCredentials() {
   };
 
   // ── USER ACTIONS ──────────────────────────────────────────────────────────
+  const handleEditUser = async () => {
+    if (!editingUser) return;
+    const res = await editUserAction(sessionToken, editingUser);
+    if (res.success) {
+      setEditingUser(null);
+      fetchDashboardData();
+    } else {
+      alert(res.error || 'Failed to update user');
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deletingUser) return;
+    const res = await deleteUserAction(sessionToken, deletingUser.id);
+    if (res.success) {
+      setDeletingUser(null);
+      fetchDashboardData();
+    } else {
+      alert(res.error || 'Failed to delete user');
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!passwordUser || !newPassword) return;
+    if (newPassword !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+    if (newPassword.length < 8) {
+      alert('Password must be at least 8 characters');
+      return;
+    }
+    const res = await changeUserPasswordAction(sessionToken, passwordUser.id, newPassword);
+    if (res.success) {
+      setPasswordUser(null);
+      setNewPassword('');
+      setConfirmPassword('');
+      fetchDashboardData();
+    } else {
+      alert(res.error || 'Failed to change password');
+    }
+  };
+
+  const handleEditEntity = async () => {
+    if (!editingEntity) return;
+    const res = await editEntityAction(sessionToken, editingEntity);
+    if (res.success) {
+      setEditingEntity(null);
+      fetchDashboardData();
+    } else {
+      alert(res.error || 'Failed to update entity');
+    }
+  };
+
+  const handleDeleteEntity = async (entityId: string) => {
+    if (!confirm('Are you sure you want to delete this entity? This cannot be undone.')) return;
+    const res = await deleteEntityAction(sessionToken, entityId);
+    if (res.success) {
+      fetchDashboardData();
+    } else {
+      alert(res.error || 'Failed to delete entity');
+    }
+  };
+
+  const handleDeletePackage = async (packageId: string) => {
+    if (!confirm('Are you sure you want to delete this package?')) return;
+    const res = await deletePackageAction(sessionToken, packageId);
+    if (res.success) {
+      fetchDashboardData();
+    } else {
+      alert(res.error || 'Failed to delete package');
+    }
+  };
+
   const handleToggleUser = (id: string) => {
     startTransition(async () => {
       const u = usersList.find(x => x.id === id);
@@ -458,7 +553,56 @@ export default function AdminCredentials() {
     });
   };
 
-  const filteredLessons = LESSONS.filter(l => l.moduleId === selectedModuleId);
+  const handleCreateLesson = async () => {
+    if (!newLessonData.lessonId || !newLessonData.title) {
+      alert('Lesson ID and Title are required');
+      return;
+    }
+    const res = await createNewLessonAction(sessionToken, newLessonData);
+    if (res.success) {
+      alert('Lesson created successfully!');
+      setShowAddLessonModal(false);
+      setSelectedLessonId(newLessonData.lessonId);
+      setNewLessonData({
+        lessonId: '',
+        moduleId: selectedModuleId,
+        title: '',
+        duration: '45 min',
+        level: 'Foundational',
+        summary: '',
+      });
+      fetchDashboardData();
+    } else {
+      alert(res.error || 'Failed to create lesson');
+    }
+  };
+
+  const handleDeleteLesson = async (lessonId: string) => {
+    if (!confirm(`Are you sure you want to delete / reset lesson ${lessonId}?`)) return;
+    const res = await deleteLessonAction(sessionToken, lessonId);
+    if (res.success) {
+      alert('Lesson override deleted/reset successfully');
+      fetchDashboardData();
+    } else {
+      alert(res.error || 'Failed to delete lesson');
+    }
+  };
+
+  const filteredLessons = useMemo(() => {
+    const staticForModule = LESSONS.filter(l => l.moduleId === selectedModuleId);
+    const customForModule = lessonOverrides
+      .filter(o => o.moduleId === selectedModuleId && !staticForModule.some(l => l.id === o.lessonId))
+      .map((o, idx) => ({
+        id: o.lessonId,
+        order: staticForModule.length + idx + 1,
+        title: o.title || o.lessonId,
+        moduleId: o.moduleId || selectedModuleId,
+        duration: o.duration || '45 min',
+        level: o.level || 'Foundational',
+        description: o.summary || '',
+      }));
+    return [...staticForModule, ...customForModule];
+  }, [selectedModuleId, lessonOverrides]);
 
   return (
     <div style={{
@@ -972,6 +1116,14 @@ export default function AdminCredentials() {
                     <option value="b2b2c">B2B2C University Partner</option>
                   </select>
                 </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#CEAE56', marginBottom: '0.35rem' }}>User ID (Optional)</label>
+                  <input name="customUserId" placeholder="e.g. EMP_001 (auto if empty)" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.82rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#CEAE56', marginBottom: '0.35rem' }}>Direct Password (Optional)</label>
+                  <input name="customPassword" type="password" placeholder="Set password (auto if empty)" style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.82rem' }} />
+                </div>
                 <input type="hidden" name="packageId" value={packagesList[0]?.id || 'PKG_B2C_PRO'} />
                 
                 <button type="submit" style={{ background: 'linear-gradient(135deg, #CEAE56 0%, #B8962E 100%)', color: '#060A16', border: 'none', borderRadius: '0.375rem', padding: '0.65rem 1rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer' }}>
@@ -1086,6 +1238,24 @@ export default function AdminCredentials() {
                               >
                                 Renew
                               </button>
+                              <button
+                                onClick={() => setEditingUser({id: u.id, userId: u.id, name: u.name, email: u.email, role: u.role, loginCategory: u.loginCategory, packageId: u.packageId, businessEntityId: u.businessEntityId})}
+                                style={{ background: 'rgba(255,255,255,0.05)', color: '#CBD5E1', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '3px 7px', cursor: 'pointer', fontSize: '0.7rem' }}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => { setPasswordUser(u); setNewPassword(''); setConfirmPassword(''); }}
+                                style={{ background: 'rgba(255,255,255,0.05)', color: '#CBD5E1', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '3px 7px', cursor: 'pointer', fontSize: '0.7rem' }}
+                              >
+                                Password
+                              </button>
+                              <button
+                                onClick={() => setDeletingUser(u)}
+                                style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '4px', padding: '3px 7px', cursor: 'pointer', fontSize: '0.7rem' }}
+                              >
+                                Delete
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -1199,8 +1369,26 @@ export default function AdminCredentials() {
               
               {/* Left Column: Lesson Selector */}
               <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.25rem' }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-                  Select Module & Lesson
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', textTransform: 'uppercase' }}>
+                    Select Module & Lesson
+                  </div>
+                  <button
+                    onClick={() => {
+                      setNewLessonData({
+                        lessonId: `L${filteredLessons.length + 1}`,
+                        moduleId: selectedModuleId,
+                        title: '',
+                        duration: '45 min',
+                        level: 'Foundational',
+                        summary: '',
+                      });
+                      setShowAddLessonModal(true);
+                    }}
+                    style={{ background: '#CEAE56', color: '#060A16', border: 'none', borderRadius: '4px', padding: '3px 8px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    + Add Lesson
+                  </button>
                 </div>
                 
                 <select
@@ -1274,6 +1462,12 @@ export default function AdminCredentials() {
                     >
                       Preview Player ↗
                     </Link>
+                    <button
+                      onClick={() => handleDeleteLesson(selectedLessonId)}
+                      style={{ fontSize: '0.75rem', color: '#F87171', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', padding: '6px 12px', borderRadius: '0.375rem', cursor: 'pointer' }}
+                    >
+                      🗑️ Delete / Reset Override
+                    </button>
                     <button
                       onClick={handleSaveLesson}
                       disabled={isPending}
@@ -2439,9 +2633,21 @@ export default function AdminCredentials() {
                         <td style={{ padding: '0.75rem 1rem' }}>
                           <button
                             onClick={() => startTransition(async () => { await toggleEntityStatusAction(sessionToken, e.id); fetchDashboardData(); })}
-                            style={{ background: e.isActive ? 'rgba(52,211,153,0.15)' : 'rgba(248,113,113,0.15)', color: e.isActive ? '#34D399' : '#F87171', border: 'none', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.7rem' }}
+                            style={{ background: e.isActive ? 'rgba(52,211,153,0.15)' : 'rgba(248,113,113,0.15)', color: e.isActive ? '#34D399' : '#F87171', border: 'none', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.7rem', marginRight: '4px' }}
                           >
                             {e.isActive ? 'Active' : 'Disabled'}
+                          </button>
+                          <button
+                            onClick={() => setEditingEntity({id: e.id, name: e.name, contactEmail: e.contactEmail, contactPhone: e.contactPhone, address: e.address, maxUsers: e.maxUsers})}
+                            style={{ background: 'rgba(255,255,255,0.05)', color: '#CBD5E1', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer', fontSize: '0.7rem', marginRight: '4px' }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEntity(e.id)}
+                            style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer', fontSize: '0.7rem' }}
+                          >
+                            Delete
                           </button>
                         </td>
                       </tr>
@@ -2493,6 +2699,162 @@ export default function AdminCredentials() {
         )}
 
       </div>
+      {/* ─── MODALS ────────────────────────────────────────── */}
+      {editingUser && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setEditingUser(null)}>
+          <div style={{ background: '#0B1528', border: '1px solid #CEAE56', borderRadius: '1rem', padding: '2rem', width: '100%', maxWidth: 480, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '1.5rem' }}>Edit User</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#CEAE56' }}>User ID
+                <input type="text" value={editingUser.newUserId !== undefined ? editingUser.newUserId : (editingUser.userId || editingUser.id || '')} onChange={e => setEditingUser({...editingUser, newUserId: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Name
+                <input type="text" value={editingUser.name || ''} onChange={e => setEditingUser({...editingUser, name: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Email
+                <input type="email" value={editingUser.email || ''} onChange={e => setEditingUser({...editingUser, email: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Role
+                <select value={editingUser.role || 'learner'} onChange={e => setEditingUser({...editingUser, role: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+                  <option value="learner">Learner</option>
+                  <option value="employer">Employer</option>
+                  <option value="employee">Employee</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Login Category
+                <select value={editingUser.loginCategory || 'b2c'} onChange={e => setEditingUser({...editingUser, loginCategory: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+                  <option value="b2c">B2C</option>
+                  <option value="b2b">B2B</option>
+                  <option value="b2b2c">B2B2C</option>
+                  <option value="community">Community</option>
+                </select>
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Set New Password (Optional)
+                <input type="password" placeholder="Leave blank to keep existing password" value={editingUser.newPassword || ''} onChange={e => setEditingUser({...editingUser, newPassword: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+              <button onClick={() => setEditingUser(null)} style={{ padding: '0.5rem 1.25rem', border: '1px solid #334155', borderRadius: '0.5rem', background: 'transparent', color: '#94A3B8', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleEditUser} style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: '0.5rem', background: '#CEAE56', color: '#060A16', fontWeight: 700, cursor: 'pointer' }}>Save Changes</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deletingUser && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setDeletingUser(null)}>
+          <div style={{ background: '#0B1528', border: '1px solid #CEAE56', borderRadius: '1rem', padding: '2rem', width: '100%', maxWidth: 420, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#F87171', marginBottom: '1rem' }}>⚠️ Delete User</h3>
+            <p style={{ fontSize: '0.9rem', color: '#8898AA', lineHeight: 1.6, marginBottom: '0.5rem' }}>Are you sure you want to permanently delete this user?</p>
+            <div style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '1.5rem' }}>
+              <div style={{ fontWeight: 700, color: '#F1F5F9' }}>{deletingUser.name}</div>
+              <div style={{ fontSize: '0.85rem', color: '#64748B' }}>{deletingUser.email}</div>
+            </div>
+            <p style={{ fontSize: '0.8rem', color: '#F87171', marginBottom: '1.5rem' }}>This will permanently delete all user data including progress, certifications, and session history. This action cannot be undone.</p>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button onClick={() => setDeletingUser(null)} style={{ padding: '0.5rem 1.25rem', border: '1px solid #334155', borderRadius: '0.5rem', background: 'transparent', color: '#94A3B8', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleDeleteUser} style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: '0.5rem', background: '#DC2626', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Delete Permanently</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {passwordUser && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { setPasswordUser(null); setNewPassword(''); setConfirmPassword(''); }}>
+          <div style={{ background: '#0B1528', border: '1px solid #CEAE56', borderRadius: '1rem', padding: '2rem', width: '100%', maxWidth: 420, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '0.5rem' }}>🔑 Change Password</h3>
+            <p style={{ fontSize: '0.85rem', color: '#8898AA', marginBottom: '1.25rem' }}>Set a new password for <strong>{passwordUser.name}</strong> ({passwordUser.email})</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>New Password
+                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Min 8 characters" style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Confirm Password
+                <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="Repeat password" style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              {newPassword && confirmPassword && newPassword !== confirmPassword && (
+                <div style={{ fontSize: '0.8rem', color: '#F87171' }}>Passwords do not match</div>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+              <button onClick={() => { setPasswordUser(null); setNewPassword(''); setConfirmPassword(''); }} style={{ padding: '0.5rem 1.25rem', border: '1px solid #334155', borderRadius: '0.5rem', background: 'transparent', color: '#94A3B8', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleChangePassword} disabled={!newPassword || newPassword !== confirmPassword || newPassword.length < 8} style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: '0.5rem', background: newPassword && newPassword === confirmPassword && newPassword.length >= 8 ? '#CEAE56' : '#94A3B8', color: newPassword && newPassword === confirmPassword && newPassword.length >= 8 ? '#060A16' : '#fff', fontWeight: 700, cursor: 'pointer' }}>Set Password</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editingEntity && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setEditingEntity(null)}>
+          <div style={{ background: '#0B1528', border: '1px solid #CEAE56', borderRadius: '1rem', padding: '2rem', width: '100%', maxWidth: 480, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '1.5rem' }}>Edit Entity</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Name
+                <input type="text" value={editingEntity.name || ''} onChange={e => setEditingEntity({...editingEntity, name: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Contact Email
+                <input type="email" value={editingEntity.contactEmail || ''} onChange={e => setEditingEntity({...editingEntity, contactEmail: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Contact Phone
+                <input type="text" value={editingEntity.contactPhone || ''} onChange={e => setEditingEntity({...editingEntity, contactPhone: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Address
+                <input type="text" value={editingEntity.address || ''} onChange={e => setEditingEntity({...editingEntity, address: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Max Users
+                <input type="number" value={editingEntity.maxUsers || 0} onChange={e => setEditingEntity({...editingEntity, maxUsers: parseInt(e.target.value, 10)})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+              <button onClick={() => setEditingEntity(null)} style={{ padding: '0.5rem 1.25rem', border: '1px solid #334155', borderRadius: '0.5rem', background: 'transparent', color: '#94A3B8', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleEditEntity} style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: '0.5rem', background: '#CEAE56', color: '#060A16', fontWeight: 700, cursor: 'pointer' }}>Save Changes</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAddLessonModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowAddLessonModal(false)}>
+          <div style={{ background: '#0B1528', border: '1px solid #CEAE56', borderRadius: '1rem', padding: '2rem', width: '100%', maxWidth: 480, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '1.5rem' }}>+ Create New Lesson</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#CEAE56' }}>Module
+                <select value={newLessonData.moduleId} onChange={e => setNewLessonData({...newLessonData, moduleId: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+                  {MODULES.map(m => (
+                    <option key={m.id} value={m.id}>{m.order || m.id}. {m.title}</option>
+                  ))}
+                </select>
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Lesson ID (Unique)
+                <input type="text" placeholder="e.g. L45" value={newLessonData.lessonId} onChange={e => setNewLessonData({...newLessonData, lessonId: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Lesson Title
+                <input type="text" placeholder="e.g. Sovereign Debt Dynamics & Brady Bonds" value={newLessonData.title} onChange={e => setNewLessonData({...newLessonData, title: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Duration
+                  <input type="text" placeholder="e.g. 45 min" value={newLessonData.duration} onChange={e => setNewLessonData({...newLessonData, duration: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }} />
+                </label>
+                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Level
+                  <select value={newLessonData.level} onChange={e => setNewLessonData({...newLessonData, level: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+                    <option value="Foundational">Foundational</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                  </select>
+                </label>
+              </div>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#8898AA' }}>Summary
+                <textarea rows={3} placeholder="Brief summary of lesson topics and objectives" value={newLessonData.summary} onChange={e => setNewLessonData({...newLessonData, summary: e.target.value})} style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.5rem', fontSize: '0.85rem', marginTop: '0.25rem' }} />
+              </label>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+              <button onClick={() => setShowAddLessonModal(false)} style={{ padding: '0.5rem 1.25rem', border: '1px solid #334155', borderRadius: '0.5rem', background: 'transparent', color: '#94A3B8', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleCreateLesson} style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: '0.5rem', background: 'linear-gradient(135deg, #CEAE56 0%, #B8962E 100%)', color: '#060A16', fontWeight: 700, cursor: 'pointer' }}>+ Create Lesson</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

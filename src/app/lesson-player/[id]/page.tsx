@@ -46,6 +46,8 @@ export default function LessonPlayerComponent() {
   }, [lesson]);
 
   const [currentStep, setCurrentStep] = useState(0);
+  const [gallerySlide, setGallerySlide] = useState(0);
+  const stepFromGalleryRef = useRef(false);
   const [selectedModel, setSelectedModel] = useState<'gemini-3.7' | 'aarka-2.0'>('gemini-3.7');
   const [aiInput, setAiInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -112,6 +114,17 @@ export default function LessonPlayerComponent() {
 
   const handleStepChange = async (idx: number) => {
     setCurrentStep(idx);
+    // Only sync gallery when the step change came from the step rail, not from gallery arrows
+    if (!stepFromGalleryRef.current) {
+      const images = lesson.galleryImages?.length ? lesson.galleryImages : [1, 2, 3];
+      const totalSlides = images.length;
+      const mapped = Math.min(
+        Math.floor((idx / LESSON_STEPS.length) * totalSlides),
+        totalSlides - 1
+      );
+      setGallerySlide(mapped);
+    }
+    stepFromGalleryRef.current = false;
     await saveStepProgress(lessonId, idx);
   };
 
@@ -333,7 +346,25 @@ export default function LessonPlayerComponent() {
                       `/lessons/${lesson.id}/slide-2.svg`,
                       `/lessons/${lesson.id}/slide-3.svg`,
                     ];
-                return <LessonGallery images={images} title={lesson.title} />;
+                return (
+                  <LessonGallery
+                    images={images}
+                    title={lesson.title}
+                    currentSlide={gallerySlide}
+                    onSlideChange={(slideIdx) => {
+                      // Map slide → step proportionally
+                      const mappedStep = Math.min(
+                        Math.floor((slideIdx / images.length) * LESSON_STEPS.length),
+                        LESSON_STEPS.length - 1
+                      );
+                      if (mappedStep !== currentStep) {
+                        // Set ref so handleStepChange knows NOT to override gallery position
+                        stepFromGalleryRef.current = true;
+                        handleStepChange(mappedStep);
+                      }
+                    }}
+                  />
+                );
               })()}
 
               <div className="animate-fadeIn" key={currentStep}>

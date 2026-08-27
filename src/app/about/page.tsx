@@ -26,7 +26,13 @@ export default function About() {
                   <span>💡</span> OUR PHILOSOPHY
                 </div>
 
-                <h1 className="hero__title" style={{ fontSize: 'clamp(2rem, 5.5vw, 3.4rem)', fontWeight: 800, color: '#0F172A', lineHeight: 1.18, marginBottom: '1.25rem', letterSpacing: '-0.03em' }}>
+                <h1 className="hero__title about-hero__title--iq" style={{
+                  fontSize: 'clamp(2rem, 5.5vw, 3.4rem)',
+                  fontWeight: 800,
+                  lineHeight: 1.18,
+                  marginBottom: '1.25rem',
+                  letterSpacing: '-0.03em',
+                }}>
                   Financial clarity belongs to everyone.
                 </h1>
 

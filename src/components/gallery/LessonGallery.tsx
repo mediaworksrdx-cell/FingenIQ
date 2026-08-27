@@ -6,6 +6,10 @@ interface LessonGalleryProps {
   images: string[];
   /** Alt text for accessibility — lesson title or step name */
   title: string;
+  /** Controlled slide index — when provided, the gallery syncs to this slide */
+  currentSlide?: number;
+  /** Callback fired when the user manually navigates to a different slide */
+  onSlideChange?: (slideIndex: number) => void;
 }
 
 /**
@@ -13,17 +17,27 @@ interface LessonGalleryProps {
  * dot indicators, and keyboard support.
  * Replaces the old YouTube video embed in the lesson player.
  */
-export default function LessonGallery({ images, title }: LessonGalleryProps) {
+export default function LessonGallery({ images, title, currentSlide, onSlideChange }: LessonGalleryProps) {
   const [current, setCurrent] = useState(0);
   const total = images.length;
 
+  // Sync with externally controlled slide index (e.g. from step rail)
+  useEffect(() => {
+    if (currentSlide !== undefined && currentSlide >= 0 && currentSlide < total) {
+      setCurrent(currentSlide);
+    }
+  }, [currentSlide, total]);
+
   const goTo = useCallback(
     (idx: number) => {
-      if (idx < 0) setCurrent(total - 1);
-      else if (idx >= total) setCurrent(0);
-      else setCurrent(idx);
+      let next: number;
+      if (idx < 0) next = total - 1;
+      else if (idx >= total) next = 0;
+      else next = idx;
+      setCurrent(next);
+      onSlideChange?.(next);
     },
-    [total],
+    [total, onSlideChange],
   );
 
   const prev = useCallback(() => goTo(current - 1), [current, goTo]);

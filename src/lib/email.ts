@@ -118,3 +118,80 @@ export async function sendActivationEmail(email: string, name: string, token: st
 
   return res.success;
 }
+
+/**
+ * Sends Contact Enquiry notification email to shivaram@vivinfacilitators.com
+ */
+export async function sendEnquiryEmail({
+  name,
+  email,
+  phone,
+  category,
+  inquiryType,
+  subject,
+  message,
+}: {
+  name: string;
+  email: string;
+  phone?: string;
+  category: string;
+  inquiryType?: string;
+  subject?: string;
+  message: string;
+}): Promise<boolean> {
+  const recipient = process.env.CONTACT_RECIPIENT_EMAIL || 'shivaram@vivinfacilitators.com';
+  const html = `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #060A16; color: #E6EDF6; border-radius: 8px; border: 1px solid rgba(184,150,46,0.3);">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h1 style="color: #CEAE56; font-size: 24px; margin: 0;">FinGen<span style="color: #B8962E;">IQ</span></h1>
+        <p style="color: #8A98B0; font-size: 14px; margin-top: 4px;">Institutional Financial Education Portal — New Enquiry</p>
+      </div>
+      <div style="background: #0B132B; padding: 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+        <h2 style="color: #FFFFFF; font-size: 18px; margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+          Enquiry Received
+        </h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0;">
+          <tr>
+            <td style="padding: 6px 0; color: #8A98B0; width: 140px;"><strong>Name:</strong></td>
+            <td style="padding: 6px 0; color: #FFFFFF; font-weight: 600;">${name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #8A98B0;"><strong>Email:</strong></td>
+            <td style="padding: 6px 0; color: #60A5FA;"><a href="mailto:${email}" style="color: #60A5FA; text-decoration: none;">${email}</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #8A98B0;"><strong>Phone:</strong></td>
+            <td style="padding: 6px 0; color: #FFFFFF;">${phone || 'Not provided'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #8A98B0;"><strong>Section:</strong></td>
+            <td style="padding: 6px 0; color: #CEAE56; text-transform: capitalize;">${category}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #8A98B0;"><strong>Inquiry Type:</strong></td>
+            <td style="padding: 6px 0; color: #FFFFFF;">${inquiryType || 'General'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #8A98B0;"><strong>Subject:</strong></td>
+            <td style="padding: 6px 0; color: #FFFFFF;">${subject || 'N/A'}</td>
+          </tr>
+        </table>
+        <div style="margin-top: 16px; padding: 14px; background: rgba(255,255,255,0.03); border-radius: 6px; border-left: 3px solid #CEAE56;">
+          <p style="color: #8A98B0; font-size: 12px; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.05em;">Message Body:</p>
+          <p style="color: #F1F5F9; font-size: 14px; line-height: 1.6; margin: 0; white-space: pre-wrap;">${message}</p>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 18px; font-size: 12px; color: #64748B;">
+        This notification was delivered to ${recipient} via FinGenIQ Portal.
+      </div>
+    </div>
+  `;
+
+  const res = await sendEmail({
+    to: recipient,
+    subject: `[FinGenIQ Enquiry] ${subject || inquiryType || category} from ${name}`,
+    html,
+  });
+
+  return res.success;
+}

@@ -168,4 +168,19 @@ CREATE TABLE IF NOT EXISTS ai_settings (
   updatedByAdminId TEXT
 );
 
+-- ── CONTACT & ENQUIRIES TABLE ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS enquiries (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name        TEXT NOT NULL,
+  email       TEXT NOT NULL,
+  phone       TEXT,
+  category    TEXT NOT NULL,
+  inquiryType TEXT,
+  subject     TEXT,
+  message     TEXT NOT NULL,
+  recipient   TEXT DEFAULT 'shivaram@vivinfacilitators.com',
+  status      TEXT DEFAULT 'new',
+  createdAt   TEXT DEFAULT (datetime('now'))
+);
+
 

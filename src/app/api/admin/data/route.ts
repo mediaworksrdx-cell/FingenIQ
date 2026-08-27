@@ -19,11 +19,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 403 });
     }
 
-    // 1. Fetch user counts & compute expirations
-    const users = db.prepare('SELECT * FROM users').all() as any[];
+    const page = parseInt(request.nextUrl.searchParams.get('page') || '1');
+    const limit = parseInt(request.nextUrl.searchParams.get('limit') || '50');
+    const search = request.nextUrl.searchParams.get('search') || '';
+    const roleFilter = request.nextUrl.searchParams.get('roleFilter') || '';
+    const statusFilter = request.nextUrl.searchParams.get('statusFilter') || '';
+
+    // 1. Fetch user counts & compute expirations (Overall stats)
+    const allUsers = db.prepare('SELECT * FROM users').all() as any[];
     const now = Date.now();
 
-    let total = users.length;
+    let globalTotal = allUsers.length;
     let pending = 0;
     let active = 0;
     let locked = 0;
@@ -31,7 +37,7 @@ export async function GET(request: NextRequest) {
     let expiring = 0;
     let expired = 0;
 
-    users.forEach(u => {
+    allUsers.forEach(u => {
       if (u.accountStatus === 'pending_activation') pending++;
       else if (u.accountStatus === 'active') active++;
       else if (u.accountStatus === 'locked') locked++;
@@ -42,13 +48,34 @@ export async function GET(request: NextRequest) {
         const diff = new Date(u.credentialExpiresAt).getTime() - now;
         const daysLeft = Math.ceil(diff / (24 * 60 * 60 * 1000));
         if (daysLeft <= 0) {
-          // If expired but status not written yet, count as expired
           expired++;
         } else if (daysLeft <= 14) {
           expiring++;
         }
       }
     });
+
+    // 1b. Fetch paginated users
+    const whereClauses: string[] = [];
+    const params: any[] = [];
+    if (search) {
+      whereClauses.push('(name LIKE ? OR email LIKE ?)');
+      params.push(`%${search}%`, `%${search}%`);
+    }
+    if (roleFilter) {
+      whereClauses.push('role = ?');
+      params.push(roleFilter);
+    }
+    if (statusFilter) {
+      whereClauses.push('accountStatus = ?');
+      params.push(statusFilter);
+    }
+    const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+    const countResult = db.prepare(`SELECT COUNT(*) as count FROM users ${whereStr}`).get(...params) as any;
+    const filteredTotal = countResult.count;
+
+    const offset = (page - 1) * limit;
+    const users = db.prepare(`SELECT * FROM users ${whereStr} LIMIT ? OFFSET ?`).all(...params, limit, offset) as any[];
 
     // 2. Fetch all user_progress and user_certifications for Cohort Analytics & Gradebook
     const allProgress = db.prepare('SELECT userId, lessonId, status, score, updatedAt FROM user_progress').all() as Array<{
@@ -96,8 +123,6 @@ export async function GET(request: NextRequest) {
         userProgressMap[p.userId].lastActive = p.updatedAt;
       }
 
-      // Track module stats
-      // Lesson IDs start with L1-L4 (M1), L5-L8 (M2), etc. or module prefixes
       const modPrefix = p.lessonId.startsWith('M') ? p.lessonId.substring(0, 2) : (
         parseInt(p.lessonId.replace('L', '')) <= 4 ? 'M1' :
         parseInt(p.lessonId.replace('L', '')) <= 8 ? 'M2' :
@@ -125,7 +150,20 @@ export async function GET(request: NextRequest) {
 
     const certUserIds = new Set(allCerts.map(c => c.userId));
 
-    // Augment users with calculated gradebook data
+    // Calculate cohort stats using ALL users to maintain correct percentages
+    allUsers.forEach(u => {
+      const prog = userProgressMap[u.id] || { completedCount: 0, totalScore: 0, gradedCount: 0, lastActive: null, completedLessons: [] };
+      const avgScore = prog.gradedCount > 0 ? Math.round(prog.totalScore / prog.gradedCount) : null;
+      if (avgScore !== null) {
+        totalCohortScore += avgScore;
+        totalCohortGraded++;
+        if (avgScore >= 85) distinctionCount++;
+        else if (avgScore >= 70) meritCount++;
+        else if (avgScore >= 50) passCount++;
+        else needsSupportCount++;
+      }
+    });
+
     const safeUsers = users.map(u => {
       const {
         passwordHash,
@@ -143,21 +181,10 @@ export async function GET(request: NextRequest) {
 
       let gradeTier = 'Not Graded';
       if (avgScore !== null) {
-        totalCohortScore += avgScore;
-        totalCohortGraded++;
-        if (avgScore >= 85) {
-          gradeTier = 'Distinction';
-          distinctionCount++;
-        } else if (avgScore >= 70) {
-          gradeTier = 'Merit';
-          meritCount++;
-        } else if (avgScore >= 50) {
-          gradeTier = 'Pass';
-          passCount++;
-        } else {
-          gradeTier = 'Needs Support';
-          needsSupportCount++;
-        }
+        if (avgScore >= 85) gradeTier = 'Distinction';
+        else if (avgScore >= 70) gradeTier = 'Merit';
+        else if (avgScore >= 50) gradeTier = 'Pass';
+        else gradeTier = 'Needs Support';
       }
 
       return {
@@ -203,10 +230,21 @@ export async function GET(request: NextRequest) {
       chatbotQAs = [];
     }
 
+    // 8. Fetch Contact Enquiries
+    let enquiries = [];
+    try {
+      enquiries = db.prepare('SELECT * FROM enquiries ORDER BY id DESC LIMIT 100').all();
+    } catch {
+      enquiries = [];
+    }
+
     return NextResponse.json({
       success: true,
+      total: filteredTotal,
+      page,
+      limit,
       stats: {
-        total,
+        total: globalTotal,
         pending,
         active,
         locked,
@@ -231,6 +269,7 @@ export async function GET(request: NextRequest) {
       aiKnowledgeDocs,
       aiSettings,
       chatbotQAs,
+      enquiries,
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
