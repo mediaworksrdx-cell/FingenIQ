@@ -45,6 +45,21 @@ export default function LessonPlayerComponent() {
     return MODULES.find(m => m.id === lesson.moduleId) || MODULES[0];
   }, [lesson]);
 
+  const effectiveSteps = useMemo(() => {
+    const rawSteps = (dynamicLesson?.steps && dynamicLesson.steps.length > 0)
+      ? dynamicLesson.steps
+      : (lesson.steps && lesson.steps.length > 0)
+        ? lesson.steps
+        : LESSON_STEPS;
+
+    return rawSteps.map((s: any, idx: number) => ({
+      id: s.stepId ?? s.id ?? (idx + 1),
+      name: s.name || `Section ${idx + 1}`,
+      type: s.type || 'concepts',
+      description: s.description ?? '',
+    }));
+  }, [dynamicLesson, lesson]);
+
   const [currentStep, setCurrentStep] = useState(0);
   const [gallerySlide, setGallerySlide] = useState(0);
   const stepFromGalleryRef = useRef(false);
@@ -95,7 +110,7 @@ export default function LessonPlayerComponent() {
     fetchUserProgress().then(res => {
       if (res.success && res.progressMap && res.progressMap[lessonId]) {
         const savedStep = res.progressMap[lessonId].currentStep || 0;
-        setCurrentStep(savedStep >= LESSON_STEPS.length ? LESSON_STEPS.length - 1 : savedStep);
+        setCurrentStep(savedStep >= effectiveSteps.length ? Math.max(0, effectiveSteps.length - 1) : savedStep);
         if (res.progressMap[lessonId].score !== null) {
           setQuizScore(res.progressMap[lessonId].score);
         }
@@ -119,7 +134,7 @@ export default function LessonPlayerComponent() {
       const images = lesson.galleryImages?.length ? lesson.galleryImages : [1, 2, 3];
       const totalSlides = images.length;
       const mapped = Math.min(
-        Math.floor((idx / LESSON_STEPS.length) * totalSlides),
+        Math.floor((idx / effectiveSteps.length) * totalSlides),
         totalSlides - 1
       );
       setGallerySlide(mapped);
@@ -212,7 +227,7 @@ export default function LessonPlayerComponent() {
     setIsTyping(true);
 
     try {
-      const stepName = LESSON_STEPS[currentStep]?.name || 'Current Step';
+      const stepName = effectiveSteps[currentStep]?.name || 'Current Step';
       const contextualQuery = `Context: Lesson ${lesson.order}: ${lesson.title} (Step: ${stepName}). User question: ${text}`;
       
       const res = await fetch('/api/assistant', {
@@ -263,7 +278,7 @@ export default function LessonPlayerComponent() {
     router.push('/lessons');
   };
 
-  const progressPct = Math.round(((currentStep + 1) / LESSON_STEPS.length) * 100);
+  const progressPct = Math.round(((currentStep + 1) / effectiveSteps.length) * 100);
 
   if (allowedModules && !allowedModules.includes('ALL') && !allowedModules.includes(module.id)) {
     return (
@@ -304,7 +319,7 @@ export default function LessonPlayerComponent() {
       >
         {/* Step Rail */}
         <nav className="player-rail" aria-label="Lesson steps">
-          {LESSON_STEPS.map((step, idx) => {
+          {effectiveSteps.map((step, idx) => {
             const isActive = idx === currentStep;
             const statusClass = isActive ? 'active' : idx < currentStep ? 'completed' : '';
             const icon = STEP_ICONS[step.type] ?? '📖';
@@ -334,7 +349,7 @@ export default function LessonPlayerComponent() {
                 <span aria-hidden="true">›</span>
                 <span>Lesson {lesson.order}</span>
                 <span aria-hidden="true">›</span>
-                <span style={{ color: 'var(--brass-400)', fontWeight: 500 }}>{LESSON_STEPS[currentStep]?.name ?? ''}</span>
+                <span style={{ color: 'var(--brass-400)', fontWeight: 500 }}>{effectiveSteps[currentStep]?.name ?? ''}</span>
               </nav>
 
               {/* Image Gallery (replaces old YouTube embed) */}
@@ -354,8 +369,8 @@ export default function LessonPlayerComponent() {
                     onSlideChange={(slideIdx) => {
                       // Map slide → step proportionally
                       const mappedStep = Math.min(
-                        Math.floor((slideIdx / images.length) * LESSON_STEPS.length),
-                        LESSON_STEPS.length - 1
+                        Math.floor((slideIdx / images.length) * effectiveSteps.length),
+                        effectiveSteps.length - 1
                       );
                       if (mappedStep !== currentStep) {
                         // Set ref so handleStepChange knows NOT to override gallery position
@@ -368,11 +383,11 @@ export default function LessonPlayerComponent() {
               })()}
 
               <div className="animate-fadeIn" key={currentStep}>
-                {LESSON_STEPS[currentStep]?.type === 'kc' || LESSON_STEPS[currentStep]?.type === 'quiz' ? (
+                {effectiveSteps[currentStep]?.type === 'kc' || effectiveSteps[currentStep]?.type === 'quiz' ? (
                   // Knowledge Check or Quiz Step
                   <div>
                     <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', color: 'var(--ink-50)', marginBottom: 'var(--sp-4)' }}>
-                      {LESSON_STEPS[currentStep]?.name ?? ''}
+                      {effectiveSteps[currentStep]?.name ?? ''}
                     </h1>
                     <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-300)', marginBottom: 'var(--sp-8)' }}>
                       Select the correct answer. Your response is recorded for grading.
@@ -416,16 +431,16 @@ export default function LessonPlayerComponent() {
                   // Default step content
                   <div>
                     <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', color: 'var(--ink-50)', marginBottom: 'var(--sp-6)' }}>
-                      {LESSON_STEPS[currentStep]?.name ?? ''}
+                      {effectiveSteps[currentStep]?.name ?? ''}
                     </h1>
                     
-                    {/* Dynamic description from separate JSON lesson data */}
+                    {/* Dynamic description from separate JSON lesson data or override */}
                     <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-200)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--sp-6)', whiteSpace: 'pre-line' }}>
-                      {lesson.steps?.[currentStep]?.description ?? `This step covers formal concepts, case examples, and study modules associated with ${LESSON_STEPS[currentStep]?.name ?? ''}.`}
+                      {effectiveSteps[currentStep]?.description || lesson.steps?.[currentStep]?.description || `This section covers formal concepts, case examples, and study modules associated with ${effectiveSteps[currentStep]?.name ?? ''}.`}
                     </p>
 
                     {/* Step Visual Explanation (WebGL 3D Interactive Model) */}
-                    {LESSON_STEPS[currentStep]?.type === 'visual' && (
+                    {effectiveSteps[currentStep]?.type === 'visual' && (
                       <FinancialNode3D 
                         title={`3D Visual Model: ${lesson.title}`} 
                         subtitle="Real-time WebGL 3D asset node & structural risk horizon renderer" 
@@ -481,9 +496,9 @@ export default function LessonPlayerComponent() {
               ← Previous
             </button>
             <span className="num" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)' }} aria-live="polite">
-              Step {currentStep + 1} of {LESSON_STEPS.length}
+              Step {currentStep + 1} of {effectiveSteps.length}
             </span>
-            {currentStep === LESSON_STEPS.length - 1 ? (
+            {currentStep === effectiveSteps.length - 1 ? (
               <button onClick={handleFinish} className="btn btn--brass" aria-label="Finish lesson">
                 Finish Lesson ✓
               </button>
@@ -491,9 +506,9 @@ export default function LessonPlayerComponent() {
               <button
                 className="btn btn--primary"
                 onClick={() => handleStepChange(currentStep + 1)}
-                aria-label={`Next: ${LESSON_STEPS[currentStep + 1]?.name}`}
+                aria-label={effectiveSteps[currentStep + 1] ? `Next: ${effectiveSteps[currentStep + 1].name}` : 'Next'}
               >
-                Next: {LESSON_STEPS[currentStep + 1]?.name.split(' ').slice(0, 2).join(' ')} →
+                Next: {effectiveSteps[currentStep + 1]?.name.split(' ').slice(0, 2).join(' ') || 'Next'} →
               </button>
             )}
           </div>

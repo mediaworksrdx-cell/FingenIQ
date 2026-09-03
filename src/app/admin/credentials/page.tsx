@@ -13,7 +13,7 @@ import {
   createNewLessonAction, deleteLessonAction
 } from '@/app/actions/adminActions';
 import { logoutAction } from '@/app/actions/authActions';
-import { LESSONS, MODULES } from '@/lib/data';
+import { LESSONS, MODULES, LESSON_STEPS } from '@/lib/data';
 import Link from 'next/link';
 
 export default function AdminCredentials() {
@@ -115,6 +115,13 @@ export default function AdminCredentials() {
   ]);
   const [lessonSaveStatus, setLessonSaveStatus] = useState<string | null>(null);
 
+  // Lesson Sections / Steps State & Uploads
+  const [lessonSteps, setLessonSteps] = useState<Array<{ stepId: number; name: string; type: string; description: string }>>([]);
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+  const [isUploadingSlides, setIsUploadingSlides] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [expandedSectionIndex, setExpandedSectionIndex] = useState<number | null>(0);
+
   // ─── AARKAA AI STUDIO STATE ────────────────────────────────────────────────
   const [selectedPromptMode, setSelectedPromptMode] = useState('institutional');
   const [newDocTitle, setNewDocTitle] = useState('');
@@ -136,6 +143,104 @@ export default function AdminCredentials() {
   const [renewPeriod, setRenewPeriod] = useState<'monthly' | 'quarterly' | 'half_yearly' | 'annual'>('monthly');
 
   const [isPending, startTransition] = useTransition();
+
+  // ─── PDF & SVG UPLOAD HANDLERS ─────────────────────────────────────────────
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingPdf(true);
+    setUploadStatus(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('lessonId', selectedLessonId);
+      fd.append('type', 'pdf');
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        setLessonPdfPath(data.url);
+        setUploadStatus(`✓ PDF uploaded successfully: ${data.url}`);
+      } else {
+        setUploadStatus(`❌ Upload failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (err: any) {
+      setUploadStatus(`❌ Upload error: ${err.message}`);
+    } finally {
+      setIsUploadingPdf(false);
+    }
+  };
+
+  const handleSlidesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setIsUploadingSlides(true);
+    setUploadStatus(null);
+    try {
+      const fd = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        fd.append('files', files[i]);
+      }
+      fd.append('lessonId', selectedLessonId);
+      fd.append('type', 'slide');
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.success && data.urls && data.urls.length > 0) {
+        setLessonGalleryImages(prev => [...prev, ...data.urls]);
+        setUploadStatus(`✓ Uploaded ${data.urls.length} slide(s) successfully!`);
+      } else {
+        setUploadStatus(`❌ Slides upload failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (err: any) {
+      setUploadStatus(`❌ Slides upload error: ${err.message}`);
+    } finally {
+      setIsUploadingSlides(false);
+    }
+  };
+
+  // ─── LESSON SECTIONS / STEPS HANDLERS ──────────────────────────────────────
+  const handleAddSection = () => {
+    const nextId = lessonSteps.length > 0 ? Math.max(...lessonSteps.map(s => s.stepId || 0)) + 1 : 1;
+    const newSection = {
+      stepId: nextId,
+      name: `New Section ${lessonSteps.length + 1}`,
+      type: 'concepts',
+      description: 'Enter lecture content and study notes for this section...',
+    };
+    setLessonSteps(prev => [...prev, newSection]);
+    setExpandedSectionIndex(lessonSteps.length);
+  };
+
+  const handleUpdateSection = (index: number, field: 'name' | 'type' | 'description', value: string) => {
+    setLessonSteps(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleDeleteSection = (index: number) => {
+    if (confirm('Are you sure you want to remove this section?')) {
+      setLessonSteps(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleMoveSection = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= lessonSteps.length) return;
+    setLessonSteps(prev => {
+      const updated = [...prev];
+      const temp = updated[index];
+      updated[index] = updated[targetIndex];
+      updated[targetIndex] = temp;
+      return updated;
+    });
+  };
 
   // Load lesson data into editor when selectedLessonId changes
   useEffect(() => {
@@ -201,6 +306,28 @@ export default function AdminCredentials() {
       } catch {
         setLessonQuiz([]);
       }
+
+      try {
+        if (override.stepsJson) {
+          setLessonSteps(JSON.parse(override.stepsJson));
+        } else if (defaultLesson?.steps && defaultLesson.steps.length > 0) {
+          setLessonSteps(defaultLesson.steps.map((s: any, i: number) => ({
+            stepId: s.stepId ?? (i + 1),
+            name: s.name || `Section ${i + 1}`,
+            type: s.type || 'concepts',
+            description: s.description || '',
+          })));
+        } else {
+          setLessonSteps(LESSON_STEPS.map(s => ({
+            stepId: s.id,
+            name: s.name,
+            type: s.type,
+            description: `This section covers formal concepts, case examples, and study modules associated with ${s.name}.`,
+          })));
+        }
+      } catch {
+        setLessonSteps([]);
+      }
     } else if (defaultLesson) {
       setLessonTitle(defaultLesson.title);
       setLessonSubtitle(defaultLesson.subtitle || '');
@@ -222,6 +349,21 @@ export default function AdminCredentials() {
       setKeyTakeaways(defaultLesson.keyTakeaways || []);
       setLessonQuiz(defaultLesson.quiz || []);
       setCustomSimJson('{}');
+      if (defaultLesson.steps && defaultLesson.steps.length > 0) {
+        setLessonSteps(defaultLesson.steps.map((s: any, i: number) => ({
+          stepId: s.stepId ?? (i + 1),
+          name: s.name || `Section ${i + 1}`,
+          type: s.type || 'concepts',
+          description: s.description || '',
+        })));
+      } else {
+        setLessonSteps(LESSON_STEPS.map(s => ({
+          stepId: s.id,
+          name: s.name,
+          type: s.type,
+          description: `This section covers formal concepts, case examples, and study modules associated with ${s.name}.`,
+        })));
+      }
     }
     setLessonSaveStatus(null);
   }, [selectedLessonId, lessonOverrides]);
@@ -390,6 +532,7 @@ export default function AdminCredentials() {
         galleryImagesJson: JSON.stringify(lessonGalleryImages),
         simulatorJson: compiledSimulatorJson,
         quizJson: JSON.stringify(lessonQuiz),
+        stepsJson: JSON.stringify(lessonSteps),
       });
 
       if (res.success) {
@@ -1484,6 +1627,11 @@ export default function AdminCredentials() {
                     {lessonSaveStatus}
                   </div>
                 )}
+                {uploadStatus && (
+                  <div style={{ padding: '0.6rem 1rem', borderRadius: '0.5rem', background: uploadStatus.includes('✓') ? 'rgba(52,211,153,0.15)' : 'rgba(239,68,68,0.15)', color: uploadStatus.includes('✓') ? '#34D399' : '#F87171', fontSize: '0.82rem', fontWeight: 600 }}>
+                    {uploadStatus}
+                  </div>
+                )}
 
                 {/* Core Metadata */}
                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '1rem' }}>
@@ -1532,12 +1680,36 @@ export default function AdminCredentials() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>📄 Reference PDF Guide Path / URL</label>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8898AA' }}>📄 Reference PDF Guide Path / URL</label>
+                      <label style={{
+                        cursor: 'pointer',
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                        color: '#60A5FA',
+                        background: 'rgba(59, 130, 246, 0.15)',
+                        border: '1px solid rgba(59, 130, 246, 0.3)',
+                        borderRadius: '0.25rem',
+                        padding: '2px 8px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        {isUploadingPdf ? '⏳ Uploading...' : '📤 Upload PDF'}
+                        <input
+                          type="file"
+                          accept=".pdf"
+                          style={{ display: 'none' }}
+                          disabled={isUploadingPdf}
+                          onChange={handlePdfUpload}
+                        />
+                      </label>
+                    </div>
                     <input
                       type="text"
                       value={lessonPdfPath}
                       onChange={e => setLessonPdfPath(e.target.value)}
-                      placeholder="/resources/module_guide.pdf"
+                      placeholder="/lessons/L1.pdf"
                       style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.6rem', color: '#F1F5F9', fontSize: '0.85rem' }}
                     />
                   </div>
@@ -1552,28 +1724,53 @@ export default function AdminCredentials() {
                         Lesson Slide Gallery & Carousel ({lessonGalleryImages.length} Slides)
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setLessonGalleryImages([
-                          `/lessons/${selectedLessonId}/slide-1.svg`,
-                          `/lessons/${selectedLessonId}/slide-2.svg`,
-                          `/lessons/${selectedLessonId}/slide-3.svg`,
-                        ]);
-                      }}
-                      style={{
-                        background: 'rgba(59, 130, 246, 0.15)',
-                        border: '1px solid rgba(59, 130, 246, 0.4)',
-                        borderRadius: '0.375rem',
-                        padding: '0.35rem 0.75rem',
-                        color: '#93C5FD',
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <label style={{
+                        cursor: 'pointer',
                         fontSize: '0.75rem',
                         fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      ✨ Load Default SVG Samples
-                    </button>
+                        color: '#34D399',
+                        background: 'rgba(52, 211, 153, 0.15)',
+                        border: '1px solid rgba(52, 211, 153, 0.4)',
+                        borderRadius: '0.375rem',
+                        padding: '0.35rem 0.75rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        {isUploadingSlides ? '⏳ Uploading...' : '📤 Upload SVG / Slides'}
+                        <input
+                          type="file"
+                          accept=".svg,.png,.jpg,.jpeg,.webp"
+                          multiple
+                          style={{ display: 'none' }}
+                          disabled={isUploadingSlides}
+                          onChange={handleSlidesUpload}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLessonGalleryImages([
+                            `/lessons/${selectedLessonId}/slide-1.svg`,
+                            `/lessons/${selectedLessonId}/slide-2.svg`,
+                            `/lessons/${selectedLessonId}/slide-3.svg`,
+                          ]);
+                        }}
+                        style={{
+                          background: 'rgba(59, 130, 246, 0.15)',
+                          border: '1px solid rgba(59, 130, 246, 0.4)',
+                          borderRadius: '0.375rem',
+                          padding: '0.35rem 0.75rem',
+                          color: '#93C5FD',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ✨ Load Default SVG Samples
+                      </button>
+                    </div>
                   </div>
 
                   <p style={{ fontSize: '0.75rem', color: '#94A3B8', marginBottom: '1rem', lineHeight: '1.4' }}>
@@ -1716,6 +1913,252 @@ export default function AdminCredentials() {
                       }}
                     >
                       ➕ Add Slide URL
+                    </button>
+                  </div>
+                </div>
+
+                {/* ─── LESSON SECTIONS & STEPS MANAGER (19 Steps + Add Section) ─────────────────── */}
+                <div style={{ background: '#070E1A', border: '1px solid rgba(206,174,86,0.35)', borderRadius: '0.75rem', padding: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1.1rem' }}>📑</span>
+                      <div>
+                        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#CEAE56' }}>
+                          Lesson Sections & Steps Manager ({lessonSteps.length} Sections)
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#8898AA' }}>
+                          Update & correct section names, edit lecture content, reorder, or add additional sections.
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddSection}
+                      style={{
+                        background: 'rgba(206,174,86,0.15)',
+                        border: '1px solid rgba(206,174,86,0.4)',
+                        borderRadius: '0.375rem',
+                        padding: '0.4rem 0.9rem',
+                        color: '#CEAE56',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      ➕ Add Additional Section
+                    </button>
+                  </div>
+
+                  {/* Sections List */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '550px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {lessonSteps.map((step, idx) => {
+                      const isExpanded = expandedSectionIndex === idx;
+                      return (
+                        <div
+                          key={idx}
+                          style={{
+                            background: '#0B1528',
+                            border: isExpanded ? '1px solid rgba(206,174,86,0.5)' : '1px solid #1E293B',
+                            borderRadius: '0.5rem',
+                            padding: '0.75rem',
+                            transition: 'border-color 0.2s',
+                          }}
+                        >
+                          {/* Section Header Row */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                            <span style={{
+                              background: '#1E293B',
+                              color: '#93C5FD',
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              minWidth: '38px',
+                              textAlign: 'center'
+                            }}>
+                              S{String(idx + 1).padStart(2, '0')}
+                            </span>
+
+                            {/* Section Name Input */}
+                            <input
+                              type="text"
+                              value={step.name}
+                              onChange={e => handleUpdateSection(idx, 'name', e.target.value)}
+                              placeholder="Section Name / Title"
+                              style={{
+                                flex: 2,
+                                background: '#070E1A',
+                                border: '1px solid #334155',
+                                borderRadius: '0.375rem',
+                                padding: '0.4rem 0.6rem',
+                                color: '#F1F5F9',
+                                fontSize: '0.82rem',
+                                fontWeight: 600,
+                              }}
+                            />
+
+                            {/* Section Type Select */}
+                            <select
+                              value={step.type}
+                              onChange={e => handleUpdateSection(idx, 'type', e.target.value)}
+                              style={{
+                                flex: 1,
+                                maxWidth: '140px',
+                                background: '#070E1A',
+                                border: '1px solid #334155',
+                                borderRadius: '0.375rem',
+                                padding: '0.4rem 0.5rem',
+                                color: '#94A3B8',
+                                fontSize: '0.75rem',
+                              }}
+                            >
+                              <option value="overview">Overview</option>
+                              <option value="intro">Intro</option>
+                              <option value="objectives">Objectives</option>
+                              <option value="concepts">Core Concepts</option>
+                              <option value="terminology">Terminology</option>
+                              <option value="visual">Visual Model</option>
+                              <option value="examples">Examples</option>
+                              <option value="casestudy">Case Study</option>
+                              <option value="didyouknow">Did You Know</option>
+                              <option value="ai-tutor">AI Tutor</option>
+                              <option value="kc">Knowledge Check</option>
+                              <option value="practice">Practice</option>
+                              <option value="summary">Summary</option>
+                              <option value="takeaways">Takeaways</option>
+                              <option value="flashcards">Flashcards</option>
+                              <option value="quiz">Quiz</option>
+                              <option value="assignment">Assignment</option>
+                              <option value="revision">Revision</option>
+                              <option value="next">Next</option>
+                              <option value="custom">Custom</option>
+                            </select>
+
+                            {/* Move Up */}
+                            <button
+                              type="button"
+                              disabled={idx === 0}
+                              onClick={() => handleMoveSection(idx, 'up')}
+                              title="Move Up"
+                              style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid #334155',
+                                borderRadius: '0.375rem',
+                                padding: '4px 8px',
+                                color: idx === 0 ? '#475569' : '#CBD5E1',
+                                fontSize: '0.75rem',
+                                cursor: idx === 0 ? 'not-allowed' : 'pointer',
+                              }}
+                            >
+                              ⬆️
+                            </button>
+
+                            {/* Move Down */}
+                            <button
+                              type="button"
+                              disabled={idx === lessonSteps.length - 1}
+                              onClick={() => handleMoveSection(idx, 'down')}
+                              title="Move Down"
+                              style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid #334155',
+                                borderRadius: '0.375rem',
+                                padding: '4px 8px',
+                                color: idx === lessonSteps.length - 1 ? '#475569' : '#CBD5E1',
+                                fontSize: '0.75rem',
+                                cursor: idx === lessonSteps.length - 1 ? 'not-allowed' : 'pointer',
+                              }}
+                            >
+                              ⬇️
+                            </button>
+
+                            {/* Toggle Content Expand */}
+                            <button
+                              type="button"
+                              onClick={() => setExpandedSectionIndex(isExpanded ? null : idx)}
+                              style={{
+                                background: isExpanded ? 'rgba(206,174,86,0.15)' : 'rgba(255,255,255,0.05)',
+                                border: '1px solid #334155',
+                                borderRadius: '0.375rem',
+                                padding: '4px 8px',
+                                color: isExpanded ? '#CEAE56' : '#CBD5E1',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {isExpanded ? '▲ Hide' : '▼ Edit Content'}
+                            </button>
+
+                            {/* Delete Section */}
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteSection(idx)}
+                              title="Delete Section"
+                              style={{
+                                background: 'rgba(239, 68, 68, 0.15)',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                borderRadius: '0.375rem',
+                                padding: '4px 8px',
+                                color: '#F87171',
+                                fontSize: '0.75rem',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+
+                          {/* Section Description / Lecture Textarea */}
+                          {isExpanded && (
+                            <div style={{ marginTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.6rem' }}>
+                              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>
+                                Section Lecture Content / Study Text (Displayed to students in lesson player for this step):
+                              </label>
+                              <textarea
+                                rows={5}
+                                value={step.description}
+                                onChange={e => handleUpdateSection(idx, 'description', e.target.value)}
+                                placeholder="Enter lecture content, study notes, case studies, or instructions for this section..."
+                                style={{
+                                  width: '100%',
+                                  background: '#070E1A',
+                                  border: '1px solid #334155',
+                                  borderRadius: '0.375rem',
+                                  padding: '0.6rem',
+                                  color: '#F1F5F9',
+                                  fontSize: '0.8rem',
+                                  lineHeight: 1.5,
+                                  fontFamily: 'monospace',
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Bottom Add Section Button */}
+                  <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      onClick={handleAddSection}
+                      style={{
+                        background: '#1E293B',
+                        border: '1px solid #334155',
+                        borderRadius: '0.375rem',
+                        padding: '0.45rem 1rem',
+                        color: '#F1F5F9',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      ➕ Add Additional Section
                     </button>
                   </div>
                 </div>

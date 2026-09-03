@@ -379,6 +379,7 @@ export async function saveLessonFullContentAction(adminToken: string | undefined
   galleryImagesJson?: string;
   simulatorJson?: string;
   quizJson?: string;
+  stepsJson?: string;
 }) {
   try {
     const adminId = await checkAdminAuth(adminToken);
@@ -396,6 +397,7 @@ export async function saveLessonFullContentAction(adminToken: string | undefined
       galleryImagesJson = '[]',
       simulatorJson = '{}',
       quizJson = '[]',
+      stepsJson = '[]',
     } = data;
 
     if (!lessonId || !title) {
@@ -451,13 +453,26 @@ export async function saveLessonFullContentAction(adminToken: string | undefined
       }
     }
 
+    // Schema validation for lesson steps / sections
+    let parsedSteps: any[] = [];
+    if (stepsJson && stepsJson.trim() !== '') {
+      try {
+        const parsed = JSON.parse(stepsJson);
+        if (Array.isArray(parsed)) {
+          parsedSteps = parsed;
+        }
+      } catch {
+        // ignore format error
+      }
+    }
+
     const updatedAt = new Date().toISOString();
 
     db.prepare(`
       INSERT INTO lesson_overrides (
         lessonId, title, subtitle, duration, level, summary, contentMarkdown,
-        keyTakeawaysJson, youtubeId, pdfPath, simulatorJson, quizJson, galleryImagesJson, updatedAt, updatedByAdminId
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        keyTakeawaysJson, youtubeId, pdfPath, simulatorJson, quizJson, galleryImagesJson, stepsJson, updatedAt, updatedByAdminId
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(lessonId) DO UPDATE SET
         title = excluded.title,
         subtitle = excluded.subtitle,
@@ -471,6 +486,7 @@ export async function saveLessonFullContentAction(adminToken: string | undefined
         simulatorJson = excluded.simulatorJson,
         quizJson = excluded.quizJson,
         galleryImagesJson = excluded.galleryImagesJson,
+        stepsJson = excluded.stepsJson,
         updatedAt = excluded.updatedAt,
         updatedByAdminId = excluded.updatedByAdminId
     `).run(
@@ -487,6 +503,7 @@ export async function saveLessonFullContentAction(adminToken: string | undefined
       simulatorJson,
       quizJson,
       galleryImagesJson,
+      stepsJson,
       updatedAt,
       adminId
     );
@@ -506,6 +523,7 @@ export async function saveLessonFullContentAction(adminToken: string | undefined
         if (youtubeId !== undefined) lessonData.youtubeId = youtubeId || null;
         if (pdfPath !== undefined) lessonData.pdfPath = pdfPath || null;
         if (parsedGalleryImages.length > 0) lessonData.galleryImages = parsedGalleryImages;
+        if (parsedSteps.length > 0) lessonData.steps = parsedSteps;
         try {
           fs.writeFileSync(filePath, JSON.stringify(lessonData, null, 2), 'utf8');
         } catch (e: any) {

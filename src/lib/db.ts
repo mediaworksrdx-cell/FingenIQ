@@ -90,6 +90,11 @@ try {
 } catch {
   // Column already exists
 }
+try {
+  db.exec(`ALTER TABLE lesson_overrides ADD COLUMN stepsJson TEXT;`);
+} catch {
+  // Column already exists
+}
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS enquiries (

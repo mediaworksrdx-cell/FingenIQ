@@ -30,6 +30,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         }
       }
 
+      let steps = defaultLesson.steps;
+      if (override.stepsJson) {
+        try {
+          steps = JSON.parse(override.stepsJson);
+        } catch {
+          steps = defaultLesson.steps;
+        }
+      }
+
       const mergedLesson = {
         ...defaultLesson,
         title: override.title || defaultLesson.title,
@@ -42,6 +51,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         pdfPath: override.pdfPath || defaultLesson.pdfPath,
         galleryImages,
         quiz,
+        steps,
       };
 
       return NextResponse.json({ success: true, lesson: mergedLesson });
