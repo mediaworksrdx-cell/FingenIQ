@@ -630,13 +630,18 @@ export default function AdminCredentials() {
 
   const handleEditEntity = async () => {
     if (!editingEntity) return;
-    const res = await editEntityAction(sessionToken, editingEntity);
-    if (res.success) {
-      setEditingEntity(null);
-      fetchDashboardData();
-    } else {
-      alert(res.error || 'Failed to update entity');
-    }
+    startTransition(async () => {
+      const res = await editEntityAction(sessionToken, {
+        ...editingEntity,
+        entityId: editingEntity.entityId || editingEntity.id,
+      });
+      if (res.success) {
+        setEditingEntity(null);
+        fetchDashboardData();
+      } else {
+        alert(res.error || 'Failed to update entity');
+      }
+    });
   };
 
   const handleDeleteEntity = async (entityId: string) => {
@@ -2841,7 +2846,7 @@ export default function AdminCredentials() {
                             {e.isActive ? 'Active' : 'Disabled'}
                           </button>
                           <button
-                            onClick={() => setEditingEntity({id: e.id, name: e.name, contactEmail: e.contactEmail, contactPhone: e.contactPhone, address: e.address, maxUsers: e.maxUsers})}
+                            onClick={() => setEditingEntity({id: e.id, entityId: e.id, name: e.name, contactEmail: e.contactEmail, contactPhone: e.contactPhone, address: e.address, maxUsers: e.maxUsers})}
                             style={{ background: 'rgba(255,255,255,0.05)', color: '#CBD5E1', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer', fontSize: '0.7rem', marginRight: '4px' }}
                           >
                             Edit

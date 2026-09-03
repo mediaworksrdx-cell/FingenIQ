@@ -1247,10 +1247,11 @@ export async function changeUserPasswordAction(adminToken: string | undefined, u
 }
 
 // ── ENTITY & PACKAGE MANAGEMENT ACTIONS ────────────────────────────────
-export async function editEntityAction(adminToken: string | undefined, data: { entityId: string, name?: string, contactEmail?: string, contactPhone?: string, address?: string, maxUsers?: number }) {
+export async function editEntityAction(adminToken: string | undefined, data: { entityId?: string, id?: string, name?: string, contactEmail?: string, contactPhone?: string, address?: string, maxUsers?: number }) {
   try {
     const adminId = await checkAdminAuth(adminToken);
-    if (!data.entityId) return { success: false, error: 'Entity ID is required.' };
+    const targetId = data.entityId || data.id;
+    if (!targetId) return { success: false, error: 'Entity ID is required.' };
 
     const updates: string[] = [];
     const values: any[] = [];
@@ -1262,9 +1263,9 @@ export async function editEntityAction(adminToken: string | undefined, data: { e
     if (data.maxUsers !== undefined) { updates.push('maxUsers = ?'); values.push(data.maxUsers); }
 
     if (updates.length > 0) {
-      values.push(data.entityId);
+      values.push(targetId);
       db.prepare(`UPDATE business_entities SET ${updates.join(', ')} WHERE id = ?`).run(...values);
-      logAudit('edit_entity', adminId, data.entityId, null, { updates: data });
+      logAudit('edit_entity', adminId, targetId, null, { updates: data });
       revalidatePath('/admin/credentials');
     }
 
