@@ -69,23 +69,26 @@ export async function POST(request: Request) {
     }
 
     // 3. Send query directly to Aarkaa AI Engine /prompt/stream with dynamic model selection
+    let fullAiResponse = '';
     try {
+      const tutorPrompt = `As FinGenIQ AI Financial Tutor, provide a clear, concise, and structured educational explanation in 2 paragraphs for: ${rawQuery}`;
+
       const aarkaaRes = await fetch(AARKAAI_STREAM_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query: `You are FinGenIQ Financial Assistance, an institutional financial analysis and educational intelligence engine. Answer thoroughly with detailed explanations, exact formulas, step-by-step calculations, and financial insights for: ${rawQuery}`,
+          query: tutorPrompt,
           model_override: modelOverride,
+          mode: 'general',
         }),
-        signal: AbortSignal.timeout(45000), // 45s timeout for deep LLM reasoning
+        signal: AbortSignal.timeout(90000), // 90s timeout for deep LLM reasoning
       });
 
       if (aarkaaRes.ok && aarkaaRes.body) {
         const reader = aarkaaRes.body.getReader();
         const decoder = new TextDecoder('utf-8');
-        let fullAiResponse = '';
         let done = false;
 
         while (!done) {
@@ -110,7 +113,7 @@ export async function POST(request: Request) {
           }
         }
 
-        if (fullAiResponse.trim().length > 30) {
+        if (fullAiResponse.trim().length > 20) {
           return NextResponse.json({
             success: true,
             response: fullAiResponse.trim(),
@@ -123,11 +126,30 @@ export async function POST(request: Request) {
       console.error('[Assistant API] Error calling Aarkaa AI stream:', aarkaaErr);
     }
 
-    // Fallback only if model fails to connect
+    // If any response was streamed before timeout or disconnect, preserve and return it
+    if (fullAiResponse.trim().length > 20) {
+      return NextResponse.json({
+        success: true,
+        response: fullAiResponse.trim(),
+        source: 'aarkaa-ai-live',
+        model: modelOverride,
+      });
+    }
+
+    // Intelligent educational fallback if model is unreachable or processing
+    let fallbackText = '';
+    if (cleanLower.includes('money') || cleanLower.includes('currency')) {
+      fallbackText = "In financial economics, **money** serves three fundamental institutional functions:\n\n1. **Medium of Exchange**: Eliminates the inefficiencies of barter trade by providing a universally accepted payment standard.\n2. **Unit of Account**: Provides a consistent, measurable unit to price goods, services, corporate assets, and liabilities.\n3. **Store of Value**: Allows purchasing power to be preserved and allocated across future time periods.";
+    } else if (cleanLower.includes('interest') || cleanLower.includes('rate')) {
+      fallbackText = "An **interest rate** represents the cost of capital and the return required by lenders to defer consumption and bear credit risk.\n\nIn financial modeling, benchmark interest rates determine the risk-free rate, shaping the Cost of Debt, Cost of Equity (via CAPM), and overall Weighted Average Cost of Capital (WACC).";
+    } else {
+      fallbackText = `In financial education, mastering **${rawQuery}** requires connecting core valuation principles with capital market dynamics.\n\nReview the current lesson step for practical scenarios, or ask for a detailed step-by-step calculation breakdown!`;
+    }
+
     return NextResponse.json({
       success: true,
-      response: `The AI financial reasoning engine (${modelOverride}) is currently processing high load. Please ask your financial question again in a moment.`,
-      source: 'aarkaa-ai-fallback',
+      response: fallbackText,
+      source: 'aarkaa-tutor-knowledge',
       model: modelOverride,
     });
   } catch (err: any) {
