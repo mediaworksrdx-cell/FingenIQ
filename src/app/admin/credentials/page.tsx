@@ -2643,38 +2643,71 @@ export default function AdminCredentials() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {articlesList.map(art => (
-                  <div key={art.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.75rem', padding: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.65rem', background: 'rgba(206,174,86,0.15)', color: '#CEAE56', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                          {art.category || 'Valuation'}
-                        </span>
-                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#F1F5F9' }}>{art.title}</span>
+                {articlesList.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '2rem', background: '#070E1A', border: '1px dashed #1E293B', borderRadius: '0.75rem' }}>
+                    <p style={{ color: '#8898AA', fontSize: '0.85rem', margin: 0 }}>No community research articles found. Click "+ Post Editorial" to publish.</p>
+                  </div>
+                ) : (
+                  articlesList.map(art => (
+                    <div key={art.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.75rem', padding: '1rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '0.65rem', background: 'rgba(206,174,86,0.15)', color: '#CEAE56', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                            {art.concept || art.category || 'Valuation'}
+                          </span>
+                          <span style={{ fontSize: '0.65rem', background: art.published ? 'rgba(52,211,153,0.15)' : 'rgba(148,163,184,0.15)', color: art.published ? '#34D399' : '#94A3B8', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                            {art.published ? '● Published' : '○ Draft'}
+                          </span>
+                          <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#F1F5F9' }}>{art.title}</span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <Link
+                            href={`/community/${art.slug}`}
+                            target="_blank"
+                            style={{ background: 'rgba(59,130,246,0.1)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)', borderRadius: '0.375rem', padding: '3px 8px', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600 }}
+                          >
+                            View ↗
+                          </Link>
+                          <Link
+                            href={`/community/edit/${art.slug}`}
+                            target="_blank"
+                            style={{ background: 'rgba(206,174,86,0.1)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.375rem', padding: '3px 8px', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600 }}
+                          >
+                            Edit ✎
+                          </Link>
+                          <button
+                            onClick={() => {
+                              if (confirm(`Delete article "${art.title}"? This cannot be undone.`)) {
+                                startTransition(async () => {
+                                  const res = await adminDeleteCommunityArticleAction(sessionToken, String(art.id));
+                                  if (res.success) {
+                                    fetchDashboardData();
+                                  } else {
+                                    alert(res.error || 'Failed to delete article');
+                                  }
+                                });
+                              }
+                            }}
+                            style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '0.375rem', padding: '3px 8px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button
-                          onClick={() => {
-                            if (confirm('Delete article?')) {
-                              startTransition(async () => {
-                                await adminDeleteCommunityArticleAction(sessionToken, String(art.id));
-                                fetchDashboardData();
-                              });
-                            }
-                          }}
-                          style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '0.375rem', padding: '3px 8px', fontSize: '0.75rem', cursor: 'pointer' }}
-                        >
-                          Delete
-                        </button>
+                      <p style={{ fontSize: '0.8rem', color: '#8898AA', margin: '0.5rem 0 0', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                        {art.summary || art.body?.slice(0, 140)}
+                      </p>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem', fontSize: '0.72rem', color: '#64748B' }}>
+                        <span>👤 {art.author_name || 'FinGenIQ Editorial'}</span>
+                        {art.created_at && <span>📅 {new Date(art.created_at).toLocaleDateString()}</span>}
+                        {art.sector && <span>🏢 {art.sector}</span>}
                       </div>
                     </div>
-
-                    <p style={{ fontSize: '0.8rem', color: '#8898AA', margin: '0.5rem 0 0', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                      {art.summary || art.body?.slice(0, 140)}
-                    </p>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
@@ -2684,27 +2717,51 @@ export default function AdminCredentials() {
                 Recent Comments Moderation Stream ({commentsList.length})
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: 420, overflowY: 'auto' }}>
-                {commentsList.map(c => (
-                  <div key={c.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.65rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#CEAE56' }}>{c.user_name || 'Member'}</span>
-                      <button
-                        onClick={() => {
-                          if (confirm('Delete comment?')) {
-                            startTransition(async () => {
-                              await adminDeleteCommentAction(sessionToken, String(c.id));
-                              fetchDashboardData();
-                            });
-                          }
-                        }}
-                        style={{ background: 'transparent', border: 'none', color: '#F87171', fontSize: '0.7rem', cursor: 'pointer' }}
-                      >
-                        ✕ Delete
-                      </button>
-                    </div>
-                    <p style={{ fontSize: '0.75rem', color: '#CBD5E1', margin: 0 }}>{c.body}</p>
+                {commentsList.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '2.5rem 1rem', background: '#070E1A', border: '1px dashed #1E293B', borderRadius: '0.75rem' }}>
+                    <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>💬</div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F1F5F9', marginBottom: '0.25rem' }}>No Comments Pending Review</div>
+                    <div style={{ fontSize: '0.75rem', color: '#8898AA' }}>Community discussions and member responses will stream here for real-time moderation.</div>
                   </div>
-                ))}
+                ) : (
+                  commentsList.map(c => (
+                    <div key={c.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.65rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#CEAE56' }}>{c.user_name || 'Member'}</span>
+                          {c.articleTitle && (
+                            <span style={{ fontSize: '0.65rem', color: '#64748B', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              on {c.articleTitle}
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (confirm('Delete comment?')) {
+                              startTransition(async () => {
+                                const res = await adminDeleteCommentAction(sessionToken, String(c.id));
+                                if (res.success) {
+                                  fetchDashboardData();
+                                } else {
+                                  alert(res.error || 'Failed to delete comment');
+                                }
+                              });
+                            }
+                          }}
+                          style={{ background: 'transparent', border: 'none', color: '#F87171', fontSize: '0.7rem', cursor: 'pointer' }}
+                        >
+                          ✕ Delete
+                        </button>
+                      </div>
+                      <p style={{ fontSize: '0.75rem', color: '#CBD5E1', margin: 0 }}>{c.body}</p>
+                      {c.created_at && (
+                        <div style={{ fontSize: '0.65rem', color: '#64748B' }}>
+                          {new Date(c.created_at).toLocaleString()}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

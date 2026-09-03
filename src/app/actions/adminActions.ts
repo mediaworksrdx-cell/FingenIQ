@@ -600,7 +600,7 @@ export async function adminDeleteCommunityArticleAction(adminToken: string | und
     const adminId = await checkAdminAuth(adminToken);
     
     // Delete associated comments first
-    db.prepare('DELETE FROM community_comments WHERE articleId = ?').run(articleId);
+    db.prepare('DELETE FROM community_comments WHERE article_id = ?').run(articleId);
     db.prepare('DELETE FROM community_articles WHERE id = ?').run(articleId);
 
     logAudit('COMMUNITY_ARTICLE_DELETED', adminId, articleId, null, null);
