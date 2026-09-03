@@ -32,7 +32,8 @@ function formatTime() {
 export default function LessonPlayerComponent() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const lessonId = params.id || 'L1';
+  const rawId = params.id || 'L1';
+  const lessonId = rawId.startsWith('L') ? rawId : `L${rawId}`;
   
   const [dynamicLesson, setDynamicLesson] = useState<any>(null);
 
@@ -133,10 +134,7 @@ export default function LessonPlayerComponent() {
     if (!stepFromGalleryRef.current) {
       const images = lesson.galleryImages?.length ? lesson.galleryImages : [1, 2, 3];
       const totalSlides = images.length;
-      const mapped = Math.min(
-        Math.floor((idx / effectiveSteps.length) * totalSlides),
-        totalSlides - 1
-      );
+      const mapped = Math.min(idx, totalSlides - 1);
       setGallerySlide(mapped);
     }
     stepFromGalleryRef.current = false;
@@ -363,13 +361,9 @@ export default function LessonPlayerComponent() {
                     title={lesson.title}
                     currentSlide={gallerySlide}
                     onSlideChange={(slideIdx) => {
-                      // Map slide → step proportionally
-                      const mappedStep = Math.min(
-                        Math.floor((slideIdx / images.length) * effectiveSteps.length),
-                        effectiveSteps.length - 1
-                      );
+                      // Map slide → step 1-to-1
+                      const mappedStep = Math.min(slideIdx, effectiveSteps.length - 1);
                       if (mappedStep !== currentStep) {
-                        // Set ref so handleStepChange knows NOT to override gallery position
                         stepFromGalleryRef.current = true;
                         handleStepChange(mappedStep);
                       }

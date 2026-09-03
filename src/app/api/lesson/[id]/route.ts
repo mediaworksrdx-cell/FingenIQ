@@ -5,7 +5,8 @@ import { LESSONS } from '@/lib/data';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
+    const { id: rawId } = await params;
+    const id = rawId.startsWith('L') ? rawId : `L${rawId}`;
     const defaultLesson = LESSONS.find(l => l.id === id) || LESSONS[0];
 
     // Check DB override

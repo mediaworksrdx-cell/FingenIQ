@@ -4,7 +4,8 @@ import type { NextRequest } from 'next/server';
 export const config = {
   matcher: [
     '/dashboard/:path*',
-    '/lessons/:path*',
+    '/lessons',
+    '/lessons/:path((?!.*\\.[\\w]+$).*)',
     '/lesson-player/:path*',
     '/assessments/:path*',
     '/capstone/:path*',
@@ -19,8 +20,12 @@ export const config = {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // 1. Allow public routes
-  if (pathname.startsWith('/certification/verify') || pathname === '/admin/login') {
+  // 1. Allow public routes, static assets, and slide media
+  if (
+    pathname.startsWith('/certification/verify') ||
+    pathname === '/admin/login' ||
+    pathname.match(/\.(svg|png|jpg|jpeg|webp|pdf|ico|css|js|woff|woff2)$/i)
+  ) {
     return NextResponse.next();
   }
 
