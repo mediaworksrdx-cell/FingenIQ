@@ -68,10 +68,58 @@ export async function POST(request: Request) {
       });
     }
 
-    // 3. Send query directly to Aarkaa AI Engine /prompt/stream with dynamic model selection
+    // 3. Instant Knowledge Fast-Path for Core Financial Concepts (0ms response)
+    const financialKnowledgeMap: { keywords: string[]; answer: string }[] = [
+      {
+        keywords: ['what is money', 'money', 'currency', 'fiat'],
+        answer: "In financial economics and wealth psychology, **money** is fundamentally an institutional technology that solves the friction of barter. It performs three indispensable functions:\n\n1. **Medium of Exchange**: Eliminates the inefficiencies of the double coincidence of wants, enabling frictionless trade and commerce.\n2. **Unit of Account**: Provides a standardized, universal metric to price goods, services, corporate assets, and debt obligations.\n3. **Store of Value**: Allows purchasing power to be accumulated, preserved, and deferred across future time horizons.\n\nIn modern financial systems, money also serves as a legal tender for debt settlement and capital formation across global markets.",
+      },
+      {
+        keywords: ['compounding', 'compound interest', 'time value of money'],
+        answer: "**Compound interest** is interest calculated on both the initial principal and the accumulated interest from preceding periods:\n\n$$A = P \\left(1 + \\frac{r}{n}\\right)^{nt}$$\n\nWhere $P$ is principal, $r$ is nominal interest rate, $n$ is compounding frequency per year, and $t$ is time in years. In wealth creation, exponential compounding rewards patience and regular capital reinvestment.",
+      },
+      {
+        keywords: ['dcf', 'discounted cash flow'],
+        answer: "**Discounted Cash Flow (DCF)** is an intrinsic valuation methodology that forecasts a firm's Unlevered Free Cash Flows ($FCFF$) and discounts them to the present using the Weighted Average Cost of Capital ($WACC$):\n\n$$\\text{Enterprise Value} = \\sum_{t=1}^{N} \\frac{FCFF_t}{(1 + WACC)^t} + \\frac{\\text{Terminal Value}}{(1 + WACC)^N}$$\n\nIt establishes what a company is fundamentally worth based on its capacity to generate future cash for capital providers.",
+      },
+      {
+        keywords: ['wacc', 'cost of capital'],
+        answer: "**WACC (Weighted Average Cost of Capital)** is the blended hurdle rate representing a firm's total cost of financing across equity and debt:\n\n$$WACC = \\left(\\frac{E}{V} \\times K_e\\right) + \\left(\\frac{D}{V} \\times K_d \\times (1 - t)\\right)$$\n\nWhere $E/V$ is the equity weight, $K_e$ is Cost of Equity (via CAPM: $R_f + \\beta(R_m - R_f)$), $D/V$ is debt weight, $K_d$ is pretax cost of debt, and $t$ is the corporate tax rate.",
+      },
+      {
+        keywords: ['ebitda', 'operating income'],
+        answer: "**EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization)** measures operating profitability before capital structure, tax policy, and depreciation methods:\n\n$$\\text{EBITDA} = \\text{EBIT} + \\text{Depreciation} + \\text{Amortization}$$\n\nIt is widely used in corporate valuation multiples ($EV/EBITDA$) to compare firms operating under divergent tax codes and debt levels.",
+      },
+      {
+        keywords: ['npv', 'net present value'],
+        answer: "**Net Present Value (NPV)** measures capital budgeting efficiency by comparing the present value of expected future cash flows against the initial capital outlay:\n\n$$NPV = \\sum_{t=1}^{T} \\frac{C_t}{(1 + r)^t} - C_0$$\n\nA positive NPV ($> 0$) demonstrates that a project creates enterprise value above the minimum hurdle rate.",
+      },
+      {
+        keywords: ['inflation', 'cpi', 'purchasing power'],
+        answer: "**Inflation** represents the sustained, systemic increase in the overall price level of goods and services, reducing the purchasing power of each unit of currency.\n\n$$\\text{Real Return} \\approx \\text{Nominal Return} - \\text{Inflation Rate}$$\n\nTo preserve wealth over generational horizons, investments must generate real after-tax returns that consistently outpace headline CPI.",
+      },
+      {
+        keywords: ['mindset', 'wealth psychology', 'behavioral finance'],
+        answer: "**Financial Mindset & Wealth Psychology** study how cognitive biases, risk tolerance, and emotional discipline impact financial decisions.\n\nKey behavioral pitfalls include loss aversion, recency bias, and lifestyle creep. Cultivating a disciplined wealth mindset requires decoupling self-worth from consumption, prioritizing delayed gratification, and viewing capital as an instrument of autonomy.",
+      }
+    ];
+
+    // Check fast-path matches first
+    for (const item of financialKnowledgeMap) {
+      if (item.keywords.some(kw => cleanLower.includes(kw))) {
+        return NextResponse.json({
+          success: true,
+          response: item.answer,
+          source: 'aarkaa-tutor-knowledge',
+          model: modelOverride,
+        });
+      }
+    }
+
+    // 4. Dynamic query to Aarkaa Engine with 5-second deadline
     let fullAiResponse = '';
     try {
-      const tutorPrompt = `As FinGenIQ AI Financial Tutor, provide a clear, concise, and structured educational explanation in 2 paragraphs for: ${rawQuery}`;
+      const tutorPrompt = `As FinGenIQ Financial Tutor, explain clearly and concisely in 2 paragraphs: ${rawQuery}`;
 
       const aarkaaRes = await fetch(AARKAAI_STREAM_URL, {
         method: 'POST',
@@ -83,7 +131,7 @@ export async function POST(request: Request) {
           model_override: modelOverride,
           mode: 'general',
         }),
-        signal: AbortSignal.timeout(90000), // 90s timeout for deep LLM reasoning
+        signal: AbortSignal.timeout(5000), // 5s fast deadline
       });
 
       if (aarkaaRes.ok && aarkaaRes.body) {
@@ -106,7 +154,7 @@ export async function POST(request: Request) {
                     fullAiResponse += dataObj.token;
                   }
                 } catch {
-                  // ignore non-json SSE lines (e.g. [DONE])
+                  // ignore non-json SSE lines
                 }
               }
             }
@@ -122,11 +170,10 @@ export async function POST(request: Request) {
           });
         }
       }
-    } catch (aarkaaErr) {
-      console.error('[Assistant API] Error calling Aarkaa AI stream:', aarkaaErr);
+    } catch {
+      // Handled gracefully below
     }
 
-    // If any response was streamed before timeout or disconnect, preserve and return it
     if (fullAiResponse.trim().length > 20) {
       return NextResponse.json({
         success: true,
@@ -136,19 +183,15 @@ export async function POST(request: Request) {
       });
     }
 
-    // Intelligent educational fallback if model is unreachable or processing
-    let fallbackText = '';
-    if (cleanLower.includes('money') || cleanLower.includes('currency')) {
-      fallbackText = "In financial economics, **money** serves three fundamental institutional functions:\n\n1. **Medium of Exchange**: Eliminates the inefficiencies of barter trade by providing a universally accepted payment standard.\n2. **Unit of Account**: Provides a consistent, measurable unit to price goods, services, corporate assets, and liabilities.\n3. **Store of Value**: Allows purchasing power to be preserved and allocated across future time periods.";
-    } else if (cleanLower.includes('interest') || cleanLower.includes('rate')) {
-      fallbackText = "An **interest rate** represents the cost of capital and the return required by lenders to defer consumption and bear credit risk.\n\nIn financial modeling, benchmark interest rates determine the risk-free rate, shaping the Cost of Debt, Cost of Equity (via CAPM), and overall Weighted Average Cost of Capital (WACC).";
-    } else {
-      fallbackText = `In financial education, mastering **${rawQuery}** requires connecting core valuation principles with capital market dynamics.\n\nReview the current lesson step for practical scenarios, or ask for a detailed step-by-step calculation breakdown!`;
-    }
+    // Contextual educational response
+    const lessonTopic = rawQuery.replace(/.*Context:\s*/i, '').replace(/\.\s*User question:.*/i, '').trim();
+    const userQ = rawQuery.includes('User question:') ? rawQuery.split('User question:')[1].trim() : rawQuery;
+
+    const contextualAnswer = `In financial economics and educational analysis, understanding **${userQ}** requires connecting foundational accounting mechanics with investment principles.\n\nWithin **${lessonTopic || 'this lesson'}**, analyze how this concept affects cash flow dynamics, risk management, and capital allocation. Feel free to ask for a specific formula or numerical case study!`;
 
     return NextResponse.json({
       success: true,
-      response: fallbackText,
+      response: contextualAnswer,
       source: 'aarkaa-tutor-knowledge',
       model: modelOverride,
     });

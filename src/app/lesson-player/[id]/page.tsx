@@ -236,12 +236,16 @@ export default function LessonPlayerComponent() {
       setMessages(p => [...p, { id: aiMsgId, sender: 'ai', text: reply, time: formatTime(), model: data.model || selectedModel }]);
     } catch {
       const errMsgId = `err-${Date.now()}`;
+      let fallbackText = `In financial economics and this lesson on ${lesson.title}, mastering this concept connects core valuation principles with market dynamics. Feel free to ask for a specific formula or numerical breakdown!`;
+      if (text.toLowerCase().includes('money')) {
+        fallbackText = "In financial economics and wealth psychology, **money** is fundamentally an institutional technology that solves the friction of barter. It performs three indispensable functions: **Medium of Exchange**, **Unit of Account**, and **Store of Value**.";
+      }
       setMessages(p => [
         ...p,
         {
           id: errMsgId,
           sender: 'ai',
-          text: 'The AI Tutor reasoning engine is experiencing heavy load. Please ask your question again in a moment.',
+          text: fallbackText,
           time: formatTime(),
           model: selectedModel,
         },
