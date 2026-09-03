@@ -230,22 +230,18 @@ export default function LessonPlayerComponent() {
       if (data.success && data.response) {
         reply = data.response;
       } else {
-        reply = `For ${lesson.title}, remember that mastering these core financial disciplines is essential. Let me know if you need any clarification on this step!`;
+        reply = data.error || 'Error: No response from AI reasoning engine.';
       }
       const aiMsgId = `ai-${Date.now()}`;
       setMessages(p => [...p, { id: aiMsgId, sender: 'ai', text: reply, time: formatTime(), model: data.model || selectedModel }]);
-    } catch {
+    } catch (err: any) {
       const errMsgId = `err-${Date.now()}`;
-      let fallbackText = `In financial economics and this lesson on ${lesson.title}, mastering this concept connects core valuation principles with market dynamics. Feel free to ask for a specific formula or numerical breakdown!`;
-      if (text.toLowerCase().includes('money')) {
-        fallbackText = "In financial economics and wealth psychology, **money** is fundamentally an institutional technology that solves the friction of barter. It performs three indispensable functions: **Medium of Exchange**, **Unit of Account**, and **Store of Value**.";
-      }
       setMessages(p => [
         ...p,
         {
           id: errMsgId,
           sender: 'ai',
-          text: fallbackText,
+          text: `Connection error: ${err.message || 'Unable to connect to AI engine'}. Please try again.`,
           time: formatTime(),
           model: selectedModel,
         },
