@@ -53,7 +53,10 @@ export default function Dashboard() {
     setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
     setGreeting(getGreeting());
     getCurrentUserAction().then(user => {
-      if (user) setUserName(user.name);
+      if (user && user.name) {
+        const cap = user.name.split(/\s+/).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        setUserName(cap);
+      }
     });
   }, []);
 
@@ -92,7 +95,7 @@ export default function Dashboard() {
                     Active Learner Session
                   </span>
                 </div>
-                <div className="welcome-banner__name">{userName}</div>
+                <div className="welcome-banner__name" style={{ textTransform: 'capitalize' }}>{userName}</div>
                 <p className="welcome-banner__quote">{quote ? `“${quote}”` : ''}</p>
               </div>
               <div className="welcome-banner__streak" aria-label="Study streak">

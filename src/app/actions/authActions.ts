@@ -39,6 +39,11 @@ async function setSessionCookie(userId: string) {
 
 // ── GET CURRENT USER ─────────────────────────────────────────
 
+function capitalizeWords(str: string): string {
+  if (!str) return '';
+  return str.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
 export async function getCurrentUserAction(): Promise<{ name: string; email: string; role: string; initials: string } | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get('session_token')?.value;
@@ -47,8 +52,9 @@ export async function getCurrentUserAction(): Promise<{ name: string; email: str
   if (!session) return null;
   const user = db.prepare('SELECT name, email, role FROM users WHERE id = ?').get(session.userId) as any;
   if (!user) return null;
-  const displayName = user.name || user.email.split('@')[0];
-  const initials = displayName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+  const rawName = user.name || user.email.split('@')[0];
+  const displayName = capitalizeWords(rawName);
+  const initials = displayName.split(/\s+/).map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
   return { name: displayName, email: user.email, role: user.role, initials };
 }
 

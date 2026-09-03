@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 
+function capitalizeWords(str: string): string {
+  if (!str) return '';
+  return str.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
 export async function GET(request: NextRequest) {
   const token = request.cookies.get('session_token')?.value;
 
@@ -80,7 +85,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       userId: session.userId,
-      name: user.name,
+      name: capitalizeWords(user.name),
       role: user.role,
       mustReset: false,
       ...packageData
