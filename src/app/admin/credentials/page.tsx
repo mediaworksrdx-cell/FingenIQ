@@ -10,7 +10,10 @@ import {
   saveChatbotQAAction, deleteChatbotQAAction, bulkSaveChatbotQAsAction, resetChatbotQAsAction,
   adminResetUserProgressAction, BulkUserRow,
   editUserAction, deleteUserAction, changeUserPasswordAction, editEntityAction, deleteEntityAction, deletePackageAction,
-  createNewLessonAction, deleteLessonAction
+  createNewLessonAction, deleteLessonAction,
+  saveAssessmentQuestionAction, deleteAssessmentQuestionAction, saveAssessmentSettingsAction,
+  saveCapstoneTrackAction, deleteCapstoneTrackAction,
+  saveCertificationSettingsAction, saveProfessionalTrackAction, deleteProfessionalTrackAction
 } from '@/app/actions/adminActions';
 import { logoutAction } from '@/app/actions/authActions';
 import { LESSONS, MODULES, LESSON_STEPS } from '@/lib/data';
@@ -39,9 +42,38 @@ export default function AdminCredentials() {
   const [newQAQuestion, setNewQAQuestion] = useState('');
   const [newQAAnswer, setNewQAAnswer] = useState('');
   const [newQACategory, setNewQACategory] = useState('General');
+
+  // ─── INSTITUTIONAL ACADEMIC GOVERNANCE STATE ──────────────────────────────
+  const [govSubTab, setGovSubTab] = useState<'assessments' | 'capstone' | 'certification'>('assessments');
+  const [assessmentQuestions, setAssessmentQuestions] = useState<any[]>([]);
+  const [assessmentSettings, setAssessmentSettings] = useState<any>({ timeLimitSeconds: 1200, maxTabSwitches: 3, passingScorePct: 70, webcamRequired: 1 });
+  const [selectedAssessmentModule, setSelectedAssessmentModule] = useState<string>('all');
+  const [capstoneTracks, setCapstoneTracks] = useState<any[]>([]);
+  const [certificationSettings, setCertificationSettings] = useState<any>({ distinctionMinScore: 85, proficiencyMinScore: 75, completionMinScore: 60 });
+  const [professionalTracks, setProfessionalTracks] = useState<any[]>([]);
+  const [govSaveStatus, setGovSaveStatus] = useState<string | null>(null);
+
+  // Question creator state
+  const [showAddQuestionModal, setShowAddQuestionModal] = useState(false);
+  const [newQuestionModule, setNewQuestionModule] = useState('M1');
+  const [newQuestionText, setNewQuestionText] = useState('');
+  const [newQuestionOptions, setNewQuestionOptions] = useState<string[]>(['', '', '', '']);
+  const [newQuestionCorrectIndex, setNewQuestionCorrectIndex] = useState(0);
+  const [newQuestionExplanation, setNewQuestionExplanation] = useState('');
+  const [newQuestionDifficulty, setNewQuestionDifficulty] = useState<'foundation' | 'intermediate' | 'advanced'>('intermediate');
+
+  // Capstone pathway creator state
+  const [showAddCapstoneModal, setShowAddCapstoneModal] = useState(false);
+  const [newCapstoneId, setNewCapstoneId] = useState('');
+  const [newCapstoneCode, setNewCapstoneCode] = useState('D');
+  const [newCapstoneTitle, setNewCapstoneTitle] = useState('');
+  const [newCapstoneIcon, setNewCapstoneIcon] = useState('📊');
+  const [newCapstoneDesc, setNewCapstoneDesc] = useState('');
+  const [newCapstoneRubric, setNewCapstoneRubric] = useState('');
+  const [newCapstonePass, setNewCapstonePass] = useState(70);
   
   // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'chatbot_qa' | 'community' | 'entities'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'governance' | 'chatbot_qa' | 'community' | 'entities'>('analytics');
   const [selectedLoginCategory, setSelectedLoginCategory] = useState('b2c');
 
   const [editingUser, setEditingUser] = useState<any>(null);
@@ -385,6 +417,11 @@ export default function AdminCredentials() {
           setAiKnowledgeDocs(data.aiKnowledgeDocs || []);
           setAiSettings(data.aiSettings || []);
           setChatbotQAs(data.chatbotQAs || []);
+          setAssessmentQuestions(data.assessmentQuestions || []);
+          if (data.assessmentSettings) setAssessmentSettings(data.assessmentSettings);
+          setCapstoneTracks(data.capstoneTracks || []);
+          if (data.certificationSettings) setCertificationSettings(data.certificationSettings);
+          setProfessionalTracks(data.professionalTracks || []);
 
           const modeSetting = (data.aiSettings || []).find((s: any) => s.settingKey === 'system_prompt_mode');
           if (modeSetting) setSelectedPromptMode(modeSetting.settingValue);
@@ -869,6 +906,7 @@ export default function AdminCredentials() {
             { id: 'analytics', label: '📊 Learner Analytics & Gradebook' },
             { id: 'users', label: '👥 User & Credential Management' },
             { id: 'lessons', label: '🎓 Curriculum & Simulator Studio' },
+            { id: 'governance', label: '🏛️ Academic Governance' },
             { id: 'chatbot_qa', label: `💬 Chatbot Q&A (${chatbotQAs.length || 30} Answers)` },
             { id: 'community', label: '🌐 Community Moderation' },
             { id: 'entities', label: '🏢 Enterprise & Packages' },
@@ -2306,6 +2344,728 @@ export default function AdminCredentials() {
         )}
 
         {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB: INSTITUTIONAL ACADEMIC GOVERNANCE ─────────────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'governance' && (
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            
+            {/* Top Control Bar & Sub-Nav */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                      🏛️ Institutional Academic Governance Studio
+                    </h3>
+                    <span style={{ background: 'rgba(206,174,86,0.15)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '9999px', padding: '2px 10px', fontSize: '0.75rem', fontWeight: 700 }}>
+                      Accredited Standard
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.8rem', color: '#8898AA', margin: '0.35rem 0 0' }}>
+                    Live administrative management for Proctored Module Assessments, Capstone Research Pathways, and Credential Certification Tiers.
+                  </p>
+                </div>
+
+                {/* Sub-Navigation Buttons */}
+                <div style={{ display: 'flex', gap: '0.5rem', background: '#070E1A', padding: '4px', borderRadius: '0.6rem', border: '1px solid #1E293B' }}>
+                  {[
+                    { id: 'assessments', label: `📝 Proctored Assessments (${assessmentQuestions.length})` },
+                    { id: 'capstone', label: `🎓 Capstone Pathways (${capstoneTracks.length})` },
+                    { id: 'certification', label: `🏅 Credential Tiers & Weights` },
+                  ].map(sub => (
+                    <button
+                      key={sub.id}
+                      onClick={() => setGovSubTab(sub.id as any)}
+                      style={{
+                        background: govSubTab === sub.id ? 'rgba(206,174,86,0.2)' : 'transparent',
+                        color: govSubTab === sub.id ? '#CEAE56' : '#94A3B8',
+                        border: govSubTab === sub.id ? '1px solid rgba(206,174,86,0.4)' : '1px solid transparent',
+                        borderRadius: '0.4rem',
+                        padding: '0.5rem 0.85rem',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {sub.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {govSaveStatus && (
+                <div style={{ marginTop: '1rem', padding: '0.75rem 1rem', borderRadius: '0.5rem', background: govSaveStatus.startsWith('✅') ? 'rgba(52,211,153,0.15)' : 'rgba(239,68,68,0.15)', border: govSaveStatus.startsWith('✅') ? '1px solid #34D399' : '1px solid #EF4444', color: govSaveStatus.startsWith('✅') ? '#34D399' : '#EF4444', fontSize: '0.85rem', fontWeight: 600 }}>
+                  {govSaveStatus}
+                </div>
+              )}
+            </div>
+
+            {/* ─── SUB-TAB 1: PROCTORED ASSESSMENTS ──────────────────────── */}
+            {govSubTab === 'assessments' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {/* Proctoring Policy Bar */}
+                <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                    <div>
+                      <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#CEAE56', margin: 0 }}>
+                        🛡️ Exam Integrity &amp; Proctoring Rules
+                      </h4>
+                      <p style={{ fontSize: '0.75rem', color: '#8898AA', margin: '2px 0 0' }}>
+                        Parameters enforced during live student proctored assessments.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        startTransition(async () => {
+                          const res = await saveAssessmentSettingsAction(sessionToken, assessmentSettings);
+                          if (res.success) {
+                            setGovSaveStatus('✅ Proctoring integrity settings updated successfully!');
+                            fetchDashboardData();
+                            setTimeout(() => setGovSaveStatus(null), 3500);
+                          } else {
+                            alert(res.error || 'Failed to save proctoring settings.');
+                          }
+                        });
+                      }}
+                      style={{ background: '#10B981', color: '#FFFFFF', border: 'none', borderRadius: '0.375rem', padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      💾 Save Proctoring Rules
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 600, color: '#8898AA', marginBottom: '4px' }}>EXAM DURATION (MINUTES)</label>
+                      <input
+                        type="number"
+                        min={5}
+                        max={180}
+                        value={Math.round((assessmentSettings?.timeLimitSeconds || 1200) / 60)}
+                        onChange={e => setAssessmentSettings({ ...assessmentSettings, timeLimitSeconds: (parseInt(e.target.value, 10) || 20) * 60 })}
+                        style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.85rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 600, color: '#8898AA', marginBottom: '4px' }}>MAX TAB-SWITCH WARNINGS</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={10}
+                        value={assessmentSettings?.maxTabSwitches || 3}
+                        onChange={e => setAssessmentSettings({ ...assessmentSettings, maxTabSwitches: parseInt(e.target.value, 10) || 3 })}
+                        style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.85rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 600, color: '#8898AA', marginBottom: '4px' }}>PASSING SCORE CUT-OFF (%)</label>
+                      <input
+                        type="number"
+                        min={40}
+                        max={100}
+                        value={assessmentSettings?.passingScorePct || 70}
+                        onChange={e => setAssessmentSettings({ ...assessmentSettings, passingScorePct: parseInt(e.target.value, 10) || 70 })}
+                        style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.85rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 600, color: '#8898AA', marginBottom: '4px' }}>WEBCAM ENFORCEMENT</label>
+                      <select
+                        value={assessmentSettings?.webcamRequired ? '1' : '0'}
+                        onChange={e => setAssessmentSettings({ ...assessmentSettings, webcamRequired: e.target.value === '1' ? 1 : 0 })}
+                        style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.55rem', color: '#F1F5F9', fontSize: '0.85rem' }}
+                      >
+                        <option value="1">Active Proctor Webcam Required</option>
+                        <option value="0">Optional / Tab Monitoring Only</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Question Bank Manager */}
+                <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                        Proctored Assessment Question Bank ({assessmentQuestions.length})
+                      </h4>
+                      <select
+                        value={selectedAssessmentModule}
+                        onChange={e => setSelectedAssessmentModule(e.target.value)}
+                        style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '4px 10px', color: '#CEAE56', fontSize: '0.75rem', fontWeight: 700 }}
+                      >
+                        <option value="all">All Modules</option>
+                        {['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'].map(m => (
+                          <option key={m} value={m}>{m} Assessments</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <button
+                      onClick={() => setShowAddQuestionModal(true)}
+                      style={{ background: 'rgba(206,174,86,0.15)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.375rem', padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      + Add Question
+                    </button>
+                  </div>
+
+                  {/* Question Cards List */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {assessmentQuestions
+                      .filter(q => selectedAssessmentModule === 'all' || q.moduleId === selectedAssessmentModule)
+                      .map((q, qIndex) => {
+                        let parsedOptions: string[] = [];
+                        try {
+                          parsedOptions = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
+                        } catch {
+                          parsedOptions = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+                        }
+
+                        return (
+                          <div key={q.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.75rem', padding: '1.25rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span style={{ background: 'rgba(59,130,246,0.15)', color: '#60A5FA', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
+                                  {q.moduleId}
+                                </span>
+                                <span style={{ background: 'rgba(206,174,86,0.15)', color: '#CEAE56', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, textTransform: 'capitalize' }}>
+                                  {q.difficulty || 'intermediate'}
+                                </span>
+                                <span style={{ color: '#8898AA', fontSize: '0.75rem' }}>Question #{qIndex + 1}</span>
+                              </div>
+
+                              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button
+                                  onClick={() => {
+                                    startTransition(async () => {
+                                      const res = await saveAssessmentQuestionAction(sessionToken, {
+                                        id: q.id,
+                                        moduleId: q.moduleId,
+                                        question: q.question,
+                                        options: parsedOptions,
+                                        correctIndex: q.correctIndex,
+                                        explanation: q.explanation,
+                                        difficulty: q.difficulty,
+                                      });
+                                      if (res.success) {
+                                        setGovSaveStatus(`✅ Saved Question #${qIndex + 1}!`);
+                                        setTimeout(() => setGovSaveStatus(null), 2500);
+                                      } else {
+                                        alert(res.error || 'Failed to save question.');
+                                      }
+                                    });
+                                  }}
+                                  style={{ background: 'rgba(52,211,153,0.12)', color: '#34D399', border: '1px solid rgba(52,211,153,0.3)', borderRadius: '0.375rem', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                                >
+                                  💾 Save
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (confirm('Delete this assessment question?')) {
+                                      startTransition(async () => {
+                                        const res = await deleteAssessmentQuestionAction(sessionToken, q.id);
+                                        if (res.success) {
+                                          fetchDashboardData();
+                                        } else {
+                                          alert(res.error || 'Failed to delete question.');
+                                        }
+                                      });
+                                    }
+                                  }}
+                                  style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '0.375rem', padding: '4px 8px', fontSize: '0.75rem', cursor: 'pointer' }}
+                                >
+                                  🗑️
+                                </button>
+                              </div>
+                            </div>
+
+                            <input
+                              type="text"
+                              value={q.question}
+                              onChange={e => {
+                                const val = e.target.value;
+                                setAssessmentQuestions(prev => prev.map(item => item.id === q.id ? { ...item, question: val } : item));
+                              }}
+                              style={{ width: '100%', background: '#0B1528', border: '1px solid #334155', borderRadius: '0.375rem', padding: '0.55rem 0.75rem', color: '#F1F5F9', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.75rem' }}
+                            />
+
+                            {/* 4 Options Grid */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                              {parsedOptions.map((opt, optIdx) => (
+                                <div key={optIdx} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#0B1528', border: q.correctIndex === optIdx ? '1px solid #10B981' : '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.35rem 0.6rem' }}>
+                                  <input
+                                    type="radio"
+                                    name={`gov-opt-${q.id}`}
+                                    checked={q.correctIndex === optIdx}
+                                    onChange={() => setAssessmentQuestions(prev => prev.map(item => item.id === q.id ? { ...item, correctIndex: optIdx } : item))}
+                                  />
+                                  <input
+                                    type="text"
+                                    value={opt}
+                                    onChange={e => {
+                                      const nextOpts = [...parsedOptions];
+                                      nextOpts[optIdx] = e.target.value;
+                                      setAssessmentQuestions(prev => prev.map(item => item.id === q.id ? { ...item, options: JSON.stringify(nextOpts) } : item));
+                                    }}
+                                    style={{ flex: 1, background: 'transparent', border: 'none', color: '#CBD5E1', fontSize: '0.8rem' }}
+                                  />
+                                  {q.correctIndex === optIdx && <span style={{ color: '#10B981', fontSize: '0.75rem' }}>✓ Key</span>}
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Explanation */}
+                            <div>
+                              <label style={{ fontSize: '0.68rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '2px' }}>INSTITUTIONAL RATIONALE &amp; EXPLANATION</label>
+                              <textarea
+                                rows={2}
+                                value={q.explanation || ''}
+                                onChange={e => {
+                                  const val = e.target.value;
+                                  setAssessmentQuestions(prev => prev.map(item => item.id === q.id ? { ...item, explanation: val } : item));
+                                }}
+                                style={{ width: '100%', background: '#0B1528', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.5rem', color: '#94A3B8', fontSize: '0.78rem', fontFamily: 'inherit' }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SUB-TAB 2: CAPSTONE PATHWAYS ──────────────────────────── */}
+            {govSubTab === 'capstone' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div>
+                      <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                        Accredited Capstone Research Pathways ({capstoneTracks.length})
+                      </h4>
+                      <p style={{ fontSize: '0.75rem', color: '#8898AA', margin: '2px 0 0' }}>
+                        Curriculum theses and valuation models required for professional certification.
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => setShowAddCapstoneModal(true)}
+                      style={{ background: 'rgba(206,174,86,0.15)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.375rem', padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      + Add Research Pathway
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {capstoneTracks.map(tr => {
+                      let parsedTags: string[] = [];
+                      try {
+                        parsedTags = typeof tr.tags === 'string' ? JSON.parse(tr.tags) : tr.tags;
+                      } catch {
+                        parsedTags = [];
+                      }
+
+                      return (
+                        <div key={tr.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.75rem', padding: '1.25rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <span style={{ fontSize: '1.2rem' }}>{tr.icon}</span>
+                              <span style={{ fontSize: '0.75rem', background: 'rgba(206,174,86,0.15)', color: '#CEAE56', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
+                                Track {tr.code}
+                              </span>
+                              <span style={{ fontSize: '0.75rem', background: tr.isActive ? 'rgba(52,211,153,0.15)' : 'rgba(239,68,68,0.15)', color: tr.isActive ? '#34D399' : '#F87171', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                                {tr.isActive ? 'Active' : 'Disabled'}
+                              </span>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              <button
+                                onClick={() => {
+                                  startTransition(async () => {
+                                    const res = await saveCapstoneTrackAction(sessionToken, {
+                                      ...tr,
+                                      tags: parsedTags,
+                                      isActive: tr.isActive ? 0 : 1,
+                                    });
+                                    if (res.success) {
+                                      fetchDashboardData();
+                                    } else {
+                                      alert(res.error || 'Failed to update track status.');
+                                    }
+                                  });
+                                }}
+                                style={{ background: 'rgba(255,255,255,0.05)', color: '#CBD5E1', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.375rem', padding: '3px 8px', fontSize: '0.72rem', cursor: 'pointer' }}
+                              >
+                                {tr.isActive ? 'Deactivate' : 'Activate'}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  startTransition(async () => {
+                                    const res = await saveCapstoneTrackAction(sessionToken, {
+                                      ...tr,
+                                      tags: parsedTags,
+                                    });
+                                    if (res.success) {
+                                      setGovSaveStatus(`✅ Saved Track ${tr.code} (${tr.title})!`);
+                                      setTimeout(() => setGovSaveStatus(null), 2500);
+                                    } else {
+                                      alert(res.error || 'Failed to save track.');
+                                    }
+                                  });
+                                }}
+                                style={{ background: 'rgba(52,211,153,0.12)', color: '#34D399', border: '1px solid rgba(52,211,153,0.3)', borderRadius: '0.375rem', padding: '3px 10px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                              >
+                                💾 Save
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (confirm(`Delete Track ${tr.code}: "${tr.title}"?`)) {
+                                    startTransition(async () => {
+                                      const res = await deleteCapstoneTrackAction(sessionToken, tr.id);
+                                      if (res.success) {
+                                        fetchDashboardData();
+                                      } else {
+                                        alert(res.error || 'Failed to delete track.');
+                                      }
+                                    });
+                                  }
+                                }}
+                                style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '0.375rem', padding: '3px 8px', fontSize: '0.72rem', cursor: 'pointer' }}
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                            <input
+                              type="text"
+                              value={tr.title}
+                              onChange={e => {
+                                const val = e.target.value;
+                                setCapstoneTracks(prev => prev.map(item => item.id === tr.id ? { ...item, title: val } : item));
+                              }}
+                              style={{ background: '#0B1528', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.5rem 0.75rem', color: '#F1F5F9', fontSize: '0.85rem', fontWeight: 700 }}
+                            />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                              <label style={{ fontSize: '0.7rem', color: '#8898AA', whiteSpace: 'nowrap' }}>Min Pass:</label>
+                              <input
+                                type="number"
+                                min={50}
+                                max={100}
+                                value={tr.minPassingScore || 70}
+                                onChange={e => {
+                                  const val = parseInt(e.target.value, 10) || 70;
+                                  setCapstoneTracks(prev => prev.map(item => item.id === tr.id ? { ...item, minPassingScore: val } : item));
+                                }}
+                                style={{ width: '100%', background: '#0B1528', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.45rem', color: '#CEAE56', fontSize: '0.8rem', fontWeight: 700 }}
+                              />
+                            </div>
+                          </div>
+
+                          <div style={{ marginBottom: '0.75rem' }}>
+                            <label style={{ fontSize: '0.68rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '2px' }}>RESEARCH THESIS GUIDANCE &amp; SCOPE</label>
+                            <textarea
+                              rows={2}
+                              value={tr.description}
+                              onChange={e => {
+                                const val = e.target.value;
+                                setCapstoneTracks(prev => prev.map(item => item.id === tr.id ? { ...item, description: val } : item));
+                              }}
+                              style={{ width: '100%', background: '#0B1528', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.5rem', color: '#CBD5E1', fontSize: '0.78rem', fontFamily: 'inherit' }}
+                            />
+                          </div>
+
+                          <div>
+                            <label style={{ fontSize: '0.68rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '2px' }}>INSTITUTIONAL EVALUATION RUBRIC &amp; CRITERIA</label>
+                            <textarea
+                              rows={3}
+                              value={tr.rubric || ''}
+                              onChange={e => {
+                                const val = e.target.value;
+                                setCapstoneTracks(prev => prev.map(item => item.id === tr.id ? { ...item, rubric: val } : item));
+                              }}
+                              style={{ width: '100%', background: '#0B1528', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.5rem', color: '#94A3B8', fontSize: '0.78rem', fontFamily: 'monospace' }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SUB-TAB 3: CERTIFICATION TIERS & WEIGHTS ──────────────── */}
+            {govSubTab === 'certification' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {/* Tiers & Weights Cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  {/* Tier Thresholds Card */}
+                  <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+                    <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#CEAE56', margin: '0 0 1rem' }}>
+                      🏅 Credential Tier Cut-Off Thresholds
+                    </h4>
+                    <p style={{ fontSize: '0.78rem', color: '#8898AA', marginBottom: '1.25rem' }}>
+                      Minimum weighted composite scores required to earn institutional recognition tiers.
+                    </p>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      <div style={{ background: '#070E1A', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '0.5rem', padding: '0.85rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#CEAE56' }}>🏅 Distinction Tier</span>
+                          <span style={{ fontSize: '0.75rem', color: '#8898AA' }}>Honors &amp; Fast-track Hiring</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '0.8rem', color: '#CBD5E1' }}>Score ≥</span>
+                          <input
+                            type="number"
+                            min={70}
+                            max={100}
+                            value={certificationSettings?.distinctionMinScore || 85}
+                            onChange={e => setCertificationSettings({ ...certificationSettings, distinctionMinScore: parseInt(e.target.value, 10) || 85 })}
+                            style={{ width: 80, background: '#0B1528', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.4rem', color: '#CEAE56', fontWeight: 700, fontSize: '0.85rem' }}
+                          />
+                          <span style={{ fontSize: '0.8rem', color: '#8898AA' }}>%</span>
+                        </div>
+                      </div>
+
+                      <div style={{ background: '#070E1A', border: '1px solid rgba(59,130,246,0.3)', borderRadius: '0.5rem', padding: '0.85rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#60A5FA' }}>🎓 Proficiency Tier</span>
+                          <span style={{ fontSize: '0.75rem', color: '#8898AA' }}>Standard Professional Tier</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '0.8rem', color: '#CBD5E1' }}>Score ≥</span>
+                          <input
+                            type="number"
+                            min={50}
+                            max={90}
+                            value={certificationSettings?.proficiencyMinScore || 75}
+                            onChange={e => setCertificationSettings({ ...certificationSettings, proficiencyMinScore: parseInt(e.target.value, 10) || 75 })}
+                            style={{ width: 80, background: '#0B1528', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.4rem', color: '#60A5FA', fontWeight: 700, fontSize: '0.85rem' }}
+                          />
+                          <span style={{ fontSize: '0.8rem', color: '#8898AA' }}>%</span>
+                        </div>
+                      </div>
+
+                      <div style={{ background: '#070E1A', border: '1px solid rgba(52,211,153,0.3)', borderRadius: '0.5rem', padding: '0.85rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#34D399' }}>✅ Completion Tier</span>
+                          <span style={{ fontSize: '0.75rem', color: '#8898AA' }}>Coursework Completion</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '0.8rem', color: '#CBD5E1' }}>Score ≥</span>
+                          <input
+                            type="number"
+                            min={40}
+                            max={80}
+                            value={certificationSettings?.completionMinScore || 60}
+                            onChange={e => setCertificationSettings({ ...certificationSettings, completionMinScore: parseInt(e.target.value, 10) || 60 })}
+                            style={{ width: 80, background: '#0B1528', border: '1px solid #1E293B', borderRadius: '0.375rem', padding: '0.4rem', color: '#34D399', fontWeight: 700, fontSize: '0.85rem' }}
+                          />
+                          <span style={{ fontSize: '0.8rem', color: '#8898AA' }}>%</span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          startTransition(async () => {
+                            const res = await saveCertificationSettingsAction(sessionToken, certificationSettings);
+                            if (res.success) {
+                              setGovSaveStatus('✅ Credential tier cut-off thresholds saved successfully!');
+                              fetchDashboardData();
+                              setTimeout(() => setGovSaveStatus(null), 3500);
+                            } else {
+                              alert(res.error || 'Failed to save tier settings.');
+                            }
+                          });
+                        }}
+                        style={{ background: '#10B981', color: '#FFFFFF', border: 'none', borderRadius: '0.375rem', padding: '0.65rem 1rem', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', marginTop: '0.5rem' }}
+                      >
+                        💾 Save Tier Cut-Offs
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Institutional Weights Card */}
+                  <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+                    <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: '0 0 1rem' }}>
+                      ⚖️ Institutional Evaluation Weights (Σ = 100%)
+                    </h4>
+                    <p style={{ fontSize: '0.78rem', color: '#8898AA', marginBottom: '1.25rem' }}>
+                      Determine how student performance across different academic components calculates the final weighted score.
+                    </p>
+
+                    {(() => {
+                      let weights = { knowledgeChecks: 10, assignments: 20, quizzes: 30, moduleAssessments: 30, capstone: 10 };
+                      try {
+                        weights = typeof certificationSettings?.weightsJson === 'string' ? JSON.parse(certificationSettings.weightsJson) : (certificationSettings?.weights || weights);
+                      } catch {}
+
+                      const totalWeight = (weights.quizzes || 0) + (weights.moduleAssessments || 0) + (weights.capstone || 0) + (weights.assignments || 0) + (weights.knowledgeChecks || 0);
+
+                      return (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#070E1A', padding: '0.6rem 0.85rem', borderRadius: '0.375rem' }}>
+                            <span style={{ fontSize: '0.8rem', color: '#F1F5F9' }}>Quizzes (44 Structured Quizzes)</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <input
+                                type="number"
+                                value={weights.quizzes || 30}
+                                onChange={e => {
+                                  const updated = { ...weights, quizzes: parseInt(e.target.value, 10) || 0 };
+                                  setCertificationSettings({ ...certificationSettings, weightsJson: JSON.stringify(updated) });
+                                }}
+                                style={{ width: 60, background: '#0B1528', border: '1px solid #1E293B', borderRadius: '4px', padding: '4px', color: '#CEAE56', fontSize: '0.8rem', fontWeight: 700 }}
+                              />
+                              <span style={{ color: '#8898AA', fontSize: '0.75rem' }}>%</span>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#070E1A', padding: '0.6rem 0.85rem', borderRadius: '0.375rem' }}>
+                            <span style={{ fontSize: '0.8rem', color: '#F1F5F9' }}>Proctored Module Assessments (M1–M8)</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <input
+                                type="number"
+                                value={weights.moduleAssessments || 30}
+                                onChange={e => {
+                                  const updated = { ...weights, moduleAssessments: parseInt(e.target.value, 10) || 0 };
+                                  setCertificationSettings({ ...certificationSettings, weightsJson: JSON.stringify(updated) });
+                                }}
+                                style={{ width: 60, background: '#0B1528', border: '1px solid #1E293B', borderRadius: '4px', padding: '4px', color: '#CEAE56', fontSize: '0.8rem', fontWeight: 700 }}
+                              />
+                              <span style={{ color: '#8898AA', fontSize: '0.75rem' }}>%</span>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#070E1A', padding: '0.6rem 0.85rem', borderRadius: '0.375rem' }}>
+                            <span style={{ fontSize: '0.8rem', color: '#F1F5F9' }}>Capstone Thesis / DCF Valuation</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <input
+                                type="number"
+                                value={weights.capstone || 10}
+                                onChange={e => {
+                                  const updated = { ...weights, capstone: parseInt(e.target.value, 10) || 0 };
+                                  setCertificationSettings({ ...certificationSettings, weightsJson: JSON.stringify(updated) });
+                                }}
+                                style={{ width: 60, background: '#0B1528', border: '1px solid #1E293B', borderRadius: '4px', padding: '4px', color: '#CEAE56', fontSize: '0.8rem', fontWeight: 700 }}
+                              />
+                              <span style={{ color: '#8898AA', fontSize: '0.75rem' }}>%</span>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#070E1A', padding: '0.6rem 0.85rem', borderRadius: '0.375rem' }}>
+                            <span style={{ fontSize: '0.8rem', color: '#F1F5F9' }}>Practical Submissions &amp; Case Studies</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <input
+                                type="number"
+                                value={weights.assignments || 20}
+                                onChange={e => {
+                                  const updated = { ...weights, assignments: parseInt(e.target.value, 10) || 0 };
+                                  setCertificationSettings({ ...certificationSettings, weightsJson: JSON.stringify(updated) });
+                                }}
+                                style={{ width: 60, background: '#0B1528', border: '1px solid #1E293B', borderRadius: '4px', padding: '4px', color: '#CEAE56', fontSize: '0.8rem', fontWeight: 700 }}
+                              />
+                              <span style={{ color: '#8898AA', fontSize: '0.75rem' }}>%</span>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#070E1A', padding: '0.6rem 0.85rem', borderRadius: '0.375rem' }}>
+                            <span style={{ fontSize: '0.8rem', color: '#F1F5F9' }}>Interactive Knowledge Checks</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <input
+                                type="number"
+                                value={weights.knowledgeChecks || 10}
+                                onChange={e => {
+                                  const updated = { ...weights, knowledgeChecks: parseInt(e.target.value, 10) || 0 };
+                                  setCertificationSettings({ ...certificationSettings, weightsJson: JSON.stringify(updated) });
+                                }}
+                                style={{ width: 60, background: '#0B1528', border: '1px solid #1E293B', borderRadius: '4px', padding: '4px', color: '#CEAE56', fontSize: '0.8rem', fontWeight: 700 }}
+                              />
+                              <span style={{ color: '#8898AA', fontSize: '0.75rem' }}>%</span>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0.85rem', borderTop: '1px dashed #1E293B', marginTop: '0.25rem' }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: totalWeight === 100 ? '#34D399' : '#EF4444' }}>
+                              Composite Sum: {totalWeight}% {totalWeight === 100 ? '✓ (Valid)' : '⚠️ (Must equal 100%)'}
+                            </span>
+                            <button
+                              onClick={() => {
+                                startTransition(async () => {
+                                  const res = await saveCertificationSettingsAction(sessionToken, {
+                                    ...certificationSettings,
+                                    weights,
+                                  });
+                                  if (res.success) {
+                                    setGovSaveStatus('✅ Evaluation weights updated and applied!');
+                                    fetchDashboardData();
+                                    setTimeout(() => setGovSaveStatus(null), 3500);
+                                  } else {
+                                    alert(res.error || 'Failed to save weights.');
+                                  }
+                                });
+                              }}
+                              style={{ background: '#10B981', color: '#FFFFFF', border: 'none', borderRadius: '0.375rem', padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                              💾 Save Weights
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                {/* Professional Tracks Table */}
+                <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: '0 0 1rem' }}>
+                    📜 Accredited Professional Certification Tracks ({professionalTracks.length})
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {professionalTracks.map(pt => {
+                      let reqMods: string[] = [];
+                      try {
+                        reqMods = typeof pt.requiredModules === 'string' ? JSON.parse(pt.requiredModules) : pt.requiredModules;
+                      } catch {
+                        reqMods = [];
+                      }
+
+                      return (
+                        <div key={pt.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <span style={{ fontSize: '1.5rem' }}>{pt.icon || '📜'}</span>
+                            <div>
+                              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#F1F5F9' }}>{pt.name}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#8898AA', margin: '2px 0' }}>{pt.description}</div>
+                              <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                                {reqMods.map(m => (
+                                  <span key={m} style={{ background: 'rgba(59,130,246,0.15)', color: '#60A5FA', padding: '1px 6px', borderRadius: '3px', fontSize: '0.65rem', fontWeight: 700 }}>
+                                    {m} Required
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399', padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700 }}>
+                              Active Track
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════════════ */}
         {/* ─── TAB: CHATBOT Q&A KNOWLEDGE BASE STUDIO (30 ANSWERS) ───────────── */}
         {/* ═════════════════════════════════════════════════════════════════════ */}
         {activeTab === 'chatbot_qa' && (
@@ -3026,6 +3786,198 @@ export default function AdminCredentials() {
           </div>
         </div>
       )}
-    </div>
+
+      {/* ─── ADD QUESTION MODAL ────────────────────────────── */}
+      {showAddQuestionModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowAddQuestionModal(false)}>
+          <div style={{ background: '#0B1528', border: '1px solid #CEAE56', borderRadius: '1rem', padding: '1.75rem', width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '1rem' }}>+ Add Proctored Assessment Question</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>MODULE</label>
+                  <select value={newQuestionModule} onChange={e => setNewQuestionModule(e.target.value)} style={{ width: '100%', padding: '0.5rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.375rem', fontSize: '0.85rem' }}>
+                    {['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'].map(m => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>DIFFICULTY</label>
+                  <select value={newQuestionDifficulty} onChange={e => setNewQuestionDifficulty(e.target.value as any)} style={{ width: '100%', padding: '0.5rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.375rem', fontSize: '0.85rem' }}>
+                    <option value="foundation">Foundation</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>QUESTION STEM</label>
+                <input
+                  type="text"
+                  placeholder="Enter clear, rigorous financial question..."
+                  value={newQuestionText}
+                  onChange={e => setNewQuestionText(e.target.value)}
+                  style={{ width: '100%', padding: '0.55rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.375rem', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>MCQ OPTIONS (Select radio button for Correct Answer Key)</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {newQuestionOptions.map((opt, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#070E1A', padding: '0.4rem 0.65rem', borderRadius: '0.375rem', border: newQuestionCorrectIndex === idx ? '1px solid #10B981' : '1px solid #1E293B' }}>
+                      <input
+                        type="radio"
+                        name="new-q-opt"
+                        checked={newQuestionCorrectIndex === idx}
+                        onChange={() => setNewQuestionCorrectIndex(idx)}
+                      />
+                      <input
+                        type="text"
+                        placeholder={`Option ${idx + 1}...`}
+                        value={opt}
+                        onChange={e => {
+                          const updated = [...newQuestionOptions];
+                          updated[idx] = e.target.value;
+                          setNewQuestionOptions(updated);
+                        }}
+                        style={{ flex: 1, background: 'transparent', border: 'none', color: '#F1F5F9', fontSize: '0.82rem' }}
+                      />
+                      {newQuestionCorrectIndex === idx && <span style={{ color: '#10B981', fontSize: '0.75rem', fontWeight: 700 }}>✓ Key</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>INSTITUTIONAL RATIONALE &amp; EXPLANATION</label>
+                <textarea
+                  rows={3}
+                  placeholder="Provide technical explanation why the key is correct..."
+                  value={newQuestionExplanation}
+                  onChange={e => setNewQuestionExplanation(e.target.value)}
+                  style={{ width: '100%', padding: '0.55rem', background: '#070E1A', border: '1px solid #1E293B', color: '#CBD5E1', borderRadius: '0.375rem', fontSize: '0.82rem', fontFamily: 'inherit' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
+              <button onClick={() => setShowAddQuestionModal(false)} style={{ padding: '0.5rem 1rem', border: '1px solid #334155', borderRadius: '0.375rem', background: 'transparent', color: '#94A3B8', fontSize: '0.8rem', cursor: 'pointer' }}>Cancel</button>
+              <button
+                onClick={() => {
+                  if (!newQuestionText.trim() || newQuestionOptions.some(o => !o.trim()) || !newQuestionExplanation.trim()) {
+                    alert('Please fill out the question stem, all 4 options, and the rationale.');
+                    return;
+                  }
+                  startTransition(async () => {
+                    const res = await saveAssessmentQuestionAction(sessionToken, {
+                      moduleId: newQuestionModule,
+                      question: newQuestionText,
+                      options: newQuestionOptions,
+                      correctIndex: newQuestionCorrectIndex,
+                      explanation: newQuestionExplanation,
+                      difficulty: newQuestionDifficulty,
+                    });
+                    if (res.success) {
+                      setShowAddQuestionModal(false);
+                      setNewQuestionText('');
+                      setNewQuestionOptions(['', '', '', '']);
+                      setNewQuestionExplanation('');
+                      setGovSaveStatus('✅ New question added to proctored bank!');
+                      fetchDashboardData();
+                      setTimeout(() => setGovSaveStatus(null), 3000);
+                    } else {
+                      alert(res.error || 'Failed to save question.');
+                    }
+                  });
+                }}
+                style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: '0.375rem', background: '#10B981', color: '#FFFFFF', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+              >
+                + Save to Bank
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── ADD CAPSTONE MODAL ────────────────────────────── */}
+      {showAddCapstoneModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowAddCapstoneModal(false)}>
+          <div style={{ background: '#0B1528', border: '1px solid #CEAE56', borderRadius: '1rem', padding: '1.75rem', width: '100%', maxWidth: 540 }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '1rem' }}>+ Add Capstone Research Pathway</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '100px 80px 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>ID</label>
+                  <input type="text" placeholder="track-d" value={newCapstoneId} onChange={e => setNewCapstoneId(e.target.value)} style={{ width: '100%', padding: '0.5rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.375rem', fontSize: '0.82rem' }} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>CODE</label>
+                  <input type="text" placeholder="D" value={newCapstoneCode} onChange={e => setNewCapstoneCode(e.target.value)} style={{ width: '100%', padding: '0.5rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.375rem', fontSize: '0.82rem' }} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>ICON &amp; TITLE</label>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" placeholder="📊" value={newCapstoneIcon} onChange={e => setNewCapstoneIcon(e.target.value)} style={{ width: 45, padding: '0.5rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.375rem', fontSize: '0.85rem', textAlign: 'center' }} />
+                    <input type="text" placeholder="Track D — Quantitative Trading Thesis" value={newCapstoneTitle} onChange={e => setNewCapstoneTitle(e.target.value)} style={{ flex: 1, padding: '0.5rem', background: '#070E1A', border: '1px solid #1E293B', color: '#F1F5F9', borderRadius: '0.375rem', fontSize: '0.85rem' }} />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>RESEARCH GUIDANCE</label>
+                <textarea rows={2} placeholder="Explain what the learner must research and construct..." value={newCapstoneDesc} onChange={e => setNewCapstoneDesc(e.target.value)} style={{ width: '100%', padding: '0.5rem', background: '#070E1A', border: '1px solid #1E293B', color: '#CBD5E1', borderRadius: '0.375rem', fontSize: '0.8rem', fontFamily: 'inherit' }} />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.7rem', color: '#8898AA', fontWeight: 700, display: 'block', marginBottom: '3px' }}>EVALUATION RUBRIC</label>
+                <textarea rows={3} placeholder="• Methodology (25%)&#10;• Empirical Testing (25%)&#10;• Risk Horizon (25%)&#10;• Conclusions (25%)" value={newCapstoneRubric} onChange={e => setNewCapstoneRubric(e.target.value)} style={{ width: '100%', padding: '0.5rem', background: '#070E1A', border: '1px solid #1E293B', color: '#CBD5E1', borderRadius: '0.375rem', fontSize: '0.8rem', fontFamily: 'monospace' }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
+              <button onClick={() => setShowAddCapstoneModal(false)} style={{ padding: '0.5rem 1rem', border: '1px solid #334155', borderRadius: '0.375rem', background: 'transparent', color: '#94A3B8', fontSize: '0.8rem', cursor: 'pointer' }}>Cancel</button>
+              <button
+                onClick={() => {
+                  if (!newCapstoneId.trim() || !newCapstoneTitle.trim() || !newCapstoneDesc.trim()) {
+                    alert('Please provide Pathway ID, Title, and Description.');
+                    return;
+                  }
+                  startTransition(async () => {
+                    const res = await saveCapstoneTrackAction(sessionToken, {
+                      id: newCapstoneId,
+                      code: newCapstoneCode,
+                      title: newCapstoneTitle,
+                      icon: newCapstoneIcon,
+                      description: newCapstoneDesc,
+                      rubric: newCapstoneRubric,
+                      minPassingScore: newCapstonePass,
+                      isActive: 1,
+                    });
+                    if (res.success) {
+                      setShowAddCapstoneModal(false);
+                      setNewCapstoneId('');
+                      setNewCapstoneTitle('');
+                      setNewCapstoneDesc('');
+                      setNewCapstoneRubric('');
+                      setGovSaveStatus('✅ New Capstone research pathway created!');
+                      fetchDashboardData();
+                      setTimeout(() => setGovSaveStatus(null), 3000);
+                    } else {
+                      alert(res.error || 'Failed to save Capstone track.');
+                    }
+                  });
+                }}
+                style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: '0.375rem', background: '#10B981', color: '#FFFFFF', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+              >
+                + Register Pathway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
   );
 }

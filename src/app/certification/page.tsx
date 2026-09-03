@@ -39,6 +39,12 @@ export default function Certification() {
   const [certification, setCertification] = useState<any>(null);
   const [certificates, setCertificates] = useState<any[]>([]);
   const [issuing, setIssuing] = useState<string | null>(null);
+  const [certSettings, setCertSettings] = useState<any>({
+    distinctionMinScore: 85,
+    proficiencyMinScore: 75,
+    completionMinScore: 60,
+  });
+  const [dynProfTracks, setDynProfTracks] = useState<any[]>(PROFESSIONAL_TRACKS);
 
   const loadData = () => {
     fetchUserProgress().then(res => {
@@ -49,6 +55,26 @@ export default function Certification() {
       }
       setLoading(false);
     });
+
+    fetch('/api/governance/data')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          if (d.certificationSettings) setCertSettings(d.certificationSettings);
+          if (d.professionalTracks && d.professionalTracks.length > 0) {
+            const mapped = d.professionalTracks.map((pt: any) => ({
+              id: pt.id,
+              name: pt.name,
+              icon: pt.icon || '📜',
+              description: pt.description,
+              requiredModules: typeof pt.requiredModules === 'string' ? JSON.parse(pt.requiredModules) : (pt.requiredModules || []),
+              requiredLessons: typeof pt.requiredLessons === 'string' ? JSON.parse(pt.requiredLessons) : (pt.requiredLessons || []),
+            }));
+            setDynProfTracks(mapped);
+          }
+        }
+      })
+      .catch(e => console.error('Failed to load governance cert settings:', e));
   };
 
   useEffect(() => {
@@ -209,7 +235,11 @@ export default function Certification() {
                     Credential Tiers
                   </h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
-                    {CERTIFICATION_CONFIG.tiers.map(tier => {
+                    {[
+                      { name: 'Distinction', minScore: certSettings?.distinctionMinScore || 85, emoji: '🏅', requiresCapstoneExcellence: true },
+                      { name: 'Proficiency', minScore: certSettings?.proficiencyMinScore || 75, emoji: '🎓', requiresCapstoneExcellence: false },
+                      { name: 'Completion', minScore: certSettings?.completionMinScore || 60, emoji: '✅', requiresCapstoneExcellence: false },
+                    ].map(tier => {
                       const ts = TIER_STYLES[tier.name];
                       const achieved = weightedScore >= tier.minScore && progress?.lessonsCompleted >= 15;
                       return (
@@ -253,7 +283,7 @@ export default function Certification() {
                     Professional Track Certifications
                   </h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-5)' }}>
-                    {PROFESSIONAL_TRACKS.map(track => {
+                    {dynProfTracks.map(track => {
                       const hasCert = certificates.some(c => c.trackId === track.id);
                       // Custom eligibility: eligible if all required lessons are completed
                       const trackEligibility = certification?.professionalTracks?.includes(track.name) ? 'eligible' : 'not-eligible';

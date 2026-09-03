@@ -238,6 +238,22 @@ export async function GET(request: NextRequest) {
       enquiries = [];
     }
 
+    // 9. Fetch Institutional Academic Governance: Assessments, Capstone & Certification
+    let assessmentQuestions: any[] = [];
+    let assessmentSettings: any = null;
+    let capstoneTracks: any[] = [];
+    let certificationSettings: any = null;
+    let professionalTracks: any[] = [];
+    try {
+      assessmentQuestions = db.prepare('SELECT * FROM assessment_questions ORDER BY moduleId ASC, id ASC').all();
+      assessmentSettings = db.prepare('SELECT * FROM assessment_settings WHERE id = ?').get('default');
+      capstoneTracks = db.prepare('SELECT * FROM capstone_tracks ORDER BY code ASC').all();
+      certificationSettings = db.prepare('SELECT * FROM certification_settings WHERE id = ?').get('global');
+      professionalTracks = db.prepare('SELECT * FROM professional_tracks_config ORDER BY id ASC').all();
+    } catch (govErr) {
+      console.error('Error fetching academic governance data:', govErr);
+    }
+
     return NextResponse.json({
       success: true,
       total: filteredTotal,
@@ -270,6 +286,11 @@ export async function GET(request: NextRequest) {
       aiSettings,
       chatbotQAs,
       enquiries,
+      assessmentQuestions,
+      assessmentSettings,
+      capstoneTracks,
+      certificationSettings,
+      professionalTracks,
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

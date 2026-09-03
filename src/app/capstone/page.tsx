@@ -2,13 +2,58 @@
 import PlatformNav from '@/components/nav/PlatformNav';
 import Footer from '@/components/layout/Footer';
 import { LESSONS } from '@/lib/data';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 export default function CapstoneWorkspace() {
-  const [track, setTrack] = useState<'A' | 'B'>('A');
+  const [capstoneTracks, setCapstoneTracks] = useState<any[]>([
+    {
+      id: 'track-a',
+      code: 'A',
+      title: 'Track A — Personal Wealth Plan',
+      icon: '💼',
+      description: 'Develop a comprehensive 5-year personal financial plan covering cash flow optimisation, emergency corpus, insurance structuring, debt elimination, investment asset allocation, and retirement modelling.',
+      tags: ['Personal Finance', 'Budgeting', 'Insurance', 'Retirement'],
+      rubric: '• Cash Flow Architecture (25%)\n• Debt & Liquidity Management (25%)\n• Asset Allocation & Hedging (25%)\n• Retirement Horizon Modelling (25%)',
+      minPassingScore: 70,
+    },
+    {
+      id: 'track-b',
+      code: 'B',
+      title: 'Track B — Investment Thesis Analysis',
+      icon: '📊',
+      description: 'Select a listed Indian company and produce a formal investment research report including DCF valuation, financial statement analysis, industry positioning, risk factors, and a buy/hold/sell recommendation.',
+      tags: ['Corporate Finance', 'Equity Research', 'DCF', 'Governance'],
+      rubric: '• Industry Positioning & Competitive Moat (25%)\n• Financial Statement & Ratio Analysis (25%)\n• 3-Stage DCF Valuation & Sensitivity (30%)\n• Governance & Structural Risk Horizon (20%)',
+      minPassingScore: 70,
+    },
+  ]);
+
+  const [track, setTrack] = useState<string>('A');
   const [citationSearch, setCitationSearch] = useState('');
   const [citations, setCitations] = useState<string[]>([]);
   const [inputs, setInputs] = useState({ wacc: 10, growth: 4, freeCashFlow: 50000000, shares: 10000000 });
+
+  useEffect(() => {
+    fetch('/api/governance/data')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.capstoneTracks && data.capstoneTracks.length > 0) {
+          const parsed = data.capstoneTracks.map((tr: any) => ({
+            ...tr,
+            tags: typeof tr.tags === 'string' ? JSON.parse(tr.tags) : (tr.tags || []),
+          }));
+          setCapstoneTracks(parsed);
+          if (!parsed.some((t: any) => t.code === track)) {
+            setTrack(parsed[0].code);
+          }
+        }
+      })
+      .catch(err => console.error('Failed to load capstone tracks:', err));
+  }, []);
+
+  const activeTrackObj = useMemo(() => {
+    return capstoneTracks.find(t => t.code === track) || capstoneTracks[0];
+  }, [capstoneTracks, track]);
 
   const dcf = useMemo(() => {
     const r = inputs.wacc / 100;
@@ -49,7 +94,7 @@ export default function CapstoneWorkspace() {
               <div className="page-hero__label">Academic Milestone</div>
               <h1 className="page-hero__title">Capstone Workspace</h1>
               <p className="page-hero__subtitle">
-                Complete a comprehensive financial planning thesis or investment valuation model. This is a graded submission that contributes 10% of your weighted score toward certification.
+                Complete a comprehensive financial planning thesis or investment valuation model. This is a graded submission that contributes toward accredited institutional certification.
               </p>
             </div>
 
@@ -58,56 +103,48 @@ export default function CapstoneWorkspace() {
 
                 {/* Track Selector */}
                 <section className="card p-7" aria-labelledby="track-heading">
-                  <h2 id="track-heading" style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-6)', fontFamily: 'var(--font-sans)' }}>
-                    Select Research Pathway
-                  </h2>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-5)' }}>
-                    {([
-                      {
-                        id: 'A' as const,
-                        label: 'Track A — Personal Wealth Plan',
-                        icon: '💼',
-                        desc: 'Develop a comprehensive 5-year personal financial plan covering cash flow optimisation, emergency corpus, insurance structuring, debt elimination, investment asset allocation, and retirement modelling.',
-                        tags: ['Personal Finance', 'Budgeting', 'Insurance', 'Retirement'],
-                      },
-                      {
-                        id: 'B' as const,
-                        label: 'Track B — Investment Thesis Analysis',
-                        icon: '📊',
-                        desc: 'Select a listed Indian company and produce a formal investment research report including DCF valuation, financial statement analysis, industry positioning, risk factors, and a buy/hold/sell recommendation.',
-                        tags: ['Corporate Finance', 'Equity Research', 'DCF', 'Governance'],
-                      },
-                    ]).map(t => (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--sp-6)' }}>
+                    <h2 id="track-heading" style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: 'var(--ink-100)', margin: 0, fontFamily: 'var(--font-sans)' }}>
+                      Select Research Pathway
+                    </h2>
+                    {activeTrackObj && (
+                      <span className="badge badge--brass" style={{ fontSize: '0.75rem' }}>
+                        Passing Benchmark: {activeTrackObj.minPassingScore || 70}%
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--sp-5)' }}>
+                    {capstoneTracks.map(t => (
                       <button
-                        key={t.id}
-                        className={`card card--interactive p-6 ${track === t.id ? 'card--credential' : ''}`}
-                        onClick={() => setTrack(t.id)}
+                        key={t.id || t.code}
+                        className={`card card--interactive p-6 ${track === t.code ? 'card--credential' : ''}`}
+                        onClick={() => setTrack(t.code)}
                         style={{
-                          border: track === t.id ? '2px solid var(--brass-500)' : '',
+                          border: track === t.code ? '2px solid var(--brass-500)' : '',
                           textAlign: 'left',
                           cursor: 'pointer',
-                          background: track === t.id ? 'rgba(184,150,46,0.07)' : '',
+                          background: track === t.code ? 'rgba(184,150,46,0.07)' : '',
                         }}
-                        aria-pressed={track === t.id}
-                        aria-label={`Select ${t.label}`}
+                        aria-pressed={track === t.code}
+                        aria-label={`Select ${t.title || t.label}`}
                       >
-                        <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-4)' }} aria-hidden="true">{t.icon}</div>
-                        <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 700, color: track === t.id ? 'var(--brass-300)' : 'var(--ink-100)', marginBottom: 'var(--sp-3)', lineHeight: 'var(--leading-snug)' }}>
-                          {t.label}
+                        <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-4)' }} aria-hidden="true">{t.icon || '📊'}</div>
+                        <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 700, color: track === t.code ? 'var(--brass-300)' : 'var(--ink-100)', marginBottom: 'var(--sp-3)', lineHeight: 'var(--leading-snug)' }}>
+                          {t.title || `Track ${t.code} — ${t.label}`}
                         </h3>
                         <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--sp-4)' }}>
-                          {t.desc}
+                          {t.description || t.desc}
                         </p>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sp-2)' }}>
-                          {t.tags.map(tg => <span key={tg} className="tag-chip tag-chip--brass">{tg}</span>)}
+                          {(t.tags || []).map((tg: string) => <span key={tg} className="tag-chip tag-chip--brass">{tg}</span>)}
                         </div>
                       </button>
                     ))}
                   </div>
                 </section>
 
-                {/* DCF Model Calculator (Track B) */}
-                {track === 'B' && (
+                {/* DCF Model Calculator (Track B or any company valuation thesis) */}
+                {(track === 'B' || activeTrackObj?.title?.toLowerCase().includes('dcf') || activeTrackObj?.title?.toLowerCase().includes('valuation')) && (
                   <section className="card p-7" aria-labelledby="dcf-heading">
                     <h2 id="dcf-heading" style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-2)', fontFamily: 'var(--font-sans)' }}>
                       DCF Valuation Model
@@ -267,32 +304,44 @@ export default function CapstoneWorkspace() {
                   )}
                 </div>
 
-                {/* Grading Rubric */}
+                {/* Dynamic Grading Rubric */}
                 <div className="card p-6">
-                  <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-5)', fontFamily: 'var(--font-sans)' }}>
-                    Grading Rubric
-                  </h2>
-                  <table className="data-table" aria-label="Capstone grading rubric">
-                    <thead>
-                      <tr>
-                        <th scope="col">Criterion</th>
-                        <th scope="col" style={{ textAlign: 'right' }}>Weight</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[
-                        ['Methodology & Rigour', '30%'],
-                        ['Financial Analysis Depth', '30%'],
-                        ['Lesson Citation Quality', '20%'],
-                        ['Presentation & Clarity', '20%'],
-                      ].map(([crit, w]) => (
-                        <tr key={crit}>
-                          <td>{crit}</td>
-                          <td style={{ textAlign: 'right' }}><span className="num">{w}</span></td>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--sp-4)' }}>
+                    <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', margin: 0, fontFamily: 'var(--font-sans)' }}>
+                      Institutional Rubric
+                    </h2>
+                    <span className="badge badge--completed" style={{ fontSize: '0.65rem' }}>
+                      Track {activeTrackObj?.code || 'A'}
+                    </span>
+                  </div>
+
+                  {activeTrackObj?.rubric ? (
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-300)', lineHeight: '1.6', whiteSpace: 'pre-line', background: 'var(--ink-950)', padding: '12px', borderRadius: 'var(--radius-md)', border: 'var(--border-subtle)', fontFamily: 'monospace' }}>
+                      {activeTrackObj.rubric}
+                    </div>
+                  ) : (
+                    <table className="data-table" aria-label="Capstone grading rubric">
+                      <thead>
+                        <tr>
+                          <th scope="col">Criterion</th>
+                          <th scope="col" style={{ textAlign: 'right' }}>Weight</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {[
+                          ['Methodology & Rigour', '30%'],
+                          ['Financial Analysis Depth', '30%'],
+                          ['Lesson Citation Quality', '20%'],
+                          ['Presentation & Clarity', '20%'],
+                        ].map(([crit, w]) => (
+                          <tr key={crit}>
+                            <td>{crit}</td>
+                            <td style={{ textAlign: 'right' }}><span className="num">{w}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </aside>
             </div>

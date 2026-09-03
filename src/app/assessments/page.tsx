@@ -13,10 +13,18 @@ export default function AssessmentPlayer() {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Mocked proctored question bank for Module 1
-  const QUESTIONS = [
+  // Dynamic DB state with fallback
+  const [assessmentSettings, setAssessmentSettings] = useState({
+    timeLimitSeconds: 1200,
+    maxTabSwitches: 3,
+    passingScorePct: 70,
+    webcamRequired: 1,
+  });
+
+  const [questions, setQuestions] = useState<any[]>([
     {
       id: 1,
+      moduleId: 'M1',
       question: 'Which horizon in the FingenIQ Financial Freedom Framework must be established first before investing capital into equity markets?',
       options: [
         'Horizon 3: Generational Wealth & Estate Distribution',
@@ -29,6 +37,7 @@ export default function AssessmentPlayer() {
     },
     {
       id: 2,
+      moduleId: 'M1',
       question: 'What is the required target corpus under a 4% Safe Withdrawal Rate (SWR) to replace a monthly lifestyle expenditure of ₹1,50,000?',
       options: [
         '₹3.50 Crores',
@@ -41,6 +50,7 @@ export default function AssessmentPlayer() {
     },
     {
       id: 3,
+      moduleId: 'M1',
       question: 'Under Insider Trading & Corporate Governance Regulations, what does UPSI stand for and when must it be handled under strict confidentiality protocols?',
       options: [
         'Unpublished Price Sensitive Information; whenever a transaction or decision is likely to materially impact asset price.',
@@ -51,7 +61,30 @@ export default function AssessmentPlayer() {
       correctIndex: 0,
       explanation: 'UPSI stands for Unpublished Price Sensitive Information. Any employee or insider privy to UPSI must adhere to trading window closure mandates to prevent insider trading violations.',
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    fetch('/api/governance/data')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          if (data.assessmentSettings) {
+            setAssessmentSettings(data.assessmentSettings);
+            if (!assessmentActive) {
+              setTimeRemaining(data.assessmentSettings.timeLimitSeconds || 1200);
+            }
+          }
+          if (data.assessmentQuestions && data.assessmentQuestions.length > 0) {
+            const parsed = data.assessmentQuestions.map((q: any) => ({
+              ...q,
+              options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
+            }));
+            setQuestions(parsed);
+          }
+        }
+      })
+      .catch(err => console.error('Failed to load dynamic governance data:', err));
+  }, []);
 
   // Tab switch detection (plagiarism/integrity check)
   useEffect(() => {
@@ -61,8 +94,9 @@ export default function AssessmentPlayer() {
       if (document.hidden) {
         setTabSwitches(prev => {
           const updated = prev + 1;
-          alert(`Plagiarism Integrity Alert: Tab-switch detected. (Warning count: ${updated}/3). Switches exceeding 3 will trigger automatic assessment failure.`);
-          if (updated >= 3) {
+          const maxAllowed = assessmentSettings.maxTabSwitches || 3;
+          alert(`Plagiarism Integrity Alert: Tab-switch detected. (Warning count: ${updated}/${maxAllowed}). Switches exceeding ${maxAllowed} will trigger automatic assessment failure.`);
+          if (updated >= maxAllowed) {
             setIsSubmitted(true);
             setAssessmentActive(false);
           }
@@ -75,7 +109,7 @@ export default function AssessmentPlayer() {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [assessmentActive, isSubmitted]);
+  }, [assessmentActive, isSubmitted, assessmentSettings]);
 
   // Timed exam decrementer
   useEffect(() => {
@@ -99,13 +133,13 @@ export default function AssessmentPlayer() {
   const score = useMemo(() => {
     if (!isSubmitted) return 0;
     let correctCount = 0;
-    QUESTIONS.forEach(q => {
+    questions.forEach(q => {
       if (selectedAnswers[q.id] === q.correctIndex) {
         correctCount++;
       }
     });
-    return Math.round((correctCount / QUESTIONS.length) * 100);
-  }, [isSubmitted, selectedAnswers]);
+    return questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
+  }, [isSubmitted, selectedAnswers, questions]);
 
   const toggleWebcam = () => {
     setWebcamStreaming(prev => !prev);
@@ -186,14 +220,14 @@ export default function AssessmentPlayer() {
                       </h3>
                       <div className="num font-semi text-brass" style={{ fontSize: '3rem', marginTop: '12px' }}>{score}%</div>
                       <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-400)', marginTop: '8px' }}>
-                        Passing threshold: 70%. Attempts remaining: {score >= 70 ? 'None (Passed)' : '1 retake after 48-hour cooldown'}.
+                        Passing threshold: {assessmentSettings.passingScorePct}%. Attempts remaining: {score >= assessmentSettings.passingScorePct ? 'None (Passed)' : '1 retake after 48-hour cooldown'}.
                       </p>
                     </div>
 
                     {/* Question details with explanations */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', borderTop: 'var(--border-subtle)', paddingTop: '20px' }}>
                       <h4 style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)' }}>Detailed Question Reviews</h4>
-                      {QUESTIONS.map((q, idx) => {
+                      {questions.map((q, idx) => {
                         const userAns = selectedAnswers[q.id];
                         const isCorrect = userAns === q.correctIndex;
                         return (
@@ -216,9 +250,9 @@ export default function AssessmentPlayer() {
                 ) : (
                   // Active Question Flow
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    {QUESTIONS.map((q, idx) => (
+                    {questions.map((q, idx) => (
                       <div key={q.id} className="card p-6">
-                        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--brass-500)', fontWeight: 600 }}>Question {idx + 1} of {QUESTIONS.length}</span>
+                        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--brass-500)', fontWeight: 600 }}>Question {idx + 1} of {questions.length}</span>
                         <h3 style={{ fontSize: 'var(--text-base)', color: 'var(--ink-100)', marginTop: '4px', marginBottom: '16px' }}>{q.question}</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {q.options.map((opt, optIdx) => {
@@ -279,7 +313,7 @@ export default function AssessmentPlayer() {
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span style={{ color: 'var(--ink-400)' }}>Focus Lost Events:</span>
-                        <span className="num font-semi text-rose">{tabSwitches} / 3</span>
+                        <span className="num font-semi text-rose">{tabSwitches} / {assessmentSettings.maxTabSwitches || 3}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span style={{ color: 'var(--ink-400)' }}>IP Address Lock:</span>

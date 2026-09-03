@@ -1314,3 +1314,329 @@ export async function deletePackageAction(adminToken: string | undefined, packag
     return { success: false, error: err.message };
   }
 }
+
+// ── INSTITUTIONAL ACADEMIC GOVERNANCE ACTIONS (SUPER-ADMIN AUTH REQUIRED) ───────
+
+async function checkSuperAdminAuth(tokenOverride?: string): Promise<string> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('session_token')?.value || tokenOverride;
+  if (!token) throw new Error('Unauthenticated: No session token found in secure cookies.');
+
+  const now = new Date().toISOString();
+  const session = db.prepare('SELECT userId FROM sessions WHERE id = ? AND expiresAt > ?').get(token, now) as any;
+  if (!session) throw new Error('Session is invalid or has expired. Please sign in again.');
+
+  const user = db.prepare('SELECT role, accountStatus FROM users WHERE id = ?').get(session.userId) as any;
+  if (!user || user.accountStatus !== 'active') throw new Error('Account inactive or disabled.');
+  if (user.role !== 'admin') throw new Error('Access denied: Super Admin authorization is required for Academic Governance.');
+
+  return session.userId;
+}
+
+// 1. ASSESSMENT QUESTION ACTIONS
+export async function saveAssessmentQuestionAction(
+  adminToken: string | undefined,
+  data: {
+    id?: number;
+    moduleId: string;
+    question: string;
+    options: string[];
+    correctIndex: number;
+    explanation: string;
+    difficulty?: 'foundation' | 'intermediate' | 'advanced';
+  }
+) {
+  try {
+    const adminId = await checkSuperAdminAuth(adminToken);
+    const { id, moduleId, question, options, correctIndex, explanation, difficulty = 'intermediate' } = data;
+
+    if (!moduleId || !question?.trim() || !options || options.length < 2 || explanation === undefined) {
+      return { success: false, error: 'Module ID, Question text, at least 2 options, and Explanation are required.' };
+    }
+
+    if (correctIndex < 0 || correctIndex >= options.length) {
+      return { success: false, error: 'Correct answer index must correspond to one of the options.' };
+    }
+
+    const now = new Date().toISOString();
+    const optionsJson = JSON.stringify(options);
+
+    if (id) {
+      db.prepare(`
+        UPDATE assessment_questions SET
+          moduleId = ?, question = ?, options = ?, correctIndex = ?, explanation = ?, difficulty = ?, updatedAt = ?
+        WHERE id = ?
+      `).run(moduleId.trim().toUpperCase(), question.trim(), optionsJson, correctIndex, explanation.trim(), difficulty, now, id);
+
+      logAudit('ASSESSMENT_QUESTION_UPDATED', adminId, String(id), null, { moduleId, question });
+      revalidatePath('/assessments');
+      revalidatePath('/admin/credentials');
+      return { success: true, id };
+    } else {
+      const res = db.prepare(`
+        INSERT INTO assessment_questions (moduleId, question, options, correctIndex, explanation, difficulty, createdAt, updatedAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(moduleId.trim().toUpperCase(), question.trim(), optionsJson, correctIndex, explanation.trim(), difficulty, now, now);
+
+      logAudit('ASSESSMENT_QUESTION_CREATED', adminId, String(res.lastInsertRowid), null, { moduleId, question });
+      revalidatePath('/assessments');
+      revalidatePath('/admin/credentials');
+      return { success: true, id: Number(res.lastInsertRowid) };
+    }
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deleteAssessmentQuestionAction(adminToken: string | undefined, id: number) {
+  try {
+    const adminId = await checkSuperAdminAuth(adminToken);
+    if (!id) return { success: false, error: 'Question ID is required.' };
+
+    db.prepare('DELETE FROM assessment_questions WHERE id = ?').run(id);
+    logAudit('ASSESSMENT_QUESTION_DELETED', adminId, String(id), null, null);
+    revalidatePath('/assessments');
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+// 2. ASSESSMENT PROCTORING SETTINGS ACTION
+export async function saveAssessmentSettingsAction(
+  adminToken: string | undefined,
+  settings: {
+    timeLimitSeconds: number;
+    maxTabSwitches: number;
+    passingScorePct: number;
+    webcamRequired: boolean | number;
+  }
+) {
+  try {
+    const adminId = await checkSuperAdminAuth(adminToken);
+    const timeLimit = Math.max(60, Number(settings.timeLimitSeconds) || 1200);
+    const maxSwitches = Math.max(1, Number(settings.maxTabSwitches) || 3);
+    const passingScore = Math.min(100, Math.max(10, Number(settings.passingScorePct) || 70));
+    const webcam = settings.webcamRequired ? 1 : 0;
+    const now = new Date().toISOString();
+
+    db.prepare(`
+      INSERT INTO assessment_settings (id, timeLimitSeconds, maxTabSwitches, passingScorePct, webcamRequired, updatedAt)
+      VALUES ('default', ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        timeLimitSeconds = excluded.timeLimitSeconds,
+        maxTabSwitches = excluded.maxTabSwitches,
+        passingScorePct = excluded.passingScorePct,
+        webcamRequired = excluded.webcamRequired,
+        updatedAt = excluded.updatedAt
+    `).run(timeLimit, maxSwitches, passingScore, webcam, now);
+
+    logAudit('ASSESSMENT_SETTINGS_UPDATED', adminId, 'default', null, { timeLimit, maxSwitches, passingScore });
+    revalidatePath('/assessments');
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+// 3. CAPSTONE TRACK ACTIONS
+export async function saveCapstoneTrackAction(
+  adminToken: string | undefined,
+  track: {
+    id: string;
+    code: string;
+    title: string;
+    icon?: string;
+    description: string;
+    rubric?: string;
+    tags?: string[];
+    minPassingScore?: number;
+    isActive?: boolean | number;
+  }
+) {
+  try {
+    const adminId = await checkSuperAdminAuth(adminToken);
+    if (!track.id || !track.code || !track.title?.trim() || !track.description?.trim()) {
+      return { success: false, error: 'Track ID, Code, Title, and Description are required.' };
+    }
+
+    const now = new Date().toISOString();
+    const tagsJson = JSON.stringify(track.tags || []);
+    const minPass = Number(track.minPassingScore) || 70;
+    const active = track.isActive !== false && track.isActive !== 0 ? 1 : 0;
+
+    db.prepare(`
+      INSERT INTO capstone_tracks (id, code, title, icon, description, rubric, tags, minPassingScore, isActive, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        code = excluded.code,
+        title = excluded.title,
+        icon = excluded.icon,
+        description = excluded.description,
+        rubric = excluded.rubric,
+        tags = excluded.tags,
+        minPassingScore = excluded.minPassingScore,
+        isActive = excluded.isActive,
+        updatedAt = excluded.updatedAt
+    `).run(
+      track.id.trim().toLowerCase(),
+      track.code.trim().toUpperCase(),
+      track.title.trim(),
+      track.icon || '📊',
+      track.description.trim(),
+      track.rubric || '',
+      tagsJson,
+      minPass,
+      active,
+      now
+    );
+
+    logAudit('CAPSTONE_TRACK_SAVED', adminId, track.id, null, { title: track.title, code: track.code });
+    revalidatePath('/capstone');
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deleteCapstoneTrackAction(adminToken: string | undefined, trackId: string) {
+  try {
+    const adminId = await checkSuperAdminAuth(adminToken);
+    if (!trackId) return { success: false, error: 'Track ID is required.' };
+
+    db.prepare('DELETE FROM capstone_tracks WHERE id = ?').run(trackId);
+    logAudit('CAPSTONE_TRACK_DELETED', adminId, trackId, null, null);
+    revalidatePath('/capstone');
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+// 4. CERTIFICATION & CREDENTIAL TIER ACTIONS
+export async function saveCertificationSettingsAction(
+  adminToken: string | undefined,
+  data: {
+    distinctionMinScore: number;
+    proficiencyMinScore: number;
+    completionMinScore: number;
+    weights?: Record<string, number>;
+    minimumRequirements?: Record<string, any>;
+  }
+) {
+  try {
+    const adminId = await checkSuperAdminAuth(adminToken);
+    const dist = Math.min(100, Math.max(50, Number(data.distinctionMinScore) || 85));
+    const prof = Math.min(dist - 1, Math.max(40, Number(data.proficiencyMinScore) || 75));
+    const comp = Math.min(prof - 1, Math.max(20, Number(data.completionMinScore) || 60));
+
+    const weightsJson = JSON.stringify(data.weights || {
+      knowledgeChecks: 10,
+      assignments: 20,
+      quizzes: 30,
+      moduleAssessments: 30,
+      capstone: 10,
+    });
+
+    const minReqJson = JSON.stringify(data.minimumRequirements || {
+      perModuleAssessment: 70,
+      capstone: 70,
+      allQuizzesAttempted: true,
+      allAssignmentsSubmitted: true,
+    });
+
+    const now = new Date().toISOString();
+
+    db.prepare(`
+      INSERT INTO certification_settings (id, distinctionMinScore, proficiencyMinScore, completionMinScore, weightsJson, minimumRequirementsJson, updatedAt)
+      VALUES ('global', ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        distinctionMinScore = excluded.distinctionMinScore,
+        proficiencyMinScore = excluded.proficiencyMinScore,
+        completionMinScore = excluded.completionMinScore,
+        weightsJson = excluded.weightsJson,
+        minimumRequirementsJson = excluded.minimumRequirementsJson,
+        updatedAt = excluded.updatedAt
+    `).run(dist, prof, comp, weightsJson, minReqJson, now);
+
+    logAudit('CERTIFICATION_SETTINGS_SAVED', adminId, 'global', null, { dist, prof, comp });
+    revalidatePath('/certification');
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function saveProfessionalTrackAction(
+  adminToken: string | undefined,
+  track: {
+    id: string;
+    name: string;
+    icon?: string;
+    description: string;
+    requiredModules?: string[];
+    requiredLessons?: string[];
+    isActive?: boolean | number;
+  }
+) {
+  try {
+    const adminId = await checkSuperAdminAuth(adminToken);
+    if (!track.id || !track.name?.trim() || !track.description?.trim()) {
+      return { success: false, error: 'Track ID, Certificate Name, and Description are required.' };
+    }
+
+    const now = new Date().toISOString();
+    const reqModulesJson = JSON.stringify(track.requiredModules || []);
+    const reqLessonsJson = JSON.stringify(track.requiredLessons || []);
+    const active = track.isActive !== false && track.isActive !== 0 ? 1 : 0;
+
+    db.prepare(`
+      INSERT INTO professional_tracks_config (id, name, icon, description, requiredModules, requiredLessons, isActive, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        name = excluded.name,
+        icon = excluded.icon,
+        description = excluded.description,
+        requiredModules = excluded.requiredModules,
+        requiredLessons = excluded.requiredLessons,
+        isActive = excluded.isActive,
+        updatedAt = excluded.updatedAt
+    `).run(
+      track.id.trim().toLowerCase(),
+      track.name.trim(),
+      track.icon || '📜',
+      track.description.trim(),
+      reqModulesJson,
+      reqLessonsJson,
+      active,
+      now
+    );
+
+    logAudit('PROFESSIONAL_TRACK_SAVED', adminId, track.id, null, { name: track.name });
+    revalidatePath('/certification');
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deleteProfessionalTrackAction(adminToken: string | undefined, trackId: string) {
+  try {
+    const adminId = await checkSuperAdminAuth(adminToken);
+    if (!trackId) return { success: false, error: 'Track ID is required.' };
+
+    db.prepare('DELETE FROM professional_tracks_config WHERE id = ?').run(trackId);
+    logAudit('PROFESSIONAL_TRACK_DELETED', adminId, trackId, null, null);
+    revalidatePath('/certification');
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}

@@ -651,3 +651,222 @@ export function resetChatbotQAsToDefaults() {
   }
 }
 
+// ── INSTITUTIONAL ACADEMIC GOVERNANCE TABLES ───────────────────────
+try {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS assessment_questions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      moduleId TEXT NOT NULL,
+      question TEXT NOT NULL,
+      options TEXT NOT NULL,
+      correctIndex INTEGER NOT NULL DEFAULT 0,
+      explanation TEXT NOT NULL,
+      difficulty TEXT DEFAULT 'intermediate',
+      createdAt TEXT,
+      updatedAt TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS assessment_settings (
+      id TEXT PRIMARY KEY,
+      timeLimitSeconds INTEGER DEFAULT 1200,
+      maxTabSwitches INTEGER DEFAULT 3,
+      passingScorePct INTEGER DEFAULT 70,
+      webcamRequired INTEGER DEFAULT 1,
+      updatedAt TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS capstone_tracks (
+      id TEXT PRIMARY KEY,
+      code TEXT NOT NULL,
+      title TEXT NOT NULL,
+      icon TEXT DEFAULT '📊',
+      description TEXT NOT NULL,
+      rubric TEXT,
+      tags TEXT DEFAULT '[]',
+      minPassingScore INTEGER DEFAULT 70,
+      isActive INTEGER DEFAULT 1,
+      updatedAt TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS certification_settings (
+      id TEXT PRIMARY KEY,
+      distinctionMinScore INTEGER DEFAULT 85,
+      proficiencyMinScore INTEGER DEFAULT 75,
+      completionMinScore INTEGER DEFAULT 60,
+      weightsJson TEXT,
+      minimumRequirementsJson TEXT,
+      updatedAt TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS professional_tracks_config (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      icon TEXT DEFAULT '📜',
+      description TEXT NOT NULL,
+      requiredModules TEXT DEFAULT '[]',
+      requiredLessons TEXT DEFAULT '[]',
+      isActive INTEGER DEFAULT 1,
+      updatedAt TEXT
+    );
+  `);
+
+  // Seed default assessment settings if empty
+  const hasSettings = db.prepare('SELECT id FROM assessment_settings WHERE id = ?').get('default');
+  if (!hasSettings) {
+    db.prepare(`
+      INSERT INTO assessment_settings (id, timeLimitSeconds, maxTabSwitches, passingScorePct, webcamRequired, updatedAt)
+      VALUES ('default', 1200, 3, 70, 1, ?)
+    `).run(new Date().toISOString());
+  }
+
+  // Seed default assessment questions if empty
+  const qCount = db.prepare('SELECT COUNT(*) as count FROM assessment_questions').get() as any;
+  if (!qCount || qCount.count === 0) {
+    const seedQ = db.prepare(`
+      INSERT INTO assessment_questions (moduleId, question, options, correctIndex, explanation, difficulty, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    const now = new Date().toISOString();
+    seedQ.run(
+      'M1',
+      'Which horizon in the FingenIQ Financial Freedom Framework must be established first before investing capital into equity markets?',
+      JSON.stringify([
+        'Horizon 3: Generational Wealth & Estate Distribution',
+        'Horizon 2: Accumulation & Portfolio Diversification',
+        'Horizon 1: Protection (Insurance Cover & Emergency Liquidity)',
+        'None of the above. Accumulation should precede protection.'
+      ]),
+      2,
+      'The Sequencing Imperative mandates establishing Horizon 1 (term cover, health protection, and emergency liquid funds) first to prevent forced liquidation of asset portfolios during distress events.',
+      'foundation',
+      now,
+      now
+    );
+    seedQ.run(
+      'M1',
+      'What is the required target corpus under a 4% Safe Withdrawal Rate (SWR) to replace a monthly lifestyle expenditure of ₹1,50,000?',
+      JSON.stringify([
+        '₹3.50 Crores',
+        '₹4.50 Crores',
+        '₹5.00 Crores',
+        '₹2.50 Crores'
+      ]),
+      1,
+      'Annual Expense = ₹1,50,000 × 12 = ₹18,00,000. Required Corpus = Annual Expense / 0.04 = ₹4,50,00,000 (₹4.50 Crores).',
+      'intermediate',
+      now,
+      now
+    );
+    seedQ.run(
+      'M1',
+      'Under Insider Trading & Corporate Governance Regulations, what does UPSI stand for and when must it be handled under strict confidentiality protocols?',
+      JSON.stringify([
+        'Unpublished Price Sensitive Information; whenever a transaction or decision is likely to materially impact asset price.',
+        'Unified Price Security Index; during secondary market order matching runs.',
+        'Unregulated Portfolio Stock Investments; for private equity startup round allocations.',
+        'None of the above.'
+      ]),
+      0,
+      'UPSI stands for Unpublished Price Sensitive Information. Any employee or insider privy to UPSI must adhere to trading window closure mandates to prevent insider trading violations.',
+      'advanced',
+      now,
+      now
+    );
+  }
+
+  // Seed default capstone tracks if empty
+  const capCount = db.prepare('SELECT COUNT(*) as count FROM capstone_tracks').get() as any;
+  if (!capCount || capCount.count === 0) {
+    const seedCap = db.prepare(`
+      INSERT INTO capstone_tracks (id, code, title, icon, description, rubric, tags, minPassingScore, isActive, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+    `);
+    const now = new Date().toISOString();
+    seedCap.run(
+      'track-a',
+      'A',
+      'Track A — Personal Wealth Plan',
+      '💼',
+      'Develop a comprehensive 5-year personal financial plan covering cash flow optimisation, emergency corpus, insurance structuring, debt elimination, investment asset allocation, and retirement modelling.',
+      '• Cash Flow Architecture (25%)\n• Debt & Liquidity Management (25%)\n• Asset Allocation & Hedging (25%)\n• Retirement Horizon Modelling (25%)',
+      JSON.stringify(['Personal Finance', 'Budgeting', 'Insurance', 'Retirement']),
+      70,
+      now
+    );
+    seedCap.run(
+      'track-b',
+      'B',
+      'Track B — Investment Thesis Analysis',
+      '📊',
+      'Select a listed Indian company and produce a formal investment research report including DCF valuation, financial statement analysis, industry positioning, risk factors, and a buy/hold/sell recommendation.',
+      '• Industry Positioning & Competitive Moat (25%)\n• Financial Statement & Ratio Analysis (25%)\n• 3-Stage DCF Valuation & Sensitivity (30%)\n• Governance & Structural Risk Horizon (20%)',
+      JSON.stringify(['Corporate Finance', 'Equity Research', 'DCF', 'Governance']),
+      70,
+      now
+    );
+    seedCap.run(
+      'track-c',
+      'C',
+      'Track C — Strategic Corporate M&A & LBO Model',
+      '🏗️',
+      'Model an institutional leveraged buyout or cross-border merger structure including debt tranches, pro-forma consolidation, EPS accretion/dilution analysis, and post-merger integration risk audit.',
+      '• Transaction Rationale & Synergy Mapping (25%)\n• Debt Tranche & Capital Structure (25%)\n• Accretion/Dilution & Pro-Forma Returns (30%)\n• Post-Merger Governance & Regulatory Compliance (20%)',
+      JSON.stringify(['M&A', 'LBO', 'Investment Banking', 'Consolidation']),
+      75,
+      now
+    );
+  }
+
+  // Seed default certification settings if empty
+  const certSettings = db.prepare('SELECT id FROM certification_settings WHERE id = ?').get('global');
+  if (!certSettings) {
+    db.prepare(`
+      INSERT INTO certification_settings (id, distinctionMinScore, proficiencyMinScore, completionMinScore, weightsJson, minimumRequirementsJson, updatedAt)
+      VALUES ('global', 85, 75, 60, ?, ?, ?)
+    `).run(
+      JSON.stringify({ knowledgeChecks: 10, assignments: 20, quizzes: 30, moduleAssessments: 30, capstone: 10 }),
+      JSON.stringify({ perModuleAssessment: 70, capstone: 70, allQuizzesAttempted: true, allAssignmentsSubmitted: true }),
+      new Date().toISOString()
+    );
+  }
+
+  // Seed default professional tracks if empty
+  const trackCount = db.prepare('SELECT COUNT(*) as count FROM professional_tracks_config').get() as any;
+  if (!trackCount || trackCount.count === 0) {
+    const seedTrack = db.prepare(`
+      INSERT INTO professional_tracks_config (id, name, icon, description, requiredModules, requiredLessons, isActive, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, 1, ?)
+    `);
+    const now = new Date().toISOString();
+    seedTrack.run(
+      'banking',
+      'Banking Professional Certification',
+      '🏦',
+      'Validates expertise in banking systems, central banking, and personal financial management.',
+      JSON.stringify(['M2', 'M6']),
+      JSON.stringify(['L14', 'L34']),
+      now
+    );
+    seedTrack.run(
+      'equity',
+      'Equity Research Analyst Certification',
+      '📈',
+      'Validates skills in equity investing, capital structures, financial statements, institutional portfolios, and hedging.',
+      JSON.stringify(['M3', 'M5', 'M7']),
+      JSON.stringify(['L19', 'L20', 'L21', 'L22', 'L23', 'L24', 'L28', 'L29', 'L30', 'L31', 'L32', 'L33', 'L37', 'L38', 'L39']),
+      now
+    );
+    seedTrack.run(
+      'corp-finance',
+      'Corporate Finance Professional Certification',
+      '🏗️',
+      'Validates proficiency in financial statements, capital structures, corporate management, and mergers & acquisitions.',
+      JSON.stringify(['M5']),
+      JSON.stringify(['L28', 'L29', 'L30', 'L31', 'L32', 'L33']),
+      now
+    );
+  }
+} catch (e) {
+  console.error('Failed to initialize institutional governance schema:', e);
+}
+
