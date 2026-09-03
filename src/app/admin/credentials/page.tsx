@@ -587,24 +587,28 @@ export default function AdminCredentials() {
   // ── USER ACTIONS ──────────────────────────────────────────────────────────
   const handleEditUser = async () => {
     if (!editingUser) return;
-    const res = await editUserAction(sessionToken, editingUser);
-    if (res.success) {
-      setEditingUser(null);
-      fetchDashboardData();
-    } else {
-      alert(res.error || 'Failed to update user');
-    }
+    startTransition(async () => {
+      const res = await editUserAction(sessionToken, editingUser);
+      if (res.success) {
+        setEditingUser(null);
+        fetchDashboardData();
+      } else {
+        alert(res.error || 'Failed to update user');
+      }
+    });
   };
 
   const handleDeleteUser = async () => {
     if (!deletingUser) return;
-    const res = await deleteUserAction(sessionToken, deletingUser.id);
-    if (res.success) {
-      setDeletingUser(null);
-      fetchDashboardData();
-    } else {
-      alert(res.error || 'Failed to delete user');
-    }
+    startTransition(async () => {
+      const res = await deleteUserAction(sessionToken, deletingUser.id);
+      if (res.success) {
+        setDeletingUser(null);
+        fetchDashboardData();
+      } else {
+        alert(res.error || 'Failed to delete user');
+      }
+    });
   };
 
   const handleChangePassword = async () => {
@@ -617,15 +621,17 @@ export default function AdminCredentials() {
       alert('Password must be at least 8 characters');
       return;
     }
-    const res = await changeUserPasswordAction(sessionToken, passwordUser.id, newPassword);
-    if (res.success) {
-      setPasswordUser(null);
-      setNewPassword('');
-      setConfirmPassword('');
-      fetchDashboardData();
-    } else {
-      alert(res.error || 'Failed to change password');
-    }
+    startTransition(async () => {
+      const res = await changeUserPasswordAction(sessionToken, passwordUser.id, newPassword);
+      if (res.success) {
+        setPasswordUser(null);
+        setNewPassword('');
+        setConfirmPassword('');
+        fetchDashboardData();
+      } else {
+        alert(res.error || 'Failed to change password');
+      }
+    });
   };
 
   const handleEditEntity = async () => {
