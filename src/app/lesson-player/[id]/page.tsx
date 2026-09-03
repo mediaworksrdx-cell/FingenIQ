@@ -356,11 +356,7 @@ export default function LessonPlayerComponent() {
               {(() => {
                 const images = lesson.galleryImages?.length
                   ? lesson.galleryImages
-                  : [
-                      `/lessons/${lesson.id}/slide-1.svg`,
-                      `/lessons/${lesson.id}/slide-2.svg`,
-                      `/lessons/${lesson.id}/slide-3.svg`,
-                    ];
+                  : Array.from({ length: 20 }, (_, i) => `/lessons/${lesson.id}/slide-${i + 1}.svg`);
                 return (
                   <LessonGallery
                     images={images}

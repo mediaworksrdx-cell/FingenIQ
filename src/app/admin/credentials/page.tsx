@@ -287,11 +287,9 @@ export default function AdminCredentials() {
         } else if (defaultLesson?.galleryImages && defaultLesson.galleryImages.length > 0) {
           setLessonGalleryImages(defaultLesson.galleryImages);
         } else {
-          setLessonGalleryImages([
-            `/lessons/${selectedLessonId}/slide-1.svg`,
-            `/lessons/${selectedLessonId}/slide-2.svg`,
-            `/lessons/${selectedLessonId}/slide-3.svg`,
-          ]);
+          setLessonGalleryImages(
+            Array.from({ length: 20 }, (_, i) => `/lessons/${selectedLessonId}/slide-${i + 1}.svg`)
+          );
         }
       } catch {
         setLessonGalleryImages([]);
@@ -340,11 +338,7 @@ export default function AdminCredentials() {
       setLessonGalleryImages(
         defaultLesson.galleryImages && defaultLesson.galleryImages.length > 0
           ? defaultLesson.galleryImages
-          : [
-              `/lessons/${defaultLesson.id}/slide-1.svg`,
-              `/lessons/${defaultLesson.id}/slide-2.svg`,
-              `/lessons/${defaultLesson.id}/slide-3.svg`,
-            ]
+          : Array.from({ length: 20 }, (_, i) => `/lessons/${defaultLesson.id}/slide-${i + 1}.svg`)
       );
       setKeyTakeaways(defaultLesson.keyTakeaways || []);
       setLessonQuiz(defaultLesson.quiz || []);
@@ -1654,11 +1648,9 @@ export default function AdminCredentials() {
                       <button
                         type="button"
                         onClick={() => {
-                          setLessonGalleryImages([
-                            `/lessons/${selectedLessonId}/slide-1.svg`,
-                            `/lessons/${selectedLessonId}/slide-2.svg`,
-                            `/lessons/${selectedLessonId}/slide-3.svg`,
-                          ]);
+                          setLessonGalleryImages(
+                            Array.from({ length: 20 }, (_, i) => `/lessons/${selectedLessonId}/slide-${i + 1}.svg`)
+                          );
                         }}
                         style={{
                           background: 'rgba(59, 130, 246, 0.15)',

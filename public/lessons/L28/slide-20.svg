@@ -1,57 +1,91 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#faf5ff"/>
-      <stop offset="100%" stop-color="#f3e8ff"/>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1A"/>
+      <stop offset="100%" stop-color="#0B1528"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#9333ea"/>
-      <stop offset="100%" stop-color="#9333ea99"/>
+    <linearGradient id="goldBar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#CEAE56"/>
+      <stop offset="50%" stop-color="#F3E5AB"/>
+      <stop offset="100%" stop-color="#B8962E"/>
     </linearGradient>
-    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.08"/>
+    <filter id="cardShadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.4"/>
     </filter>
   </defs>
+
+  <!-- Background Base -->
+  <rect width="1280" height="720" fill="url(#bgGrad)"/>
   
-  <!-- Background -->
-  <rect width="1280" height="720" fill="url(#bg)"/>
+  <!-- Subtle Grid Accent -->
+  <g stroke="rgba(255,255,255,0.02)" stroke-width="1">
+    <line x1="100" y1="0" x2="100" y2="720"/>
+    <line x1="640" y1="0" x2="640" y2="720"/>
+    <line x1="1180" y1="0" x2="1180" y2="720"/>
+    <line x1="0" y1="120" x2="1280" y2="120"/>
+    <line x1="0" y1="600" x2="1280" y2="600"/>
+  </g>
+
+  <!-- Main Card Container -->
+  <rect x="50" y="35" width="1180" height="650" rx="20" fill="#091122" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" filter="url(#cardShadow)"/>
   
-  <!-- Card Container -->
-  <rect x="60" y="40" width="1160" height="640" rx="20" fill="#ffffff" filter="url(#shadow)" opacity="0.92"/>
-  <rect x="60" y="40" width="1160" height="640" rx="20" fill="none" stroke="#9333ea" stroke-width="1.5" opacity="0.25"/>
-  
-  <!-- Top accent bar -->
-  <rect x="60" y="40" width="1160" height="6" rx="3" fill="url(#accent)"/>
-  
-  <!-- Lesson badge -->
-  <rect x="90" y="65" width="110" height="34" rx="17" fill="#9333ea" opacity="0.12"/>
-  <text x="145" y="87" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="800" fill="#9333ea">L28</text>
-  
-  <!-- Slide counter badge -->
-  <rect x="1080" y="65" width="110" height="34" rx="17" fill="#9333ea" opacity="0.12"/>
-  <text x="1135" y="87" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#9333ea">20 of 30</text>
-  
-  <!-- Emoji Icon -->
-  <text x="640" y="195" text-anchor="middle" font-size="64">📈</text>
-  
-  <!-- Lesson Title -->
-  <text text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#3b0764" y="260">
-    <tspan x="640" dy="0">Business Models &amp; Value Creation</tspan>
+  <!-- Top Gold Accent Line -->
+  <rect x="50" y="35" width="1180" height="4" rx="2" fill="url(#goldBar)"/>
+
+  <!-- Top Header Row -->
+  <g transform="translate(90, 65)">
+    <!-- Lesson & Module Badge -->
+    <rect x="0" y="0" width="150" height="34" rx="8" fill="rgba(206,174,86,0.15)" stroke="rgba(206,174,86,0.3)"/>
+    <text x="75" y="22" font-family="system-ui, sans-serif" font-size="12" font-weight="800" fill="#CEAE56" text-anchor="middle">L28 · MODULE 5</text>
+    
+    <!-- Section Identifier Badge -->
+    <rect x="165" y="0" width="260" height="34" rx="8" fill="rgba(234,179,8,0.15)" stroke="#EAB308" stroke-opacity="0.4"/>
+    <text x="295" y="22" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#EAB308" text-anchor="middle">SECTION 20 · MASTERY VERIFICATION</text>
+    
+    <!-- Slide Counter Badge (X of 20) -->
+    <rect x="940" y="0" width="150" height="34" rx="8" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)"/>
+    <text x="1015" y="22" font-family="monospace" font-size="13" font-weight="700" fill="#CBD5E1" text-anchor="middle">20 of 20</text>
+  </g>
+
+  <!-- Lesson Title & Section Headline -->
+  <g transform="translate(100, 150)">
+    <text x="0" y="0" font-family="Georgia, serif" font-size="30" font-weight="700" fill="#F1F5F9">
+      Business Models &amp; Value Creation
+    </text>
+    <text x="0" y="38" font-family="system-ui, sans-serif" font-size="20" font-weight="700" fill="#EAB308">
+      🎓 Mastery Verification & Professional Milestone
+    </text>
+    <line x1="0" y1="58" x2="300" y2="58" stroke="#EAB308" stroke-width="2.5" opacity="0.8"/>
+  </g>
+
+  <!-- Section Lecture Content Body -->
+  <text font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#CBD5E1" line-height="1.6">
+    <tspan x="100" y="350">This section covers the institutional principles, quantitative models,</tspan>
+<tspan x="100" y="376">and strategic applications for Business Models &amp; Value Creation.</tspan>
+
   </text>
+
+  <!-- Custom Visual Content Per Section -->
   
-  <!-- Divider -->
-  <rect x="540" y="310" width="200" height="3" rx="1.5" fill="#9333ea" opacity="0.45"/>
-  
-  <!-- Step Name -->
-  <text x="640" y="350" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" fill="#7e22ce">Financial Modelling &amp; Projections</text>
-  
-  <!-- Step Description -->
-  <text text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#334155" y="397">
-    <tspan x="640" dy="0">Business Models &amp; Value Creation: Build dynamic 3-statement models</tspan>
-        <tspan x="640" dy="28">and financial projections to quantify growth vectors and evaluate</tspan>
-        <tspan x="640" dy="28">capital allocation.</tspan>
-  </text>
-  
-  <!-- Bottom watermark -->
-  <text x="640" y="650" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b" opacity="0.6" font-weight="600">FinGenIQ · Institutional Financial Intelligence</text>
+        <!-- Professional Milestone Crest -->
+        <g transform="translate(100, 480)">
+          <rect x="0" y="0" width="1080" height="90" rx="12" fill="#0B1528" stroke="rgba(206,174,86,0.5)" stroke-width="1.5"/>
+          <circle cx="60" cy="45" r="28" fill="rgba(206,174,86,0.15)" stroke="#CEAE56" stroke-width="1.5"/>
+          <text x="60" y="54" font-size="24" text-anchor="middle">🏅</text>
+          <text x="110" y="38" font-family="system-ui, sans-serif" font-size="14" font-weight="800" fill="#CEAE56">PROFESSIONAL COMPETENCY VERIFIED</text>
+          <text x="110" y="62" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#F1F5F9">Track credits recorded towards FinGenIQ Chartered Valuation &amp; Financial Intelligence Certification</text>
+          <rect x="910" y="24" width="140" height="42" rx="8" fill="#CEAE56"/>
+          <text x="980" y="50" font-family="system-ui, sans-serif" font-size="12" font-weight="800" fill="#060A16" text-anchor="middle">VERIFIED ✓</text>
+        </g>
+        
+
+  <!-- Footer Watermark -->
+  <g transform="translate(100, 655)">
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#64748B">
+      FinGenIQ · Institutional Financial Architecture &amp; Valuation Intelligence
+    </text>
+    <text x="1080" y="0" font-family="monospace" font-size="11" fill="#64748B" text-anchor="end">
+      L28.S20 · 2026 Curriculum Standard
+    </text>
+  </g>
 </svg>
