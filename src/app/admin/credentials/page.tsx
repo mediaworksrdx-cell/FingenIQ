@@ -1093,43 +1093,7 @@ export default function AdminCredentials() {
               </div>
             </div>
 
-            {/* Official System Default Credentials Overview */}
-            <div style={{ background: '#0B1528', border: '1px solid rgba(206,174,86,0.25)', borderRadius: '1rem', padding: '1.25rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#CEAE56', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  🔑 Official System Role Credentials
-                </h3>
-                <span style={{ fontSize: '0.7rem', color: '#8898AA' }}>
-                  Standard accounts for testing and role governance
-                </span>
-              </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
-                <div style={{ background: '#070E1A', border: '1px solid rgba(180,83,9,0.35)', borderRadius: '0.5rem', padding: '0.75rem' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#B45309', fontWeight: 700 }}>🛡️ ROOT ADMINISTRATOR</div>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#F1F5F9', marginTop: '0.2rem' }}>admin@fingeniq.com</div>
-                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '0.15rem' }}>Password: <code style={{ color: '#CEAE56' }}>Admin@123456</code></div>
-                </div>
-
-                <div style={{ background: '#070E1A', border: '1px solid rgba(37,99,235,0.35)', borderRadius: '0.5rem', padding: '0.75rem' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#60A5FA', fontWeight: 700 }}>💼 INSTITUTIONAL STAFF / EMPLOYEE</div>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#F1F5F9', marginTop: '0.2rem' }}>employee@fingeniq.com</div>
-                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '0.15rem' }}>Password: <code style={{ color: '#60A5FA' }}>Employee@123456</code></div>
-                </div>
-
-                <div style={{ background: '#070E1A', border: '1px solid rgba(124,58,237,0.35)', borderRadius: '0.5rem', padding: '0.75rem' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#A78BFA', fontWeight: 700 }}>🎓 ACADEMIC FACULTY / TEACHER</div>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#F1F5F9', marginTop: '0.2rem' }}>teacher@fingeniq.com</div>
-                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '0.15rem' }}>Password: <code style={{ color: '#A78BFA' }}>Teacher@123456</code></div>
-                </div>
-
-                <div style={{ background: '#070E1A', border: '1px solid rgba(22,163,74,0.35)', borderRadius: '0.5rem', padding: '0.75rem' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#4ADE80', fontWeight: 700 }}>📖 STANDARD LEARNER</div>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#F1F5F9', marginTop: '0.2rem' }}>learner@fingeniq.com</div>
-                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '0.15rem' }}>Password: <code style={{ color: '#4ADE80' }}>Learner@123456</code></div>
-                </div>
-              </div>
-            </div>
 
             {/* Individual Credential Provisioning Form */}
             <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>

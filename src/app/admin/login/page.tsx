@@ -9,24 +9,18 @@ const ROLE_PRESETS = [
   {
     role: 'admin',
     label: '🛡️ Admin',
-    email: 'admin@fingeniq.com',
-    password: 'Admin@123456',
     desc: 'Full Super-Admin Control & Governance',
     badgeColor: '#B45309',
   },
   {
     role: 'employee',
     label: '💼 Employee',
-    email: 'employee@fingeniq.com',
-    password: 'Employee@123456',
     desc: 'Institutional Staff & Moderation',
     badgeColor: '#2563EB',
   },
   {
     role: 'teacher',
     label: '🎓 Teacher',
-    email: 'teacher@fingeniq.com',
-    password: 'Teacher@123456',
     desc: 'Academic Faculty & Curriculum',
     badgeColor: '#7C3AED',
   },
@@ -36,8 +30,8 @@ function AdminLoginContent() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [selectedRole, setSelectedRole] = useState<'admin' | 'employee' | 'teacher'>('admin');
-  const [emailInput, setEmailInput] = useState('admin@fingeniq.com');
-  const [passwordInput, setPasswordInput] = useState('Admin@123456');
+  const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -53,8 +47,6 @@ function AdminLoginContent() {
 
   const handleSelectRole = (preset: typeof ROLE_PRESETS[0]) => {
     setSelectedRole(preset.role as any);
-    setEmailInput(preset.email);
-    setPasswordInput(preset.password);
   };
 
   return (
@@ -244,39 +236,6 @@ function AdminLoginContent() {
               System Time: {currentTime ? currentTime.toLocaleString() : 'Loading...'}
             </div>
           </form>
-        </div>
-
-        {/* Available Roles & Credentials Reference Box */}
-        <div style={{
-          marginTop: '1.25rem',
-          background: '#FFFFFF',
-          border: '1px solid rgba(0, 0, 0, 0.08)',
-          borderRadius: '0.75rem',
-          padding: '1rem',
-          fontSize: '0.75rem',
-          color: '#334155',
-        }}>
-          <div style={{ fontWeight: 700, marginBottom: '0.5rem', color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            🔑 All Default Login Credentials:
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', background: '#F8FAFC', padding: '4px 8px', borderRadius: '4px' }}>
-              <span>🛡️ <strong>Admin:</strong> <code>admin@fingeniq.com</code></span>
-              <span style={{ color: '#64748B' }}><code>Admin@123456</code></span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', background: '#F8FAFC', padding: '4px 8px', borderRadius: '4px' }}>
-              <span>💼 <strong>Employee:</strong> <code>employee@fingeniq.com</code></span>
-              <span style={{ color: '#64748B' }}><code>Employee@123456</code></span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', background: '#F8FAFC', padding: '4px 8px', borderRadius: '4px' }}>
-              <span>🎓 <strong>Teacher:</strong> <code>teacher@fingeniq.com</code></span>
-              <span style={{ color: '#64748B' }}><code>Teacher@123456</code></span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', background: '#F8FAFC', padding: '4px 8px', borderRadius: '4px' }}>
-              <span>📖 <strong>Learner:</strong> <code>learner@fingeniq.com</code></span>
-              <span style={{ color: '#64748B' }}><code>Learner@123456</code></span>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
