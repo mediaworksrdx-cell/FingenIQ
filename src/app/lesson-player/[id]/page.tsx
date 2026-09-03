@@ -7,15 +7,6 @@ import { fetchUserProgress, saveStepProgress, submitQuizScore } from '@/app/acti
 import LessonGallery from '@/components/gallery/LessonGallery';
 import dynamic from 'next/dynamic';
 
-const FinancialNode3D = dynamic(() => import('@/components/3d/FinancialNode3D'), {
-  ssr: false,
-  loading: () => (
-    <div style={{ height: '320px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(184,150,46,0.2)' }}>
-      <span style={{ fontSize: '13px', color: '#B8962E' }}>Loading 3D Visualizer...</span>
-    </div>
-  ),
-});
-
 const STEP_ICONS: Record<string, string> = {
   kc: '❓', quiz: '📝', 'ai-tutor': '🤖', concept: '📖',
   video: '▶', case: '📋', formula: '∑', overview: '📋',
@@ -428,14 +419,6 @@ export default function LessonPlayerComponent() {
                     <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-200)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--sp-6)', whiteSpace: 'pre-line' }}>
                       {effectiveSteps[currentStep]?.description || lesson.steps?.[currentStep]?.description || `This section covers formal concepts, case examples, and study modules associated with ${effectiveSteps[currentStep]?.name ?? ''}.`}
                     </p>
-
-                    {/* Step Visual Explanation (WebGL 3D Interactive Model) */}
-                    {effectiveSteps[currentStep]?.type === 'visual' && (
-                      <FinancialNode3D 
-                        title={`3D Visual Model: ${lesson.title}`} 
-                        subtitle="Real-time WebGL 3D asset node & structural risk horizon renderer" 
-                      />
-                    )}
 
                     {/* PDF Revision Guide download button */}
                     {lesson.pdfPath && (
