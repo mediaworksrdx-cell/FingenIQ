@@ -2,6 +2,7 @@
 import PlatformNav from '@/components/nav/PlatformNav';
 import Footer from '@/components/layout/Footer';
 import { MODULES, USER_STATE } from '@/lib/data';
+import { getCurrentUserAction } from '@/app/actions/authActions';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -43,13 +44,17 @@ const MODULE_COLORS = [
 ];
 
 export default function Dashboard() {
-  const { progress, name, certification } = USER_STATE;
+  const { progress, certification } = USER_STATE;
   const [quote, setQuote] = useState('');
   const [greeting, setGreeting] = useState('Welcome');
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
     setGreeting(getGreeting());
+    getCurrentUserAction().then(user => {
+      if (user) setUserName(user.name);
+    });
   }, []);
 
   const pct = progress.lessonsCompleted / progress.totalLessons;
@@ -87,7 +92,7 @@ export default function Dashboard() {
                     Active Learner Session
                   </span>
                 </div>
-                <div className="welcome-banner__name">{name}</div>
+                <div className="welcome-banner__name">{userName}</div>
                 <p className="welcome-banner__quote">{quote ? `“${quote}”` : ''}</p>
               </div>
               <div className="welcome-banner__streak" aria-label="Study streak">

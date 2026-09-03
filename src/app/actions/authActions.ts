@@ -37,6 +37,21 @@ async function setSessionCookie(userId: string) {
   });
 }
 
+// ── GET CURRENT USER ─────────────────────────────────────────
+
+export async function getCurrentUserAction(): Promise<{ name: string; email: string; role: string; initials: string } | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('session_token')?.value;
+  if (!token) return null;
+  const session = db.prepare('SELECT userId FROM sessions WHERE id = ?').get(token) as any;
+  if (!session) return null;
+  const user = db.prepare('SELECT name, email, role FROM users WHERE id = ?').get(session.userId) as any;
+  if (!user) return null;
+  const displayName = user.name || user.email.split('@')[0];
+  const initials = displayName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+  return { name: displayName, email: user.email, role: user.role, initials };
+}
+
 // ── SERVER ACTIONS ───────────────────────────────────────────
 
 export async function loginAction(prevState: any, formData: FormData) {
