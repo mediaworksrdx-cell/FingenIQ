@@ -9,7 +9,8 @@ import {
   getUserCertification,
   generateCertificate,
   verifyCertificate,
-  getUserCertificates
+  getUserCertificates,
+  getUserRecentActivity
 } from '@/lib/progress';
 import { revalidatePath } from 'next/cache';
 
@@ -22,13 +23,15 @@ export async function fetchUserProgress() {
     const aggregate = await aggregateUserProgress(userId);
     const certification = await getUserCertification(userId);
     const certificates = getUserCertificates(userId);
+    const recentActivity = await getUserRecentActivity(userId);
     
     return {
       success: true,
       progressMap,
       aggregate,
       certification,
-      certificates
+      certificates,
+      recentActivity
     };
   } catch (err: any) {
     return { success: false, error: err.message };

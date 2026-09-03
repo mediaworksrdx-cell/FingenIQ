@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { USER_STATE } from '@/lib/data';
+import { fetchUserProgress } from '@/app/actions/progressActions';
 import { logoutAction, changePasswordAction } from '@/app/actions/authActions';
 import PlatformAiTutor from '@/components/chat/PlatformAiTutor';
 import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
@@ -28,6 +29,7 @@ export default function PlatformNav() {
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [aiTutorOpen, setAiTutorOpen] = useState(false);
   const [sessionUser, setSessionUser] = useState<{ name: string; role: string; email?: string } | null>(null);
+  const [userProgressPct, setUserProgressPct] = useState(0);
 
   // Change password form state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -50,6 +52,12 @@ export default function PlatformNav() {
         }
       })
       .catch(() => {});
+
+    fetchUserProgress().then(res => {
+      if (res.success && res.aggregate && res.aggregate.totalLessons > 0) {
+        setUserProgressPct(Math.round((res.aggregate.lessonsCompleted / res.aggregate.totalLessons) * 100));
+      }
+    }).catch(() => {});
   }, []);
 
   // Close dropdown on outside click
@@ -364,7 +372,7 @@ export default function PlatformNav() {
             <div className="nav__avatar" style={{ width: 36, height: 36, fontSize: 'var(--text-xs)' }}>{displayInitials}</div>
             <div>
               <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)' }}>{displayName}</div>
-              <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--ink-500)' }}>{PROGRESS_PCT}% complete</div>
+              <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--ink-500)' }}>{userProgressPct}% complete</div>
             </div>
           </div>
 

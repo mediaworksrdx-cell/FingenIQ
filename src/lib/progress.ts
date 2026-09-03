@@ -136,7 +136,7 @@ export async function aggregateUserProgress(userId: string): Promise<UserProgres
     }
   }
 
-  const averageQuizScore = gradedLessonsCount > 0 ? Math.round(totalScoreSum / gradedLessonsCount) : 80;
+  const averageQuizScore = gradedLessonsCount > 0 ? Math.round(totalScoreSum / gradedLessonsCount) : 0;
 
   const modulesProgress: Record<string, any> = {};
   let currentModule = 'M1';
@@ -166,11 +166,11 @@ export async function aggregateUserProgress(userId: string): Promise<UserProgres
     lessonsCompleted,
     totalLessons: LESSONS.length,
     currentModule,
-    knowledgeChecks: averageQuizScore + 3, // mock deviation
-    assignments: averageQuizScore - 2, // mock deviation
-    quizzes: averageQuizScore,
-    moduleAssessments: averageQuizScore + 1, // mock deviation
-    capstone: lessonsCompleted > 35 ? 85 : null,
+    knowledgeChecks: gradedLessonsCount > 0 ? averageQuizScore : 0,
+    assignments: gradedLessonsCount > 0 ? averageQuizScore : 0,
+    quizzes: gradedLessonsCount > 0 ? averageQuizScore : 0,
+    moduleAssessments: 0,
+    capstone: lessonsCompleted >= 35 ? 85 : null,
     modules: modulesProgress
   };
 }
@@ -274,4 +274,35 @@ export function getUserCertificates(userId: string) {
     FROM user_certifications
     WHERE userId = ?
   `).all(userId) as Array<{ id: string; trackId: string; issuedAt: string; certificateHash: string }>;
+}
+
+// Get recent activity for a user
+export async function getUserRecentActivity(userId: string) {
+  const rows = db.prepare(`
+    SELECT lessonId, status, currentStep, score, updatedAt
+    FROM user_progress
+    WHERE userId = ?
+    ORDER BY updatedAt DESC
+    LIMIT 6
+  `).all(userId) as Array<{
+    lessonId: string;
+    status: string;
+    currentStep: number;
+    score: number | null;
+    updatedAt: string;
+  }>;
+
+  return rows.map(r => {
+    const lesson = LESSONS.find(l => l.id === r.lessonId);
+    return {
+      lessonId: r.lessonId,
+      lessonTitle: lesson?.title || r.lessonId,
+      lessonOrder: lesson?.order || 1,
+      moduleId: lesson?.moduleId || 'M1',
+      status: r.status,
+      currentStep: r.currentStep,
+      score: r.score,
+      updatedAt: r.updatedAt
+    };
+  });
 }

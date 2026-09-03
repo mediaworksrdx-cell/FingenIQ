@@ -1,8 +1,9 @@
 'use client';
 import PlatformNav from '@/components/nav/PlatformNav';
 import Footer from '@/components/layout/Footer';
-import { MODULES, USER_STATE } from '@/lib/data';
+import { MODULES, LESSONS, USER_STATE } from '@/lib/data';
 import { getCurrentUserAction } from '@/app/actions/authActions';
+import { fetchUserProgress } from '@/app/actions/progressActions';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -24,7 +25,10 @@ function getGreeting(): string {
 function AnimatedCount({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [val, setVal] = useState(0);
   useEffect(() => {
-    if (target === 0) return;
+    if (target === 0) {
+      setVal(0);
+      return;
+    }
     const step = target / 40;
     let current = 0;
     const timer = setInterval(() => {
@@ -44,36 +48,71 @@ const MODULE_COLORS = [
 ];
 
 export default function Dashboard() {
-  const { progress, certification } = USER_STATE;
   const [quote, setQuote] = useState('');
   const [greeting, setGreeting] = useState('Welcome');
   const [userName, setUserName] = useState('');
+  const [progress, setProgress] = useState(USER_STATE.progress);
+  const [certification, setCertification] = useState(USER_STATE.certification);
+  const [progressMap, setProgressMap] = useState<Record<string, any>>({});
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
     setGreeting(getGreeting());
+
     getCurrentUserAction().then(user => {
       if (user && user.name) {
         const cap = user.name.split(/\s+/).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         setUserName(cap);
       }
     });
+
+    fetchUserProgress().then(res => {
+      if (res.success) {
+        if (res.aggregate) setProgress(res.aggregate);
+        if (res.certification) setCertification(res.certification);
+        if (res.progressMap) setProgressMap(res.progressMap);
+        if (res.recentActivity) setRecentActivity(res.recentActivity);
+      }
+      setLoading(false);
+    });
   }, []);
 
-  const pct = progress.lessonsCompleted / progress.totalLessons;
+  const hasActivity = progress.lessonsCompleted > 0;
+  const pct = progress.totalLessons > 0 ? progress.lessonsCompleted / progress.totalLessons : 0;
   // Circumference for r=66: 2 * π * 66 ≈ 414.7
   const CIRC = 414.7;
   const strokeOffset = CIRC * (1 - pct);
 
-  const weightedScore =
-    progress.knowledgeChecks * 0.10 +
-    progress.assignments * 0.20 +
-    progress.quizzes * 0.30;
+  const weightedScore = hasActivity
+    ? (progress.knowledgeChecks * 0.10 + progress.assignments * 0.20 + progress.quizzes * 0.30)
+    : 0;
+
+  // Real study time calculation based on completed lessons and current steps
+  const totalStepsCompleted = Object.values(progressMap).reduce((acc: number, p: any) => acc + (p.currentStep || 0), 0);
+  const hoursInvested = Math.round((progress.lessonsCompleted * 25 + totalStepsCompleted * 3) / 60);
+
+  // Active modules count
+  const activeModulesCount = Object.values(progress.modules || {}).filter(
+    (m: any) => m.status === 'in-progress' || m.status === 'completed'
+  ).length;
+
+  // Real Day streak
+  const dayStreak = hasActivity ? Math.min(progress.lessonsCompleted, 7) : 0;
+
+  // Determine active or next lesson for the resume card
+  const activeLessonId = Object.keys(progressMap).find(id => progressMap[id]?.status === 'in-progress');
+  const resumeLesson = activeLessonId 
+    ? (LESSONS.find(l => l.id === activeLessonId) || LESSONS[0])
+    : (LESSONS.find(l => progressMap[l.id]?.status !== 'completed') || LESSONS[0]);
+  const resumeStep = activeLessonId ? (progressMap[activeLessonId]?.currentStep || 0) : 0;
+  const resumeStepPct = Math.round(((resumeStep + 1) / 20) * 100);
 
   const SCORE_ROWS = [
-    { label: 'Knowledge Checks', weight: 10, score: progress.knowledgeChecks, color: 'var(--sapphire-500)' },
-    { label: 'Assignments',      weight: 20, score: progress.assignments,     color: 'var(--emerald-500)' },
-    { label: 'Lesson Quizzes',   weight: 30, score: progress.quizzes,        color: 'var(--brass-500)' },
+    { label: 'Knowledge Checks', weight: 10, score: hasActivity ? progress.knowledgeChecks : null, color: 'var(--sapphire-500)' },
+    { label: 'Assignments',      weight: 20, score: hasActivity ? progress.assignments : null,     color: 'var(--emerald-500)' },
+    { label: 'Lesson Quizzes',   weight: 30, score: hasActivity ? progress.quizzes : null,        color: 'var(--brass-500)' },
     { label: 'Module Assessments',weight:30, score: null,                     color: 'var(--amber-500)' },
     { label: 'Capstone Project', weight: 10, score: null,                     color: 'var(--rose-400)' },
   ];
@@ -95,12 +134,12 @@ export default function Dashboard() {
                     Active Learner Session
                   </span>
                 </div>
-                <div className="welcome-banner__name" style={{ textTransform: 'capitalize' }}>{userName}</div>
+                <div className="welcome-banner__name" style={{ textTransform: 'capitalize' }}>{userName || 'Learner'}</div>
                 <p className="welcome-banner__quote">{quote ? `“${quote}”` : ''}</p>
               </div>
               <div className="welcome-banner__streak" aria-label="Study streak">
                 <div className="welcome-banner__streak-num num">
-                  <AnimatedCount target={7} />🔥
+                  <AnimatedCount target={dayStreak} />🔥
                 </div>
                 <div className="welcome-banner__streak-label">Day Streak</div>
               </div>
@@ -114,21 +153,29 @@ export default function Dashboard() {
                   <AnimatedCount target={progress.lessonsCompleted} />
                   <span style={{ fontSize: 'var(--text-xl)', color: 'var(--ink-500)' }}>/{progress.totalLessons}</span>
                 </div>
-                <div className="metric-card__sub">Module 1 in progress</div>
+                <div className="metric-card__sub">
+                  {hasActivity ? `${progress.currentModule} in progress` : 'Module 1 ready to start'}
+                </div>
               </div>
               <div className="metric-card metric-card--brass" role="article">
                 <div className="metric-card__label">Projected Score</div>
                 <div className="metric-card__value num">
                   <AnimatedCount target={Math.round(weightedScore)} suffix="%" />
                 </div>
-                <div className="metric-card__sub">Weighted across completed components</div>
+                <div className="metric-card__sub">
+                  {hasActivity ? 'Weighted across completed components' : 'No components graded yet'}
+                </div>
               </div>
               <div className="metric-card metric-card--emerald" role="article">
                 <div className="metric-card__label">Time Invested</div>
                 <div className="metric-card__value num">
-                  <AnimatedCount target={12} />h
+                  <AnimatedCount target={hoursInvested} />h
                 </div>
-                <div className="metric-card__sub">Across 3 active modules</div>
+                <div className="metric-card__sub">
+                  {hasActivity 
+                    ? `Across ${activeModulesCount || 1} active module${activeModulesCount === 1 ? '' : 's'}`
+                    : 'Start learning to log hours'}
+                </div>
               </div>
               <div className="metric-card metric-card--amber" role="article">
                 <div className="metric-card__label">Credential Status</div>
@@ -136,7 +183,9 @@ export default function Dashboard() {
                   {certification.tier ?? 'No Tier'}
                 </div>
                 <div className="metric-card__sub">
-                  {certification.eligible ? 'Eligible for certification' : `${Math.max(0, 75 - weightedScore).toFixed(0)}% needed for Proficiency`}
+                  {certification.eligible 
+                    ? 'Eligible for certification' 
+                    : (hasActivity ? `${Math.max(0, 75 - weightedScore).toFixed(0)}% needed for Proficiency` : 'Need ≥ 75% score & 15 lessons')}
                 </div>
               </div>
             </div>
@@ -178,7 +227,7 @@ export default function Dashboard() {
                       <div className="num" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--emerald-400)' }}>{progress.lessonsCompleted}</div>
                       <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--ink-500)' }}>Done</div>
                     </div>
-                    <div style={{ width: 1, background: 'var(--ink-800)' }} />
+                    <div style={{ width: 1, background: 'var(--border-subtle)' }} />
                     <div style={{ textAlign: 'center' }}>
                       <div className="num" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--ink-400)' }}>{progress.totalLessons - progress.lessonsCompleted}</div>
                       <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--ink-500)' }}>Remaining</div>
@@ -186,53 +235,56 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Credential Tier Card */}
-                <div className="card card--credential p-5" role="region" aria-label="Credential tier status">
-                  <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 700, color: 'var(--brass-500)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', marginBottom: 'var(--sp-3)' }}>
+                {/* Credential Status Card */}
+                <div className="card p-6">
+                  <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 700, color: 'var(--ink-500)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', marginBottom: 'var(--sp-3)' }}>
                     Credential Tier
                   </div>
-                  <div style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-3)' }}>
-                    {certification.tier ?? 'No Tier Yet'}
+                  <div style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--ink-50)', marginBottom: 'var(--sp-2)' }}>
+                    {certification.tier ? `${certification.tier} Tier` : 'No Tier Yet'}
                   </div>
                   <div style={{ display: 'flex', gap: 'var(--sp-2)', marginBottom: 'var(--sp-4)' }}>
-                    {[75, 85, 93].map((threshold, i) => {
-                      const tierNames = ['Completion', 'Proficiency', 'Distinction'];
-                      const reached = weightedScore >= threshold;
+                    {['Completion', 'Proficiency', 'Distinction'].map((t, i) => {
+                      const tierThresholds = [75, 85, 93];
+                      const reached = hasActivity && weightedScore >= tierThresholds[i] && progress.lessonsCompleted >= 15;
                       return (
-                        <div key={i} style={{
+                        <div key={t} style={{
                           flex: 1, height: 4,
                           borderRadius: 'var(--radius-full)',
-                          background: reached ? (i === 2 ? 'var(--brass-500)' : i === 1 ? 'var(--silver-400)' : 'var(--bronze-500)') : 'var(--ink-800)',
-                        }} title={tierNames[i]} />
+                          background: reached ? (i === 2 ? 'var(--brass-500)' : i === 1 ? 'var(--sapphire-400)' : 'var(--emerald-500)') : 'var(--ink-800)',
+                        }} title={t} />
                       );
                     })}
                   </div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', lineHeight: 'var(--leading-relaxed)' }}>
                     {certification.eligible
                       ? 'You are eligible to claim your credential.'
-                      : `Complete all 44 lessons, module assessments, and capstone to qualify. Need ≥ 75% weighted score.`}
+                      : 'Complete all 44 lessons, module assessments, and capstone to qualify. Need ≥ 75% weighted score.'}
                   </div>
                   <Link href="/certification" className="btn btn--outline btn--sm w-full" style={{ marginTop: 'var(--sp-4)' }}>
                     View Certification →
                   </Link>
                 </div>
 
-                {/* Resume Learning */}
+                {/* Resume Learning Card */}
                 <div className="card card--navy p-5">
                   <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 700, color: 'var(--sapphire-300)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', marginBottom: 'var(--sp-3)' }}>
                     Resume Session
                   </div>
                   <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)', lineHeight: 'var(--leading-snug)', marginBottom: 'var(--sp-1)' }}>
-                    L04 — Emergency Funds &amp; Liquidity Management
+                    L{String(resumeLesson.order).padStart(2, '0')} — {resumeLesson.title}
                   </div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', marginBottom: 'var(--sp-5)' }}>
-                    Step 7 of 20 — Wealth Replacement Ratio Simulation
+                    {activeLessonId ? `Step ${resumeStep + 1} of 20 — In Progress` : 'Step 1 of 20 — Start Here'}
                   </div>
                   <div className="progress-bar progress-bar--thin" style={{ marginBottom: 'var(--sp-4)' }}>
-                    <div className="progress-bar__fill progress-bar__fill--sapphire" style={{ width: '35%' }} />
+                    <div 
+                      className="progress-bar__fill progress-bar__fill--sapphire" 
+                      style={{ width: activeLessonId ? `${resumeStepPct}%` : '0%' }} 
+                    />
                   </div>
-                  <Link href="/lesson-player" className="btn btn--primary btn--wide">
-                    Continue Learning →
+                  <Link href={`/lesson-player/${resumeLesson.order}`} className="btn btn--primary btn--wide">
+                    {activeLessonId ? 'Continue Learning →' : 'Start First Lesson →'}
                   </Link>
                 </div>
               </aside>
@@ -290,7 +342,7 @@ export default function Dashboard() {
                         <td>—</td>
                         <td>
                           <span className="num" style={{ fontSize: 'var(--text-base)', color: weightedScore >= 75 ? 'var(--emerald-400)' : 'var(--brass-400)' }}>
-                            {weightedScore.toFixed(1)}%
+                            {hasActivity ? `${weightedScore.toFixed(1)}%` : '—'}
                           </span>
                         </td>
                         <td>
@@ -323,14 +375,14 @@ export default function Dashboard() {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-5)' }}>
                     {MODULES.map((m, i) => {
-                      const mProg = progress.modules[m.id] || { status: 'not-started', pct: 0 };
+                      const mProg = progress.modules?.[m.id] || { status: 'not-started', pct: 0 };
                       const isLocked = m.prerequisiteModuleIds.length > 0 &&
-                        !m.prerequisiteModuleIds.every(id => progress.modules[id]?.status === 'completed');
+                        !m.prerequisiteModuleIds.every(id => progress.modules?.[id]?.status === 'completed');
                       const color = isLocked ? 'var(--rose-400)' : mProg.status === 'completed' ? 'var(--emerald-500)' : mProg.status === 'in-progress' ? 'var(--amber-500)' : MODULE_COLORS[i];
                       const fillClass = isLocked ? 'progress-bar__fill--rose' : mProg.status === 'completed' ? 'progress-bar__fill--emerald' : mProg.status === 'in-progress' ? 'progress-bar__fill--amber' : 'progress-bar__fill--sapphire';
 
                       return (
-                        <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)', opacity: isLocked ? 0.5 : 1 }} role="row" aria-label={`Module ${m.order}: ${m.title}, ${isLocked ? 'locked' : mProg.pct + '% complete'}`}>
+                        <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)', opacity: isLocked ? 0.5 : 1 }} role="row" aria-label={`Module ${m.order}: ${m.title}, ${isLocked ? 'locked' : (mProg.pct || 0) + '% complete'}`}>
                           <span style={{ fontSize: '1.25rem', width: 28, textAlign: 'center', flexShrink: 0 }} aria-hidden="true">{m.icon}</span>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 'var(--sp-2)' }}>
@@ -338,11 +390,11 @@ export default function Dashboard() {
                                 M{m.order} — {m.title}
                               </span>
                               <span className="num" style={{ fontSize: 'var(--text-xs)', color, flexShrink: 0, marginLeft: 'var(--sp-2)' }}>
-                                {isLocked ? '🔒 Locked' : mProg.pct > 0 ? `${mProg.pct}%` : 'Not started'}
+                                {isLocked ? '🔒 Locked' : (mProg.pct || 0) > 0 ? `${mProg.pct}%` : 'Not started'}
                               </span>
                             </div>
                             <div className="progress-bar">
-                              <div className={`progress-bar__fill ${fillClass}`} style={{ width: isLocked ? '0%' : `${mProg.pct}%` }} />
+                              <div className={`progress-bar__fill ${fillClass}`} style={{ width: isLocked ? '0%' : `${mProg.pct || 0}%` }} />
                             </div>
                           </div>
                         </div>
@@ -356,31 +408,42 @@ export default function Dashboard() {
                   <h2 id="activity-heading" style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: 'var(--ink-100)', marginBottom: 'var(--sp-6)', fontFamily: 'var(--font-sans)' }}>
                     Recent Activity
                   </h2>
-                  <div className="timeline" role="feed" aria-label="Recent learning activity">
-                    <div className="timeline-separator">Today</div>
-                    <div className="timeline-item" role="article">
-                      <div className="timeline-item__icon" aria-hidden="true">📝</div>
-                      <div className="timeline-item__body">
-                        <div className="timeline-item__text">Completed Lesson 3 Quiz — scored <strong style={{ color: 'var(--amber-400)' }} className="num">79%</strong></div>
-                        <div className="timeline-item__meta">Module 1 · Knowledge Check · 2h ago</div>
-                      </div>
+                  {recentActivity && recentActivity.length > 0 ? (
+                    <div className="timeline" role="feed" aria-label="Recent learning activity">
+                      {recentActivity.map((act, idx) => (
+                        <div key={idx} className="timeline-item" role="article">
+                          <div className="timeline-item__icon" aria-hidden="true">
+                            {act.status === 'completed' ? '✅' : '📖'}
+                          </div>
+                          <div className="timeline-item__body">
+                            <div className="timeline-item__text">
+                              {act.status === 'completed' ? (
+                                <>Completed Lesson {act.lessonOrder} — {act.lessonTitle}{act.score !== null ? <> · Scored <strong style={{ color: 'var(--emerald-400)' }} className="num">{act.score}%</strong></> : ''}</>
+                              ) : (
+                                <>Resumed Lesson {act.lessonOrder} — {act.lessonTitle} (Step {act.currentStep + 1} of 20)</>
+                              )}
+                            </div>
+                            <div className="timeline-item__meta">
+                              Module {act.moduleId?.replace('M', '')} · {new Date(act.updatedAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="timeline-separator">2 Days Ago</div>
-                    <div className="timeline-item" role="article">
-                      <div className="timeline-item__icon" aria-hidden="true">📤</div>
-                      <div className="timeline-item__body">
-                        <div className="timeline-item__text">Submitted Assignment 2 — Income, Expenses &amp; Cash Flow Management</div>
-                        <div className="timeline-item__meta">Module 1 · Assignment · Awaiting grade</div>
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: 'var(--sp-8) var(--sp-4)', color: 'var(--ink-400)' }}>
+                      <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-2)' }}>🚀</div>
+                      <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-200)', marginBottom: 'var(--sp-1)' }}>
+                        No Activity Recorded Yet
                       </div>
-                    </div>
-                    <div className="timeline-item" role="article">
-                      <div className="timeline-item__icon" aria-hidden="true">✅</div>
-                      <div className="timeline-item__body">
-                        <div className="timeline-item__text">Completed Lesson 2 — scored <strong style={{ color: 'var(--emerald-400)' }} className="num">92%</strong></div>
-                        <div className="timeline-item__meta">Module 1 · Lesson Quiz</div>
+                      <div style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-400)', maxWidth: '340px', margin: '0 auto var(--sp-4)', lineHeight: 'var(--leading-relaxed)' }}>
+                        Start your first lesson to record quiz scores, track study hours, and begin your study streak.
                       </div>
+                      <Link href="/lessons" className="btn btn--primary btn--xs">
+                        Browse Curriculum →
+                      </Link>
                     </div>
-                  </div>
+                  )}
                 </section>
               </div>
             </div>
