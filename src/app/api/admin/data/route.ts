@@ -223,7 +223,7 @@ export async function GET(request: NextRequest) {
     const aiSettings = db.prepare('SELECT * FROM ai_settings').all();
 
     // 7. Fetch Chatbot 30 Q&As
-    let chatbotQAs = [];
+    let chatbotQAs: any[] = [];
     try {
       chatbotQAs = db.prepare('SELECT * FROM chatbot_qa ORDER BY displayOrder ASC, id ASC').all();
     } catch {
@@ -231,7 +231,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 8. Fetch Contact Enquiries
-    let enquiries = [];
+    let enquiries: any[] = [];
     try {
       enquiries = db.prepare('SELECT * FROM enquiries ORDER BY id DESC LIMIT 100').all();
     } catch {

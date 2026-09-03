@@ -41,7 +41,7 @@ export default function AdminCredentials() {
   const [newQACategory, setNewQACategory] = useState('General');
   
   // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'chatbot_qa' | 'aarkaa' | 'community' | 'entities' | 'logs'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'chatbot_qa' | 'community' | 'entities' | 'logs'>('analytics');
   const [selectedLoginCategory, setSelectedLoginCategory] = useState('b2c');
 
   const [editingUser, setEditingUser] = useState<any>(null);
@@ -652,7 +652,7 @@ export default function AdminCredentials() {
                 </span>
               </div>
               <div style={{ fontSize: '0.7rem', color: '#8898AA' }}>
-                Curriculum Studio · Learner Gradebook · Aarkaa AI RAG Governance · Multi-Tenant Control
+                Curriculum Studio · Learner Gradebook · Multi-Tenant Control
               </div>
             </div>
           </Link>
@@ -673,13 +673,6 @@ export default function AdminCredentials() {
             style={{ fontSize: '0.75rem', color: '#8898AA', textDecoration: 'none', padding: '6px 12px', borderRadius: '0.375rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
           >
             💬 Research Feed ↗
-          </Link>
-          <Link
-            href="/aarkaai"
-            target="_blank"
-            style={{ fontSize: '0.75rem', color: '#CC785C', textDecoration: 'none', padding: '6px 12px', borderRadius: '0.375rem', background: 'rgba(204,120,92,0.1)', border: '1px solid rgba(204,120,92,0.3)', fontWeight: 600 }}
-          >
-            🤖 Aarkaa AI 2.0 ↗
           </Link>
           <button
             onClick={async () => {
@@ -729,7 +722,6 @@ export default function AdminCredentials() {
             { id: 'users', label: '👥 User & Credential Management' },
             { id: 'lessons', label: '🎓 Curriculum & Simulator Studio' },
             { id: 'chatbot_qa', label: `💬 Chatbot Q&A (${chatbotQAs.length || 30} Answers)` },
-            { id: 'aarkaa', label: '🤖 Aarkaa AI Governance & RAG' },
             { id: 'community', label: '🌐 Community Moderation' },
             { id: 'entities', label: '🏢 Enterprise & Packages' },
             { id: 'logs', label: '🔒 Security Audit Log' },
@@ -799,7 +791,7 @@ export default function AdminCredentials() {
                 <div style={{ background: '#070E1A', border: '1px solid rgba(248,113,113,0.3)', borderRadius: '0.75rem', padding: '1rem' }}>
                   <div style={{ fontSize: '0.75rem', color: '#F87171', fontWeight: 700 }}>NEEDS SUPPORT (&lt;50%)</div>
                   <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F1F5F9', marginTop: '0.25rem' }}>{stats.needsSupportCount} <span style={{ fontSize: '0.8rem', color: '#8898AA' }}>students</span></div>
-                  <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginTop: '0.25rem' }}>Recommended for Aarkaa AI tutoring</div>
+                  <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginTop: '0.25rem' }}>Recommended for Faculty tutoring</div>
                 </div>
               </div>
             </div>
@@ -2298,190 +2290,7 @@ export default function AdminCredentials() {
         )}
 
         {/* ═════════════════════════════════════════════════════════════════════ */}
-        {/* ─── TAB 4: AARKAA AI GOVERNANCE & CONTROLLED RAG ─────────────────── */}
-        {/* ═════════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'aarkaa' && (
-          <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-            
-            {/* Controlled Knowledge Documents Manager */}
-            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#CC785C', margin: 0 }}>
-                    🤖 Controlled RAG Knowledge Base ({aiKnowledgeDocs.length} Documents)
-                  </h3>
-                  <p style={{ fontSize: '0.75rem', color: '#8898AA', margin: '0.2rem 0 0' }}>
-                    Institutional financial guidelines and benchmark datasets ingested into Aarkaa AI context.
-                  </p>
-                </div>
-              </div>
-
-              {/* Add / Edit Doc Form */}
-              <div style={{ background: '#070E1A', border: '1px solid rgba(204,120,92,0.3)', borderRadius: '0.75rem', padding: '1rem' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#CC785C', marginBottom: '0.75rem' }}>
-                  {editingDocId ? `Edit Document: ${editingDocId}` : '+ Ingest New Knowledge Document'}
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  <input
-                    type="text"
-                    placeholder="Document title / standard..."
-                    value={newDocTitle}
-                    onChange={e => setNewDocTitle(e.target.value)}
-                    style={{ background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.5rem', color: '#F1F5F9', fontSize: '0.8rem' }}
-                  />
-                  <select
-                    value={newDocCategory}
-                    onChange={e => setNewDocCategory(e.target.value)}
-                    style={{ background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.5rem', color: '#F1F5F9', fontSize: '0.8rem' }}
-                  >
-                    <option value="Valuation Standards">Valuation Standards</option>
-                    <option value="Accounting Rules">Accounting Rules</option>
-                    <option value="Institutional Research">Institutional Research</option>
-                    <option value="Curriculum Policy">Curriculum Policy</option>
-                  </select>
-                </div>
-                <textarea
-                  rows={4}
-                  placeholder="Knowledge text content or financial rule specification..."
-                  value={newDocContent}
-                  onChange={e => setNewDocContent(e.target.value)}
-                  style={{ width: '100%', background: '#0B1528', border: '1px solid #334155', borderRadius: 4, padding: '0.5rem', color: '#F1F5F9', fontSize: '0.8rem', fontFamily: 'monospace', marginBottom: '0.75rem' }}
-                />
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                  {editingDocId && (
-                    <button onClick={() => { setEditingDocId(null); setNewDocTitle(''); setNewDocContent(''); }} style={{ background: 'transparent', border: '1px solid #334155', color: '#8898AA', padding: '4px 10px', borderRadius: 4, fontSize: '0.75rem', cursor: 'pointer' }}>Cancel</button>
-                  )}
-                  <button
-                    onClick={handleSaveAiDoc}
-                    disabled={isPending}
-                    style={{ background: '#CC785C', color: '#FFFFFF', border: 'none', padding: '5px 14px', borderRadius: 4, fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    {editingDocId ? 'Update Document' : 'Save Document to RAG'}
-                  </button>
-                </div>
-              </div>
-
-              {/* Docs Stream */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {aiKnowledgeDocs.map(doc => (
-                  <div key={doc.id} style={{ background: '#070E1A', border: '1px solid #1E293B', borderRadius: '0.5rem', padding: '0.85rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.65rem', background: 'rgba(204,120,92,0.2)', color: '#CC785C', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>
-                          {doc.category}
-                        </span>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F1F5F9' }}>{doc.title}</span>
-                        <span style={{ fontSize: '0.65rem', color: '#64748B' }}>v{doc.version || 1}</span>
-                      </div>
-                      <div style={{ display: 'flex', gap: '0.35rem' }}>
-                        <button
-                          onClick={() => {
-                            setEditingDocId(doc.id);
-                            setNewDocTitle(doc.title);
-                            setNewDocCategory(doc.category);
-                            setNewDocContent(doc.content);
-                          }}
-                          style={{ background: 'rgba(255,255,255,0.05)', color: '#CBD5E1', border: '1px solid #334155', borderRadius: 4, padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => {
-                            startTransition(async () => {
-                              await toggleAiKnowledgeDocAction(sessionToken, doc.id);
-                              fetchDashboardData();
-                            });
-                          }}
-                          style={{ background: doc.isActive ? 'rgba(52,211,153,0.15)' : 'rgba(248,113,113,0.15)', color: doc.isActive ? '#34D399' : '#F87171', border: 'none', borderRadius: 4, padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer', fontWeight: 700 }}
-                        >
-                          {doc.isActive ? 'Active' : 'Disabled'}
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (confirm('Delete this knowledge document?')) {
-                              startTransition(async () => {
-                                await deleteAiKnowledgeDocAction(sessionToken, doc.id);
-                                fetchDashboardData();
-                              });
-                            }
-                          }}
-                          style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: 'none', borderRadius: 4, padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                    <p style={{ fontSize: '0.75rem', color: '#94A3B8', margin: '0.5rem 0 0', lineHeight: 1.4 }}>
-                      {doc.content}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* AI Settings & Testing Playground */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              
-              {/* System Prompt Presets */}
-              <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.25rem' }}>
-                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '0.75rem' }}>
-                  System Prompt Behavior
-                </h3>
-                <select
-                  value={selectedPromptMode}
-                  onChange={e => {
-                    const val = e.target.value;
-                    setSelectedPromptMode(val);
-                    startTransition(async () => {
-                      await updateAiSettingAction(sessionToken, 'system_prompt_mode', val);
-                      fetchDashboardData();
-                    });
-                  }}
-                  style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: 4, padding: '0.6rem', color: '#F1F5F9', fontSize: '0.8rem', marginBottom: '0.75rem' }}
-                >
-                  <option value="institutional">Institutional Financial Analyst (Default)</option>
-                  <option value="academic">Academic Professor / Theory Tutor</option>
-                  <option value="socratic">Socratic Mentor (Guide with Questions)</option>
-                  <option value="capstone_coach">Capstone Valuation Reviewer</option>
-                </select>
-                <p style={{ fontSize: '0.7rem', color: '#8898AA', margin: 0 }}>
-                  Controls the foundational persona and tone across the student assistant and Aarkaa AI studio.
-                </p>
-              </div>
-
-              {/* Testing Playground */}
-              <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.25rem' }}>
-                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '0.75rem' }}>
-                  🧪 RAG Query Simulation Test
-                </h3>
-                <textarea
-                  rows={3}
-                  value={aiTestPrompt}
-                  onChange={e => setAiTestPrompt(e.target.value)}
-                  style={{ width: '100%', background: '#070E1A', border: '1px solid #1E293B', borderRadius: 4, padding: '0.5rem', color: '#F1F5F9', fontSize: '0.78rem', marginBottom: '0.5rem' }}
-                />
-                <button
-                  onClick={handleTestAi}
-                  disabled={isAiTesting}
-                  style={{ width: '100%', background: '#CC785C', color: '#FFFFFF', border: 'none', borderRadius: 4, padding: '6px', fontSize: '0.8rem', fontWeight: 700, cursor: isAiTesting ? 'not-allowed' : 'pointer' }}
-                >
-                  {isAiTesting ? 'Querying Aarkaa...' : 'Run Query with Ingested Docs'}
-                </button>
-
-                {aiTestResponse && (
-                  <div style={{ marginTop: '0.75rem', background: '#070E1A', border: '1px solid #1E293B', borderRadius: 4, padding: '0.75rem', fontSize: '0.75rem', color: '#CBD5E1', maxHeight: 200, overflowY: 'auto' }}>
-                    <div style={{ fontSize: '0.65rem', color: '#CC785C', fontWeight: 700, marginBottom: '0.25rem' }}>AARKAA AI TEST OUTPUT:</div>
-                    {aiTestResponse}
-                  </div>
-                )}
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* ═════════════════════════════════════════════════════════════════════ */}
-        {/* ─── TAB 5: COMMUNITY MODERATION ───────────────────────────────────── */}
+        {/* ─── TAB: COMMUNITY MODERATION ──────────────────────────────────────── */}
         {/* ═════════════════════════════════════════════════════════════════════ */}
         {activeTab === 'community' && (
           <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>

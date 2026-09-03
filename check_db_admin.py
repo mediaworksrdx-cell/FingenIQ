@@ -26,8 +26,8 @@ print("Admin password hash and status confirmed!")
 with open("temp_check_db.py", "w") as f:
     f.write(script_remote)
 
-subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-i", r"C:\Users\daarv\.ssh\id_ed25519", "temp_check_db.py", "sathishbadri2015@136.85.114.150:/home/sathishbadri2015/temp_check_db.py"], check=True)
-subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", "-i", r"C:\Users\daarv\.ssh\id_ed25519", "sathishbadri2015@136.85.114.150", "python3 /home/sathishbadri2015/temp_check_db.py; rm -f /home/sathishbadri2015/temp_check_db.py"], check=True)
+subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-i", r"C:\Users\daarv\.ssh\id_ed25519", "temp_check_db.py", "sathishbadri2015@35.225.45.190:/home/sathishbadri2015/temp_check_db.py"], check=True)
+subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", "-i", r"C:\Users\daarv\.ssh\id_ed25519", "sathishbadri2015@35.225.45.190", "python3 /home/sathishbadri2015/temp_check_db.py; rm -f /home/sathishbadri2015/temp_check_db.py"], check=True)
 
 if os.path.exists("temp_check_db.py"):
     os.remove("temp_check_db.py")

@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
         'www.aarka-ai.com',
         'synthetixanalytics.com',
         'www.synthetixanalytics.com',
-        '136.85.114.150',
+        '35.225.45.190',
         'localhost:3001',
         'localhost:3000',
       ],

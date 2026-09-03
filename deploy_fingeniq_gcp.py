@@ -4,7 +4,7 @@ import tarfile
 import subprocess
 import time
 
-REMOTE_IP = "136.85.114.150"
+REMOTE_IP = "35.225.45.190"
 REMOTE_USER = "sathishbadri2015"
 REMOTE_HOST = f"{REMOTE_USER}@{REMOTE_IP}"
 SSH_KEY = r"C:\Users\daarv\.ssh\id_ed25519"
@@ -103,7 +103,7 @@ def deploy_remote():
 
 def main():
     print("=" * 60)
-    print("Deploying FinGenIQ to GCP Compute Engine (136.85.114.150:3001)")
+    print("Deploying FinGenIQ to GCP Compute Engine (35.225.45.190:3001)")
     print("=" * 60)
     if package_fingeniq():
         deploy_remote()
