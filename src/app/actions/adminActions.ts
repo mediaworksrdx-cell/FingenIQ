@@ -8,11 +8,18 @@ import { sendActivationEmail } from '@/lib/email';
 import { getAppBaseUrl } from '@/lib/config';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
+import { cookies } from 'next/headers';
 
 // Verify current session matches admin, employee, or teacher role
-async function checkAdminAuth(adminSessionToken: string | undefined): Promise<any> {
-  if (!adminSessionToken) throw new Error('Unauthenticated admin request');
-  const session = db.prepare('SELECT userId FROM sessions WHERE id = ?').get(adminSessionToken) as any;
+async function checkAdminAuth(adminSessionToken?: string | undefined): Promise<any> {
+  // Read httpOnly cookie server-side (client can't access httpOnly cookies via document.cookie)
+  let token = adminSessionToken;
+  if (!token) {
+    const cookieStore = await cookies();
+    token = cookieStore.get('session_token')?.value;
+  }
+  if (!token) throw new Error('Unauthenticated admin request');
+  const session = db.prepare('SELECT userId FROM sessions WHERE id = ?').get(token) as any;
   if (!session) throw new Error('Invalid session');
   const user = db.prepare('SELECT role FROM users WHERE id = ?').get(session.userId) as any;
   if (!user || (user.role !== 'admin' && user.role !== 'employee' && user.role !== 'teacher')) throw new Error('Unauthorized role');
