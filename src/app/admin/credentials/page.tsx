@@ -41,7 +41,7 @@ export default function AdminCredentials() {
   const [newQACategory, setNewQACategory] = useState('General');
   
   // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'chatbot_qa' | 'community' | 'entities' | 'logs'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'chatbot_qa' | 'community' | 'entities'>('analytics');
   const [selectedLoginCategory, setSelectedLoginCategory] = useState('b2c');
 
   const [editingUser, setEditingUser] = useState<any>(null);
@@ -867,7 +867,6 @@ export default function AdminCredentials() {
             { id: 'chatbot_qa', label: `💬 Chatbot Q&A (${chatbotQAs.length || 30} Answers)` },
             { id: 'community', label: '🌐 Community Moderation' },
             { id: 'entities', label: '🏢 Enterprise & Packages' },
-            { id: 'logs', label: '🔒 Security Audit Log' },
           ].map(tab => (
             <button
               key={tab.id}
@@ -2863,44 +2862,7 @@ export default function AdminCredentials() {
           </div>
         )}
 
-        {/* ═════════════════════════════════════════════════════════════════════ */}
-        {/* ─── TAB 7: SECURITY & AUDIT TRAILS ────────────────────────────────── */}
-        {/* ═════════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'logs' && (
-          <div style={{ marginTop: '1.5rem' }}>
-            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', overflow: 'hidden' }}>
-              <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: '0.9rem', fontWeight: 700, color: '#F1F5F9' }}>
-                Immutable Security Audit Log Stream ({auditLogs.length} Events)
-              </div>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.75rem' }}>
-                  <thead>
-                    <tr style={{ background: '#070E1A', color: '#8898AA' }}>
-                      <th style={{ padding: '0.6rem 1rem' }}>Timestamp</th>
-                      <th style={{ padding: '0.6rem 1rem' }}>Event Action</th>
-                      <th style={{ padding: '0.6rem 1rem' }}>Actor</th>
-                      <th style={{ padding: '0.6rem 1rem' }}>Target ID</th>
-                      <th style={{ padding: '0.6rem 1rem' }}>Diff Metadata</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {auditLogs.map(log => (
-                      <tr key={log.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                        <td style={{ padding: '0.6rem 1rem', color: '#8898AA' }}>{new Date(log.timestamp).toLocaleString()}</td>
-                        <td style={{ padding: '0.6rem 1rem', fontWeight: 600, color: '#CEAE56' }}>{log.action}</td>
-                        <td style={{ padding: '0.6rem 1rem', color: '#CBD5E1' }}>{log.adminId}</td>
-                        <td style={{ padding: '0.6rem 1rem', color: '#8898AA' }}>{log.targetUserId || log.targetEntityId || '—'}</td>
-                        <td style={{ padding: '0.6rem 1rem', color: '#94A3B8', fontFamily: 'monospace', fontSize: '0.7rem' }}>
-                          {log.metadata ? (typeof log.metadata === 'string' ? log.metadata : JSON.stringify(log.metadata)) : '—'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* End of tabs */}
 
       </div>
       {/* ─── MODALS ────────────────────────────────────────── */}
