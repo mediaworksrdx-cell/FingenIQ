@@ -120,7 +120,15 @@ export default function PlatformNav() {
   };
 
   const displayName = sessionUser?.name || USER_STATE.name;
-  const displayRole = sessionUser?.role === 'admin' ? 'Administrator' : 'Learner';
+  const displayRole = sessionUser?.role === 'admin' 
+    ? 'Administrator' 
+    : sessionUser?.role === 'teacher'
+    ? 'Academic Faculty'
+    : sessionUser?.role === 'employee'
+    ? 'FinGenIQ Staff'
+    : sessionUser?.role === 'employer'
+    ? 'Corporate Partner'
+    : 'Learner';
   const displayInitials = displayName && displayName !== 'User'
     ? displayName.trim().split(/\s+/).map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
     : (sessionUser?.email ? sessionUser.email[0].toUpperCase() : initials);
