@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
   <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
@@ -53,7 +54,7 @@
       Building Lifelong Financial Independence &amp; Legacy
     </text>
     <text x="0" y="38" font-family="system-ui, sans-serif" font-size="20" font-weight="700" fill="#818CF8">
-      🤖 AI Reasoning & Valuation Modeling
+      🤖 AI Reasoning &amp; Valuation Modeling
     </text>
     <line x1="0" y1="58" x2="300" y2="58" stroke="#818CF8" stroke-width="2.5" opacity="0.8"/>
   </g>
