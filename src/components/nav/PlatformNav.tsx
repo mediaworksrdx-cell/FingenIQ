@@ -113,6 +113,9 @@ export default function PlatformNav() {
 
   const displayName = sessionUser?.name || USER_STATE.name;
   const displayRole = sessionUser?.role === 'admin' ? 'Administrator' : 'Learner';
+  const displayInitials = displayName && displayName !== 'User'
+    ? displayName.trim().split(/\s+/).map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
+    : (sessionUser?.email ? sessionUser.email[0].toUpperCase() : initials);
 
   return (
     <>
@@ -187,7 +190,7 @@ export default function PlatformNav() {
                 className={`nav__avatar${hasTier ? ' nav__tier-ring' : ''}`}
                 title={displayName}
               >
-                {initials}
+                {displayInitials}
               </div>
             </button>
 
@@ -358,7 +361,7 @@ export default function PlatformNav() {
 
         <div style={{ marginTop: 'auto', paddingTop: 'var(--sp-6)', borderTop: 'var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', padding: 'var(--sp-2)' }}>
-            <div className="nav__avatar" style={{ width: 36, height: 36, fontSize: 'var(--text-xs)' }}>{initials}</div>
+            <div className="nav__avatar" style={{ width: 36, height: 36, fontSize: 'var(--text-xs)' }}>{displayInitials}</div>
             <div>
               <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--ink-100)' }}>{displayName}</div>
               <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--ink-500)' }}>{PROGRESS_PCT}% complete</div>
