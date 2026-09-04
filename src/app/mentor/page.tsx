@@ -7,8 +7,9 @@ import Footer from '@/components/layout/Footer';
 interface MentorProfile {
   name: string;
   designation: string;
-  qualification: string;
+  qualification?: string;
   experience: string;
+  experienceIcon?: string;
   focusAreas: string[];
   bio: string;
   initials: string;
@@ -17,34 +18,57 @@ interface MentorProfile {
 
 const FEATURED_MENTORS: MentorProfile[] = [
   {
-    name: 'Vikramaditya Sengupta, CFA',
-    designation: 'Managing Director & Senior Portfolio Strategist',
-    qualification: 'CFA Charterholder · MBA in Finance (IIM Ahmedabad)',
-    experience: '18+ Years in Quantitative Asset Management & Fixed Income',
-    focusAreas: ['Portfolio Construction', 'Macro Economics', 'Risk Arbitrage', 'Asset Allocation'],
-    bio: 'Former Head of Fixed Income Strategy at top global investment banks, advising institutional pension funds and sovereign wealth allocations across global markets.',
-    initials: 'VS',
+    name: 'Dr. Vaishali Rupam',
+    designation: 'Independent Director | Synthetix Analytix',
+    qualification: 'MSc · B.Ed · MPhil · MBA · PhD',
+    experienceIcon: '⏱️',
+    experience: '30+ Years in Academic Leadership, FinTech & Financial Education',
+    focusAreas: ['AI & FinTech', 'Financial Education', 'Market Accessibility', 'Investor Empowerment'],
+    bio: 'Academic leader with extensive experience across India and the UAE, focused on AI-driven financial innovation and investor empowerment.',
+    initials: 'VR',
     avatarGradient: 'linear-gradient(135deg, #15803D 0%, #166534 100%)',
   },
   {
-    name: 'Dr. Ananya Roy, Ph.D.',
-    designation: 'Chief Valuation Officer & Financial Economist',
-    qualification: 'Ph.D. in Financial Economics (London School of Economics) · MS Computational Finance',
-    experience: '14+ Years in Equity Research, M&A Deal Structuring & Corporate Valuation',
-    focusAreas: ['DCF Valuation', 'LBO Architecture', 'Corporate Restructuring', 'Private Equity'],
-    bio: 'Author of institutional valuation frameworks, specialized in high-growth tech capital restructuring, private equity deal due diligence, and cross-border M&A modeling.',
-    initials: 'AR',
+    name: 'Shivaram Y.S',
+    designation: 'Commercial Strategy | Project Controls | Contractual Claims',
+    experienceIcon: '🏆',
+    experience: '30+ Years Global Leadership in EPC & Infrastructure',
+    focusAreas: ['Commercial Strategy', 'Project Controls', 'Contractual Claims', 'Predictive Analytics'],
+    bio: 'A senior industry leader with experience across major organizations including Bechtel, SABIC, McDermott, Petrofac, and Eversendai, specializing in commercial strategy, project controls, risk mitigation, and profitable project outcomes.',
+    initials: 'SY',
     avatarGradient: 'linear-gradient(135deg, #B45309 0%, #78350F 100%)',
   },
   {
-    name: 'Rajesh K. Nambiar, CA',
-    designation: 'Chartered Accountant & Senior Treasury Advisor',
-    qualification: 'Chartered Accountant (ICAI) · NISM Series VIII Derivatives Specialist',
-    experience: '16+ Years in Derivatives Trading, Currency Hedging & Treasury Management',
-    focusAreas: ['Options Volatility Modeling', 'Algorithmic Hedging', 'FX Risk', 'Corporate Treasury'],
-    bio: 'Advises Fortune 500 treasuries on cross-border currency exposure, interest rate swaps, and institutional derivative risk mitigation strategies.',
-    initials: 'RN',
+    name: 'Rupam Shyamrao',
+    designation: 'Director – Operations | Synthetix Analytix',
+    qualification: 'BE (Production) · MBA',
+    experienceIcon: '⏱️',
+    experience: '35+ Years Senior Leadership | 30+ Years Market Experience',
+    focusAreas: ['Operations', 'Market Strategy', 'AI Innovation', 'Financial Education'],
+    bio: 'Experienced leader in major infrastructure and energy operations, combining operational excellence with deep Indian and U.S. equity market expertise.',
+    initials: 'RS',
     avatarGradient: 'linear-gradient(135deg, #1D4ED8 0%, #1E3A8A 100%)',
+  },
+  {
+    name: 'Biswajeet Behura',
+    designation: 'Managing Director | Meta Wealth Capital',
+    experienceIcon: '🏆',
+    experience: 'Nearly 20 Years in Financial Services & Education',
+    focusAreas: ['Strategic Advisory', 'Financial Education', 'Market Insights', 'Professional Mentorship'],
+    bio: 'A seasoned finance professional and strategic mentor guiding FinGeniQ’s initiatives, transforming complex market dynamics into accessible, high-impact learning frameworks for aspiring finance professionals.',
+    initials: 'BB',
+    avatarGradient: 'linear-gradient(135deg, #0F766E 0%, #115E59 100%)',
+  },
+  {
+    name: 'Rutvik Rupam',
+    designation: 'Promoter | Synthetix Analytix',
+    qualification: 'BE (Mechanical) · MS ISCM, Germany · FinTech Diploma, NUS',
+    experienceIcon: '⏱️',
+    experience: 'Global Operations, Data Strategy & Financial Technology',
+    focusAreas: ['AI & FinTech', 'Data Strategy', 'Global Operations', 'Market Intelligence'],
+    bio: 'Combines engineering, global operations, and AI-driven analytics to develop intelligent financial solutions for modern investors.',
+    initials: 'RR',
+    avatarGradient: 'linear-gradient(135deg, #4338CA 0%, #312E81 100%)',
   },
 ];
 
@@ -66,34 +90,82 @@ export default function MentorPage() {
   });
 
   const [toast, setToast] = useState<{ title: string; desc: string } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setToast({
-      title: 'Application Submitted 🤝',
-      desc: `Thank you, ${formData.name}. We will review your application and get back to you within 3-5 business days.`,
-    });
-    setFormData({
-      name: '',
-      qualification: '',
-      experience: '',
-      interestToWork: '',
-      phone: '',
-      email: '',
-      whatsapp: '',
-      linkedin: '',
-      interestedIn: '',
-      companyName: '',
-      address: '',
-      areaOfBusiness: '',
-      website: '',
-    });
-    setTimeout(() => setToast(null), 5000);
+    setIsSubmitting(true);
+    try {
+      const details = [
+        `Qualification & Certifications: ${formData.qualification}`,
+        `Experience & Role: ${formData.experience}`,
+        `Engagement Model: ${formData.interestToWork}`,
+        `Phone: ${formData.phone}`,
+        `Email: ${formData.email}`,
+        formData.whatsapp ? `WhatsApp: ${formData.whatsapp}` : '',
+        formData.linkedin ? `LinkedIn: ${formData.linkedin}` : '',
+        `Primary Area of Interest: ${formData.interestedIn}`,
+        formData.companyName ? `Company / Institution: ${formData.companyName}` : '',
+        formData.address ? `Corporate Address: ${formData.address}` : '',
+        formData.areaOfBusiness ? `Sector / Business: ${formData.areaOfBusiness}` : '',
+        formData.website ? `Website: ${formData.website}` : '',
+      ].filter(Boolean).join('\n\n');
+
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          category: 'Faculty & Mentorship',
+          inquiryType: formData.interestedIn || 'Faculty / Mentor Application',
+          subject: `Faculty & Mentor Application: ${formData.name}`,
+          message: details,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setToast({
+          title: 'Application Submitted 🤝',
+          desc: `Thank you, ${formData.name}. Your application has been routed to our faculty desk (shivaram@vivinfacilitators.com). We will review and contact you shortly.`,
+        });
+        setFormData({
+          name: '',
+          qualification: '',
+          experience: '',
+          interestToWork: '',
+          phone: '',
+          email: '',
+          whatsapp: '',
+          linkedin: '',
+          interestedIn: '',
+          companyName: '',
+          address: '',
+          areaOfBusiness: '',
+          website: '',
+        });
+      } else {
+        setToast({
+          title: 'Submission Issue ⚠️',
+          desc: data.error || 'Failed to submit application. Please try again.',
+        });
+      }
+    } catch {
+      setToast({
+        title: 'Submission Error ❌',
+        desc: 'Network error. Please check your connection and try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setToast(null), 6000);
+    }
   };
 
   return (
@@ -180,27 +252,29 @@ export default function MentorPage() {
                     </div>
 
                     {/* Academic & Professional Qualification Box */}
-                    <div
-                      style={{
-                        background: '#FAF8F5',
-                        border: '1px solid rgba(0, 0, 0, 0.06)',
-                        borderLeft: '3px solid #15803D',
-                        borderRadius: '0.5rem',
-                        padding: '0.75rem 1rem',
-                        marginBottom: '1rem',
-                      }}
-                    >
-                      <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
-                        🎓 Qualification &amp; Accreditations
+                    {m.qualification && (
+                      <div
+                        style={{
+                          background: '#FAF8F5',
+                          border: '1px solid rgba(0, 0, 0, 0.06)',
+                          borderLeft: '3px solid #15803D',
+                          borderRadius: '0.5rem',
+                          padding: '0.75rem 1rem',
+                          marginBottom: '1rem',
+                        }}
+                      >
+                        <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
+                          🎓 Qualification &amp; Accreditations
+                        </div>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0F172A', lineHeight: 1.4 }}>
+                          {m.qualification}
+                        </div>
                       </div>
-                      <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0F172A', lineHeight: 1.4 }}>
-                        {m.qualification}
-                      </div>
-                    </div>
+                    )}
 
                     {/* Experience Banner */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', fontSize: '0.8rem', color: '#475569' }}>
-                      <span style={{ fontSize: '0.9rem' }}>⏱️</span>
+                      <span style={{ fontSize: '0.9rem' }}>{m.experienceIcon || '⏱️'}</span>
                       <strong style={{ color: '#0F172A' }}>{m.experience}</strong>
                     </div>
 
@@ -515,8 +589,13 @@ export default function MentorPage() {
                       )}
 
                       <div className="pt-4">
-                        <button type="submit" className="btn btn--brass w-full justify-center" style={{ padding: '0.85rem 1.5rem', fontSize: '0.95rem' }}>
-                          Submit Faculty &amp; Mentor Application →
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="btn btn--brass w-full justify-center"
+                          style={{ padding: '0.85rem 1.5rem', fontSize: '0.95rem', opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                        >
+                          {isSubmitting ? 'Submitting Application...' : 'Submit Faculty & Mentor Application →'}
                         </button>
                       </div>
 
