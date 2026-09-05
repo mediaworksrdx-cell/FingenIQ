@@ -13,7 +13,7 @@ print('[1/4] Archiving FinGenIQ clean source files...')
 
 def exclude_filter(tarinfo):
     name = tarinfo.name
-    for exc in ['node_modules', '.next', '.git', '__pycache__']:
+    for exc in ['node_modules', '.next', '.git', '__pycache__', 'db.sqlite', 'fingeniq.db']:
         if f'/{exc}/' in name or name.endswith(f'/{exc}') or name.startswith(f'{exc}/') or name == exc:
             return None
     return tarinfo
@@ -32,6 +32,7 @@ build_script = (
     "cd /home/mediaworksr/fingeniq\n"
     ". /home/mediaworksr/.nvm/nvm.sh\n"
     "npm run build\n"
+    "cp -f .next/standalone/server.js ./server.js 2>/dev/null || true\n"
     "cd /home/mediaworksr/fingeniq/node_modules\n"
     "ln -sf better-sqlite3 better-sqlite3-90e2652d1716b047 2>/dev/null || true\n"
     "for h in $(grep -roh 'better-sqlite3-[a-f0-9]*' ../.next/ 2>/dev/null | sort -u); do\n"
