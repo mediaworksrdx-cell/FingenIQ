@@ -181,6 +181,7 @@ h5 { font-size: var(--text-xl); }
 h6 { font-size: var(--text-lg); }
 
 p { color: #334155; line-height: var(--leading-relaxed); max-width: 72ch; }
+.dark p, [data-theme="dark"] p, .fingen-chat-window p { color: #F8FAFC !important; }
 p + p { margin-top: var(--sp-4); }
 strong { font-weight: 700; color: #0F172A; }
 code {

@@ -171,7 +171,7 @@ export default function GlobalChatBubble() {
   const renderFormattedText = (content: string) => {
     const lines = content.split('\n');
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.825rem', lineHeight: '1.55' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.825rem', lineHeight: '1.55', color: '#F8FAFC' }}>
         {lines.map((line, idx) => {
           if (!line.trim()) return <div key={idx} style={{ height: '0.2rem' }} />;
 
@@ -184,21 +184,23 @@ export default function GlobalChatBubble() {
                   {part}
                 </strong>
               ) : (
-                part
+                <span key={i} style={{ color: '#F8FAFC' }}>
+                  {part}
+                </span>
               )
             );
           }
 
           if (line.startsWith('• ') || line.startsWith('* ')) {
             return (
-              <div key={idx} style={{ display: 'flex', gap: '0.4rem', paddingLeft: '0.25rem' }}>
-                <span style={{ color: '#F59E0B' }}>•</span>
-                <span>{typeof formatted === 'string' ? line.substring(2) : formatted}</span>
+              <div key={idx} style={{ display: 'flex', gap: '0.4rem', paddingLeft: '0.25rem', color: '#F8FAFC' }}>
+                <span style={{ color: '#F59E0B', fontWeight: 700 }}>•</span>
+                <span style={{ color: '#F8FAFC' }}>{typeof formatted === 'string' ? line.substring(2) : formatted}</span>
               </div>
             );
           }
 
-          return <p key={idx} style={{ margin: 0 }}>{formatted}</p>;
+          return <p key={idx} style={{ margin: 0, color: '#F8FAFC' }}>{formatted}</p>;
         })}
       </div>
     );
@@ -238,6 +240,7 @@ export default function GlobalChatBubble() {
         <div
           role="dialog"
           aria-label="FinGenIQ Assistant"
+          className="fingen-chat-window"
           style={{
             position: 'fixed',
             bottom: 88,
@@ -257,6 +260,18 @@ export default function GlobalChatBubble() {
             fontFamily: 'system-ui, -apple-system, sans-serif',
           }}
         >
+          <style>{`
+            .fingen-chat-window p {
+              color: #F8FAFC !important;
+            }
+            .fingen-chat-window .user-msg p {
+              color: #FFFFFF !important;
+            }
+            .fingen-chat-window input::placeholder {
+              color: #94A3B8 !important;
+              opacity: 1 !important;
+            }
+          `}</style>
           {/* Header */}
           <div
             style={{
@@ -327,6 +342,7 @@ export default function GlobalChatBubble() {
                 }}
               >
                 <div
+                  className={msg.sender === 'user' ? 'user-msg' : 'assistant-msg'}
                   style={{
                     maxWidth: '88%',
                     padding: '0.65rem 0.9rem',
@@ -336,18 +352,18 @@ export default function GlobalChatBubble() {
                     background: msg.sender === 'user'
                       ? '#16A34A'
                       : '#1E293B',
-                    color: msg.sender === 'user' ? '#FFFFFF' : '#F1F5F9',
+                    color: msg.sender === 'user' ? '#FFFFFF' : '#F8FAFC',
                     border: msg.sender === 'user' ? 'none' : '1px solid rgba(255,255,255,0.06)',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
                   }}
                 >
                   {msg.sender === 'user' ? (
-                    <p style={{ margin: 0, fontSize: '0.825rem', fontWeight: 500 }}>{msg.text}</p>
+                    <p style={{ margin: 0, fontSize: '0.825rem', fontWeight: 500, color: '#FFFFFF' }}>{msg.text}</p>
                   ) : (
                     renderFormattedText(msg.text)
                   )}
                 </div>
-                <span style={{ fontSize: '0.625rem', color: '#64748B', marginTop: '2px', padding: '0 4px' }}>
+                <span style={{ fontSize: '0.625rem', color: '#94A3B8', marginTop: '2px', padding: '0 4px' }}>
                   {msg.timestamp}
                 </span>
               </div>
