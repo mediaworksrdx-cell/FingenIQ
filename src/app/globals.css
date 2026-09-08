@@ -1722,7 +1722,7 @@ code {
 }
 .footer__inner {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr;
   gap: var(--sp-14);
   margin-bottom: var(--sp-14);
 }

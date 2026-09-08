@@ -66,22 +66,10 @@ export default function Footer() {
               <Link href="/contact" className="footer__link">Contact Us</Link>
             </div>
           </div>
-
-          {/* Legal Column */}
-          <div>
-            <h3 className="footer__col-title">Legal</h3>
-            <div className="footer__links">
-              <Link href="#" className="footer__link">Terms of Service</Link>
-              <Link href="#" className="footer__link">Privacy Policy</Link>
-              <Link href="#" className="footer__link">Cookie Policy</Link>
-              <Link href="/certification-roadmap" className="footer__link">Regulatory Disclaimer</Link>
-            </div>
-          </div>
         </div>
 
         <div className="footer__bottom">
           <span>© 2026 FingenIQ. All rights reserved. Educational use only.</span>
-          <span style={{ color: 'var(--ink-700)' }}>Designed for modern professional standards in financial education.</span>
         </div>
       </div>
     </footer>
