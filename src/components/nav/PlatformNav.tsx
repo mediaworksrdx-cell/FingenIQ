@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: '/lessons',            label: 'Lessons',      icon: '◉' },
   { href: '/assessments',        label: 'Assessments',  icon: '✎', dot: true },
   { href: '/capstone',           label: 'Capstone',     icon: '◐' },
+  { href: '/marketplace',        label: 'Marketplace',  icon: '⬢' },
   { href: '/certification',      label: 'Certification',icon: '⬡' },
 ];
 

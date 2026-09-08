@@ -254,6 +254,17 @@ export async function GET(request: NextRequest) {
       console.error('Error fetching academic governance data:', govErr);
     }
 
+    // 10. Fetch Marketplace Jobs
+    let marketplaceJobs: any[] = [];
+    try {
+      marketplaceJobs = (db.prepare('SELECT * FROM marketplace_jobs ORDER BY createdAt DESC').all() as any[]).map((j: any) => ({
+        ...j,
+        skills: typeof j.skills === 'string' ? JSON.parse(j.skills || '[]') : j.skills
+      }));
+    } catch (mErr) {
+      console.error('Error fetching marketplace jobs:', mErr);
+    }
+
     return NextResponse.json({
       success: true,
       total: filteredTotal,
@@ -291,6 +302,7 @@ export async function GET(request: NextRequest) {
       capstoneTracks,
       certificationSettings,
       professionalTracks,
+      marketplaceJobs,
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

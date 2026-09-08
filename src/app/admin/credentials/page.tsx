@@ -13,7 +13,8 @@ import {
   createNewLessonAction, deleteLessonAction,
   saveAssessmentQuestionAction, deleteAssessmentQuestionAction, saveAssessmentSettingsAction,
   saveCapstoneTrackAction, deleteCapstoneTrackAction,
-  saveCertificationSettingsAction, saveProfessionalTrackAction, deleteProfessionalTrackAction
+  saveCertificationSettingsAction, saveProfessionalTrackAction, deleteProfessionalTrackAction,
+  saveMarketplaceJobAction, deleteMarketplaceJobAction, toggleMarketplaceJobStatusAction
 } from '@/app/actions/adminActions';
 import { logoutAction } from '@/app/actions/authActions';
 import { LESSONS, MODULES, LESSON_STEPS } from '@/lib/data';
@@ -73,8 +74,29 @@ export default function AdminCredentials() {
   const [newCapstonePass, setNewCapstonePass] = useState(70);
   
   // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'governance' | 'chatbot_qa' | 'community' | 'entities'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'lessons' | 'governance' | 'marketplace' | 'chatbot_qa' | 'community' | 'entities'>('analytics');
   const [selectedLoginCategory, setSelectedLoginCategory] = useState('b2c');
+
+  // Marketplace State
+  const [marketplaceJobs, setMarketplaceJobs] = useState<any[]>([]);
+  const [marketplaceSearch, setMarketplaceSearch] = useState('');
+  const [marketplaceTierFilter, setMarketplaceTierFilter] = useState('all');
+  const [marketplaceStatusFilter, setMarketplaceStatusFilter] = useState('all');
+  const [showAddJobModal, setShowAddJobModal] = useState(false);
+  const [editingJob, setEditingJob] = useState<any>(null);
+  const [newJobData, setNewJobData] = useState({
+    id: '',
+    title: '',
+    company: '',
+    location: '',
+    type: 'Full-time',
+    requiredTier: 'Proficiency',
+    requiredTrack: '',
+    salary: '',
+    description: '',
+    skills: '',
+  });
+  const [jobSaveStatus, setJobSaveStatus] = useState<string | null>(null);
 
   const [editingUser, setEditingUser] = useState<any>(null);
   const [deletingUser, setDeletingUser] = useState<any>(null);
@@ -422,6 +444,7 @@ export default function AdminCredentials() {
           setCapstoneTracks(data.capstoneTracks || []);
           if (data.certificationSettings) setCertificationSettings(data.certificationSettings);
           setProfessionalTracks(data.professionalTracks || []);
+          setMarketplaceJobs(data.marketplaceJobs || []);
 
           const modeSetting = (data.aiSettings || []).find((s: any) => s.settingKey === 'system_prompt_mode');
           if (modeSetting) setSelectedPromptMode(modeSetting.settingValue);
@@ -907,6 +930,7 @@ export default function AdminCredentials() {
             { id: 'users', label: '👥 User & Credential Management' },
             { id: 'lessons', label: '🎓 Curriculum & Simulator Studio' },
             { id: 'governance', label: '🏛️ Academic Governance' },
+            { id: 'marketplace', label: `💼 Marketplace (${marketplaceJobs.length})` },
             { id: 'chatbot_qa', label: `💬 Chatbot Q&A (${chatbotQAs.length || 30} Answers)` },
             { id: 'community', label: '🌐 Community Moderation' },
             { id: 'entities', label: '🏢 Enterprise & Packages' },
@@ -3022,6 +3046,475 @@ export default function AdminCredentials() {
                       );
                     })}
                   </div>
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* ─── TAB: MARKETPLACE & CAREER POSTINGS ───────────────────────────── */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'marketplace' && (
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            
+            {/* Top Control Bar */}
+            <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                      💼 Marketplace &amp; Job Board Studio
+                    </h3>
+                    <span style={{ background: 'rgba(206,174,86,0.15)', color: '#CEAE56', border: '1px solid rgba(206,174,86,0.3)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
+                      {marketplaceJobs.length} Postings
+                    </span>
+                  </div>
+                  <p style={{ color: '#8898AA', fontSize: '0.8rem', marginTop: '0.35rem', marginBottom: 0 }}>
+                    Manage institutional job opportunities and career openings displayed on the learner Marketplace.
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  {jobSaveStatus && (
+                    <span style={{ fontSize: '0.8rem', color: jobSaveStatus.includes('Error') ? '#F87171' : '#34D399', fontWeight: 600 }}>
+                      {jobSaveStatus}
+                    </span>
+                  )}
+                  <button
+                    onClick={() => {
+                      setEditingJob(null);
+                      setNewJobData({
+                        id: '',
+                        title: '',
+                        company: '',
+                        location: '',
+                        type: 'Full-time',
+                        requiredTier: 'Proficiency',
+                        requiredTrack: '',
+                        salary: '',
+                        description: '',
+                        skills: '',
+                      });
+                      setShowAddJobModal(true);
+                    }}
+                    style={{
+                      background: 'linear-gradient(135deg, #CEAE56 0%, #B8963E 100%)',
+                      color: '#070D18',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      padding: '0.65rem 1.25rem',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      boxShadow: '0 2px 8px rgba(206,174,86,0.25)',
+                    }}
+                  >
+                    <span>+</span> Add New Listing
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Filter & Search Bar */}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
+                <input
+                  type="text"
+                  placeholder="Search by role title, company, skills..."
+                  value={marketplaceSearch}
+                  onChange={e => setMarketplaceSearch(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: '#0B1528',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '0.5rem',
+                    padding: '0.65rem 1rem',
+                    fontSize: '0.82rem',
+                    color: '#F1F5F9',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+              <select
+                value={marketplaceTierFilter}
+                onChange={e => setMarketplaceTierFilter(e.target.value)}
+                style={{
+                  background: '#0B1528',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '0.5rem',
+                  padding: '0.65rem 1rem',
+                  fontSize: '0.82rem',
+                  color: '#F1F5F9',
+                  outline: 'none',
+                }}
+              >
+                <option value="all">All Required Tiers</option>
+                <option value="Distinction">Distinction Tier</option>
+                <option value="Proficiency">Proficiency Tier</option>
+                <option value="Completion">Completion Tier</option>
+              </select>
+              <select
+                value={marketplaceStatusFilter}
+                onChange={e => setMarketplaceStatusFilter(e.target.value)}
+                style={{
+                  background: '#0B1528',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '0.5rem',
+                  padding: '0.65rem 1rem',
+                  fontSize: '0.82rem',
+                  color: '#F1F5F9',
+                  outline: 'none',
+                }}
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="paused">Paused</option>
+              </select>
+            </div>
+
+            {/* Listings Content */}
+            {(() => {
+              const filteredListings = marketplaceJobs.filter(j => {
+                const matchesSearch = !marketplaceSearch ||
+                  j.title.toLowerCase().includes(marketplaceSearch.toLowerCase()) ||
+                  j.company.toLowerCase().includes(marketplaceSearch.toLowerCase()) ||
+                  (Array.isArray(j.skills) ? j.skills : []).some((s: string) => s.toLowerCase().includes(marketplaceSearch.toLowerCase()));
+                const matchesTier = marketplaceTierFilter === 'all' || j.requiredTier === marketplaceTierFilter;
+                const matchesStatus = marketplaceStatusFilter === 'all' || j.status === marketplaceStatusFilter;
+                return matchesSearch && matchesTier && matchesStatus;
+              });
+
+              if (filteredListings.length === 0) {
+                return (
+                  <div style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '1rem', padding: '3.5rem 1.5rem', textAlign: 'center' }}>
+                    <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(206,174,86,0.1)', color: '#CEAE56', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem', margin: '0 auto 1.25rem' }}>
+                      💼
+                    </div>
+                    <h4 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F1F5F9', marginBottom: '0.5rem' }}>
+                      {marketplaceJobs.length === 0 ? 'No marketplace listings created yet' : 'No listings match your search filters'}
+                    </h4>
+                    <p style={{ fontSize: '0.82rem', color: '#8898AA', maxWidth: '460px', margin: '0 auto 1.5rem', lineHeight: 1.6 }}>
+                      {marketplaceJobs.length === 0
+                        ? 'Opportunities created here will appear on the learner Marketplace next to Capstone. Create them as corporate partners publish roles.'
+                        : 'Try searching with different keywords or resetting your tier and status filters.'}
+                    </p>
+                    {marketplaceJobs.length === 0 && (
+                      <button
+                        onClick={() => {
+                          setEditingJob(null);
+                          setNewJobData({
+                            id: '',
+                            title: '',
+                            company: '',
+                            location: '',
+                            type: 'Full-time',
+                            requiredTier: 'Proficiency',
+                            requiredTrack: '',
+                            salary: '',
+                            description: '',
+                            skills: '',
+                          });
+                          setShowAddJobModal(true);
+                        }}
+                        style={{
+                          background: 'linear-gradient(135deg, #CEAE56 0%, #B8963E 100%)',
+                          color: '#070D18',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          padding: '0.65rem 1.5rem',
+                          fontSize: '0.82rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        + Create First Listing
+                      </button>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
+                  {filteredListings.map(job => (
+                    <div key={job.id} style={{ background: '#0B1528', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.75rem', padding: '1.25rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>{job.title}</h4>
+                            <span style={{
+                              background: job.status === 'active' ? 'rgba(52,211,153,0.15)' : 'rgba(148,163,184,0.15)',
+                              color: job.status === 'active' ? '#34D399' : '#94A3B8',
+                              padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase'
+                            }}>
+                              {job.status}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.35rem', flexWrap: 'wrap', fontSize: '0.78rem', color: '#8898AA' }}>
+                            <span style={{ color: '#CEAE56', fontWeight: 600 }}>{job.company}</span>
+                            <span>📍 {job.location}</span>
+                            <span>⏳ {job.type}</span>
+                            <span>💰 {job.salary}</span>
+                            <span>🎓 Requires {job.requiredTier}</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                          <button
+                            onClick={async () => {
+                              const res = await toggleMarketplaceJobStatusAction(sessionToken, job.id);
+                              if (res.success) {
+                                setMarketplaceJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: res.status } : j));
+                              }
+                            }}
+                            style={{
+                              background: 'transparent',
+                              border: '1px solid rgba(255,255,255,0.15)',
+                              color: '#94A3B8',
+                              padding: '0.4rem 0.75rem',
+                              borderRadius: '0.35rem',
+                              fontSize: '0.75rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {job.status === 'active' ? 'Pause' : 'Activate'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingJob(job);
+                              setNewJobData({
+                                id: job.id,
+                                title: job.title,
+                                company: job.company,
+                                location: job.location,
+                                type: job.type || 'Full-time',
+                                requiredTier: job.requiredTier || 'Proficiency',
+                                requiredTrack: job.requiredTrack || '',
+                                salary: job.salary || '',
+                                description: job.description || '',
+                                skills: Array.isArray(job.skills) ? job.skills.join(', ') : '',
+                              });
+                              setShowAddJobModal(true);
+                            }}
+                            style={{
+                              background: 'transparent',
+                              border: '1px solid rgba(206,174,86,0.3)',
+                              color: '#CEAE56',
+                              padding: '0.4rem 0.75rem',
+                              borderRadius: '0.35rem',
+                              fontSize: '0.75rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={async () => {
+                              if (confirm(`Delete listing "${job.title}"?`)) {
+                                const res = await deleteMarketplaceJobAction(sessionToken, job.id);
+                                if (res.success) {
+                                  setMarketplaceJobs(prev => prev.filter(j => j.id !== job.id));
+                                }
+                              }
+                            }}
+                            style={{
+                              background: 'transparent',
+                              border: '1px solid rgba(248,113,113,0.3)',
+                              color: '#F87171',
+                              padding: '0.4rem 0.75rem',
+                              borderRadius: '0.35rem',
+                              fontSize: '0.75rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+
+                      <p style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: '0.75rem', lineHeight: 1.5, marginBottom: '0.75rem' }}>
+                        {job.description}
+                      </p>
+
+                      <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                        {(Array.isArray(job.skills) ? job.skills : []).map((sk: string) => (
+                          <span key={sk} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', color: '#CBD5E1' }}>
+                            {sk}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
+            {/* Modal for Add / Edit Listing */}
+            {showAddJobModal && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
+                <div style={{ background: '#0B1528', border: '1px solid rgba(206,174,86,0.3)', borderRadius: '1rem', width: '100%', maxWidth: '640px', maxHeight: '90vh', overflowY: 'auto', padding: '1.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F1F5F9', margin: 0 }}>
+                      {editingJob ? 'Edit Marketplace Listing' : 'Add New Marketplace Listing'}
+                    </h3>
+                    <button
+                      onClick={() => setShowAddJobModal(false)}
+                      style={{ background: 'none', border: 'none', color: '#8898AA', fontSize: '1.25rem', cursor: 'pointer' }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      setJobSaveStatus('Saving listing...');
+                      const skillsArr = newJobData.skills.split(',').map(s => s.trim()).filter(Boolean);
+                      const res = await saveMarketplaceJobAction(sessionToken, {
+                        ...newJobData,
+                        skills: skillsArr,
+                      });
+                      if (res.success) {
+                        setJobSaveStatus('Listing published successfully!');
+                        setShowAddJobModal(false);
+                        fetchDashboardData();
+                        setTimeout(() => setJobSaveStatus(null), 3000);
+                      } else {
+                        setJobSaveStatus(`Error: ${res.error}`);
+                      }
+                    }}
+                    style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+                  >
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Role Title *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Equity Research Associate"
+                        value={newJobData.title}
+                        onChange={e => setNewJobData({ ...newJobData, title: e.target.value })}
+                        style={{ width: '100%', background: '#070D18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Company Name *</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Motilal Oswal"
+                          value={newJobData.company}
+                          onChange={e => setNewJobData({ ...newJobData, company: e.target.value })}
+                          style={{ width: '100%', background: '#070D18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Location *</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Mumbai · Hybrid"
+                          value={newJobData.location}
+                          onChange={e => setNewJobData({ ...newJobData, location: e.target.value })}
+                          style={{ width: '100%', background: '#070D18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Job Type</label>
+                        <select
+                          value={newJobData.type}
+                          onChange={e => setNewJobData({ ...newJobData, type: e.target.value })}
+                          style={{ width: '100%', background: '#070D18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                        >
+                          <option value="Full-time">Full-time</option>
+                          <option value="Part-time">Part-time</option>
+                          <option value="Internship">Internship</option>
+                          <option value="Contract">Contract</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Required Tier</label>
+                        <select
+                          value={newJobData.requiredTier}
+                          onChange={e => setNewJobData({ ...newJobData, requiredTier: e.target.value })}
+                          style={{ width: '100%', background: '#070D18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                        >
+                          <option value="Proficiency">Proficiency (75%+)</option>
+                          <option value="Distinction">Distinction (90%+)</option>
+                          <option value="Completion">Completion (60%+)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Salary / Range</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. ₹8–12 LPA"
+                          value={newJobData.salary}
+                          onChange={e => setNewJobData({ ...newJobData, salary: e.target.value })}
+                          style={{ width: '100%', background: '#070D18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Required Track (Optional)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Equity Research Analyst Certification"
+                        value={newJobData.requiredTrack}
+                        onChange={e => setNewJobData({ ...newJobData, requiredTrack: e.target.value })}
+                        style={{ width: '100%', background: '#070D18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Required Skills (Comma-separated)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. DCF Modelling, Financial Statement Analysis, Valuation"
+                        value={newJobData.skills}
+                        onChange={e => setNewJobData({ ...newJobData, skills: e.target.value })}
+                        style={{ width: '100%', background: '#070D18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#8898AA', marginBottom: '0.35rem' }}>Role Description *</label>
+                      <textarea
+                        required
+                        rows={4}
+                        placeholder="Provide details about the role, key responsibilities, and team."
+                        value={newJobData.description}
+                        onChange={e => setNewJobData({ ...newJobData, description: e.target.value })}
+                        style={{ width: '100%', background: '#070D18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.4rem', padding: '0.6rem 0.85rem', color: '#F1F5F9', fontSize: '0.82rem' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.75rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddJobModal(false)}
+                        style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: '#94A3B8', padding: '0.6rem 1.25rem', borderRadius: '0.4rem', fontSize: '0.82rem', cursor: 'pointer' }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        style={{ background: 'linear-gradient(135deg, #CEAE56 0%, #B8963E 100%)', color: '#070D18', border: 'none', padding: '0.6rem 1.5rem', borderRadius: '0.4rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        {editingJob ? 'Save Changes' : 'Publish Listing'}
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             )}

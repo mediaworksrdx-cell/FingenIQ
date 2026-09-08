@@ -1640,3 +1640,96 @@ export async function deleteProfessionalTrackAction(adminToken: string | undefin
     return { success: false, error: err.message };
   }
 }
+
+// ─── MARKETPLACE ACTIONS ──────────────────────────────────────────────────────
+
+export async function saveMarketplaceJobAction(adminToken: string | undefined, jobData: {
+  id?: string;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  requiredTier: string;
+  requiredTrack?: string;
+  salary?: string;
+  description: string;
+  skills: string[];
+}) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!jobData.title || !jobData.company || !jobData.location || !jobData.description) {
+      return { success: false, error: 'Title, company, location, and description are required.' };
+    }
+
+    const id = jobData.id || `JOB-${Date.now()}`;
+    const now = new Date().toISOString();
+    const skillsJson = JSON.stringify(jobData.skills || []);
+
+    db.prepare(`
+      INSERT INTO marketplace_jobs (id, title, company, location, type, requiredTier, requiredTrack, salary, description, skills, status, posted, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 'Just now', ?)
+      ON CONFLICT(id) DO UPDATE SET
+        title = excluded.title,
+        company = excluded.company,
+        location = excluded.location,
+        type = excluded.type,
+        requiredTier = excluded.requiredTier,
+        requiredTrack = excluded.requiredTrack,
+        salary = excluded.salary,
+        description = excluded.description,
+        skills = excluded.skills
+    `).run(
+      id,
+      jobData.title.trim(),
+      jobData.company.trim(),
+      jobData.location.trim(),
+      jobData.type || 'Full-time',
+      jobData.requiredTier || 'Proficiency',
+      jobData.requiredTrack?.trim() || null,
+      jobData.salary?.trim() || 'Competitive',
+      jobData.description.trim(),
+      skillsJson,
+      now
+    );
+
+    logAudit('MARKETPLACE_JOB_SAVED', adminId, id, null, { title: jobData.title, company: jobData.company });
+    revalidatePath('/marketplace');
+    revalidatePath('/admin/credentials');
+    return { success: true, id };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deleteMarketplaceJobAction(adminToken: string | undefined, jobId: string) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    if (!jobId) return { success: false, error: 'Job ID is required.' };
+
+    db.prepare('DELETE FROM marketplace_jobs WHERE id = ?').run(jobId);
+    logAudit('MARKETPLACE_JOB_DELETED', adminId, jobId, null, null);
+    revalidatePath('/marketplace');
+    revalidatePath('/admin/credentials');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function toggleMarketplaceJobStatusAction(adminToken: string | undefined, jobId: string) {
+  try {
+    const adminId = await checkAdminAuth(adminToken);
+    const job = db.prepare('SELECT status FROM marketplace_jobs WHERE id = ?').get(jobId) as any;
+    if (!job) return { success: false, error: 'Job not found.' };
+
+    const newStatus = job.status === 'active' ? 'paused' : 'active';
+    db.prepare('UPDATE marketplace_jobs SET status = ? WHERE id = ?').run(newStatus, jobId);
+    logAudit('MARKETPLACE_JOB_STATUS_TOGGLED', adminId, jobId, null, { newStatus });
+    revalidatePath('/marketplace');
+    revalidatePath('/admin/credentials');
+    return { success: true, status: newStatus };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
