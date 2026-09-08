@@ -5,6 +5,7 @@ import { loginAction } from '@/app/actions/authActions';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 function LoginContent() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
@@ -202,10 +203,9 @@ function LoginContent() {
                   Forgot Password?
                 </Link>
               </div>
-              <input
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
                 required
                 autoComplete="current-password"
                 style={{
@@ -215,7 +215,6 @@ function LoginContent() {
                   padding: '0.8rem 1rem',
                   color: '#0F172A',
                   fontSize: '0.875rem',
-                  width: '100%',
                   outline: 'none',
                 }}
                 placeholder="••••••••••••"

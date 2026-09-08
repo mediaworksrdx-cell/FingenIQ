@@ -4,6 +4,7 @@ import { useActionState, use } from 'react';
 import { activateAccountAction } from '@/app/actions/authActions';
 import Link from 'next/link';
 import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 export default function ActivateAccount({
   params,
@@ -98,10 +99,9 @@ export default function ActivateAccount({
               <label htmlFor="password" style={{ fontSize: '0.65rem', fontWeight: 700, color: '#334155', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                 New Secure Password
               </label>
-              <input
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
                 required
                 style={{
                   background: '#FFFFFF',
@@ -110,7 +110,6 @@ export default function ActivateAccount({
                   padding: '0.75rem 1rem',
                   color: '#0F172A',
                   fontSize: '0.875rem',
-                  width: '100%',
                 }}
                 placeholder="••••••••••••"
               />
@@ -120,10 +119,9 @@ export default function ActivateAccount({
               <label htmlFor="confirmPassword" style={{ fontSize: '0.65rem', fontWeight: 700, color: '#334155', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                 Confirm Secure Password
               </label>
-              <input
+              <PasswordInput
                 id="confirmPassword"
                 name="confirmPassword"
-                type="password"
                 required
                 style={{
                   background: '#FFFFFF',
@@ -132,7 +130,6 @@ export default function ActivateAccount({
                   padding: '0.75rem 1rem',
                   color: '#0F172A',
                   fontSize: '0.875rem',
-                  width: '100%',
                 }}
                 placeholder="••••••••••••"
               />

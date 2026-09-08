@@ -5,6 +5,7 @@ import { communityLoginAction, communityRegisterAction } from '@/app/actions/com
 import Link from 'next/link';
 import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
 import { useSearchParams } from 'next/navigation';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 function CommunityAuthContent() {
   const searchParams = useSearchParams();
@@ -156,10 +157,9 @@ function CommunityAuthContent() {
                 <label htmlFor="login-password" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Password
                 </label>
-                <input
+                <PasswordInput
                   id="login-password"
                   name="password"
-                  type="password"
                   required
                   placeholder="••••••••••••"
                   style={{
@@ -250,10 +250,9 @@ function CommunityAuthContent() {
                 <label htmlFor="reg-password" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Password (min. 8 characters)
                 </label>
-                <input
+                <PasswordInput
                   id="reg-password"
                   name="password"
-                  type="password"
                   required
                   minLength={8}
                   placeholder="••••••••••••"
@@ -273,10 +272,9 @@ function CommunityAuthContent() {
                 <label htmlFor="reg-confirm" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Confirm Password
                 </label>
-                <input
+                <PasswordInput
                   id="reg-confirm"
                   name="confirmPassword"
-                  type="password"
                   required
                   placeholder="••••••••••••"
                   style={{

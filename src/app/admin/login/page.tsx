@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState, Suspense } from 'react';
 import { loginAction } from '@/app/actions/authActions';
 import Link from 'next/link';
 import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 const ROLE_PRESETS = [
   {
@@ -184,10 +185,9 @@ function AdminLoginContent() {
                   Forgot Key?
                 </Link>
               </div>
-              <input
+              <PasswordInput
                 id="admin-password"
                 name="password"
-                type="password"
                 required
                 autoComplete="current-password"
                 value={passwordInput}

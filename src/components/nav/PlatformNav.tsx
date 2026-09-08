@@ -7,6 +7,7 @@ import { fetchUserProgress } from '@/app/actions/progressActions';
 import { logoutAction, changePasswordAction } from '@/app/actions/authActions';
 import PlatformAiTutor from '@/components/chat/PlatformAiTutor';
 import FinGenIqLogo from '@/components/brand/FinGenIqLogo';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 const NAV_LINKS = [
   { href: '/dashboard',          label: 'Dashboard',    icon: '◈' },
@@ -580,14 +581,12 @@ export default function PlatformNav() {
                 <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
                   Current Password
                 </label>
-                <input
-                  type="password"
+                <PasswordInput
                   required
                   value={currentPassword}
                   onChange={e => setCurrentPassword(e.target.value)}
                   placeholder="••••••••••••"
                   style={{
-                    width: '100%',
                     padding: '0.65rem 0.85rem',
                     background: '#FFFFFF',
                     border: '1px solid rgba(0, 0, 0, 0.15)',
@@ -603,14 +602,12 @@ export default function PlatformNav() {
                   <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
                     New Password
                   </label>
-                  <input
-                    type="password"
+                  <PasswordInput
                     required
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
                     placeholder="••••••••••••"
                     style={{
-                      width: '100%',
                       padding: '0.65rem 0.85rem',
                       background: '#FFFFFF',
                       border: '1px solid rgba(0, 0, 0, 0.15)',
@@ -624,14 +621,12 @@ export default function PlatformNav() {
                   <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
                     Confirm New
                   </label>
-                  <input
-                    type="password"
+                  <PasswordInput
                     required
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
                     placeholder="••••••••••••"
                     style={{
-                      width: '100%',
                       padding: '0.65rem 0.85rem',
                       background: '#FFFFFF',
                       border: '1px solid rgba(0, 0, 0, 0.15)',
