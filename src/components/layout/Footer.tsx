@@ -50,7 +50,7 @@ export default function Footer() {
               <Link href="/assessments" className="footer__link">Assessments</Link>
               <Link href="/capstone" className="footer__link">Capstone</Link>
               <Link href="/certification" className="footer__link">Credentials</Link>
-              <Link href="/community" className="footer__link">Research Community</Link>
+              <Link href="/community" className="footer__link">Community</Link>
               <Link href="/marketplace" className="footer__link">Marketplace</Link>
             </div>
           </div>
