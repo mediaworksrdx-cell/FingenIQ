@@ -9,7 +9,7 @@ export default function Footer() {
         {/* Regulatory Disclaimer */}
         <div className="footer__disclaimer">
           <strong style={{ color: 'var(--ink-400)' }}>Educational Disclaimer:</strong>{' '}
-          FingenIQ is an educational platform. All content is provided for educational purposes only and does not constitute financial advice, investment recommendations, or a solicitation to buy or sell any financial instrument. FingenIQ is an independent educational technology platform and does not offer regulated financial advisory or investment management services. Learners should consult certified financial professionals before making financial decisions. The Standards Roadmap outlines our internal curriculum quality, benchmarking, and proctoring objectives.
+          FingenIQ is an educational platform. All content is provided for educational purposes only and does not constitute financial advice, investment recommendations, or a solicitation to buy or sell any financial instrument. FingenIQ is an independent educational technology platform and does not offer regulated financial advisory or investment management services. Learners should consult certified financial professionals before making financial decisions.
         </div>
 
         <div className="footer__inner">
@@ -64,7 +64,6 @@ export default function Footer() {
               <Link href="/mentor" className="footer__link">Mentor Program</Link>
               <Link href="/faq" className="footer__link">FAQ</Link>
               <Link href="/contact" className="footer__link">Contact Us</Link>
-              <Link href="/certification-roadmap" className="footer__link">Standards Roadmap</Link>
             </div>
           </div>
 
