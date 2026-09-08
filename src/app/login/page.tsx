@@ -250,9 +250,6 @@ function LoginContent() {
         {/* Footer info links */}
         <footer role="contentinfo" style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.75rem', color: '#475569', lineHeight: 1.6 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <Link href="/admin/login" style={{ color: '#B45309', textDecoration: 'none', fontWeight: 700 }}>
-              🛡️ Admin, Employee &amp; Teacher Portal Sign In →
-            </Link>
             <Link href="/community/login" style={{ color: '#15803D', textDecoration: 'none', fontWeight: 600 }}>
               Looking for Community Discussion? Community Sign In / Register →
             </Link>
