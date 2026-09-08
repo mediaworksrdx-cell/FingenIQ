@@ -145,7 +145,7 @@ for (const ent of seedEntities) {
   insertEnt.run(ent.id, ent.name, ent.type, ent.email, ent.maxUsers, now);
 }
 
-// ── BOOTSTRAP DEFAULT CREDENTIALS FOR 4 ROLES ──────────────────────────────
+// ── BOOTSTRAP DEFAULT CREDENTIALS FOR PORTAL ROLES ──────────────────────────
 const defaultAccounts = [
   {
     id: 'U_ADMIN_SEED',
@@ -153,6 +153,9 @@ const defaultAccounts = [
     email: process.env.INITIAL_ADMIN_EMAIL || 'admin@fingeniq.com',
     password: process.env.INITIAL_ADMIN_PASSWORD || 'Admin@123456',
     role: 'admin',
+    loginCategory: 'b2c',
+    businessEntityId: null,
+    packageId: 'PKG_B2C_PRO',
   },
   {
     id: 'U_EMPLOYEE_SEED',
@@ -160,6 +163,9 @@ const defaultAccounts = [
     email: 'employee@fingeniq.com',
     password: 'Employee@123456',
     role: 'employee',
+    loginCategory: 'b2c',
+    businessEntityId: null,
+    packageId: 'PKG_B2C_PRO',
   },
   {
     id: 'U_TEACHER_SEED',
@@ -167,6 +173,9 @@ const defaultAccounts = [
     email: 'teacher@fingeniq.com',
     password: 'Teacher@123456',
     role: 'teacher',
+    loginCategory: 'b2c',
+    businessEntityId: null,
+    packageId: 'PKG_B2C_PRO',
   },
   {
     id: 'U_LEARNER_SEED',
@@ -174,6 +183,49 @@ const defaultAccounts = [
     email: process.env.INITIAL_LEARNER_EMAIL || 'learner@fingeniq.com',
     password: process.env.INITIAL_LEARNER_PASSWORD || 'Learner@123456',
     role: 'learner',
+    loginCategory: 'b2c',
+    businessEntityId: null,
+    packageId: 'PKG_B2C_PRO',
+  },
+  {
+    id: 'U_ENTERPRISE_SEED',
+    name: 'Enterprise Demo Employee',
+    email: 'enterprise@fingeniq.com',
+    password: 'Enterprise@123456',
+    role: 'employee',
+    loginCategory: 'b2b',
+    businessEntityId: 'ENT_DEMO_B2B',
+    packageId: 'PKG_B2B_ENTERPRISE',
+  },
+  {
+    id: 'U_PARTNER_SEED',
+    name: 'University Partner Student',
+    email: 'partner@fingeniq.com',
+    password: 'Partner@123456',
+    role: 'learner',
+    loginCategory: 'b2b2c',
+    businessEntityId: 'ENT_DEMO_B2B2C',
+    packageId: 'PKG_B2B2C_FULL',
+  },
+  {
+    id: 'U_bfe6918657',
+    name: 'Alice Smith',
+    email: 'alice@corp.com',
+    password: 'Enterprise@123456',
+    role: 'employee',
+    loginCategory: 'b2b',
+    businessEntityId: 'ENT_DEMO_B2B',
+    packageId: 'PKG_B2B_ENTERPRISE',
+  },
+  {
+    id: 'U_2e159e02be',
+    name: 'Bob Student',
+    email: 'bob@univ.edu',
+    password: 'Partner@123456',
+    role: 'learner',
+    loginCategory: 'b2b2c',
+    businessEntityId: 'ENT_DEMO_B2B2C',
+    packageId: 'PKG_B2B2C_FULL',
   },
 ];
 
@@ -181,18 +233,32 @@ const upsertUserStmt = db.prepare(`
   INSERT INTO users (
     id, name, email, role, passwordHash, mustResetPassword, 
     accountStatus, failedLoginAttempts, validityPeriod, credentialIssuedAt,
-    loginCategory, packageId
-  ) VALUES (?, ?, ?, ?, ?, 0, 'active', 0, 'annual', ?, 'b2c', 'PKG_B2C_PRO')
+    loginCategory, businessEntityId, packageId
+  ) VALUES (?, ?, ?, ?, ?, 0, 'active', 0, 'annual', ?, ?, ?, ?)
   ON CONFLICT(email) DO UPDATE SET
     role = excluded.role,
     passwordHash = excluded.passwordHash,
     name = excluded.name,
-    accountStatus = 'active'
+    accountStatus = 'active',
+    mustResetPassword = 0,
+    loginCategory = excluded.loginCategory,
+    businessEntityId = excluded.businessEntityId,
+    packageId = excluded.packageId
 `);
 
 for (const acc of defaultAccounts) {
   const hash = bcrypt.hashSync(acc.password, 12);
-  upsertUserStmt.run(acc.id, acc.name, acc.email, acc.role, hash, now);
+  upsertUserStmt.run(
+    acc.id,
+    acc.name,
+    acc.email,
+    acc.role,
+    hash,
+    now,
+    acc.loginCategory || 'b2c',
+    acc.businessEntityId || null,
+    acc.packageId || 'PKG_B2C_PRO'
+  );
 }
 
 // ── COMMUNITY ARTICLE HELPERS ──────────────────────────────────────────────
